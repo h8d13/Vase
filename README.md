@@ -1,35 +1,32 @@
 # VaseOS
 A testing suite to run VMs and perform system installations.
 
-Supports installing arch KDE without a USB stick from an existing system.
-
 ## Usage
 
-1. Get the Arch ISO or login your existing install.
 
-2. Get the code from Github
+### From an existing install
+
+1. Get the code from Github
 
 `git clone https://github.com/h8d13/VaseOS`
 
-1. Check deps if not running from the USB
+2. Check deps if not running from the USB
 
 To check packages used by archinstall fork:
 
-`$ sudo ./hadebox/install -d`
+`$ sudo ./hade_box/install -d` then without `-d` to test TUI menu. 
 
 It will output perhaps missing libs used in arch install and how to download them.
 
-2. Regular USB run
+3. Install to a target drive or create custom ISO ! 
 
-Will launch a TUI menu for you to configure then format the disks.
+Overlay hade_box into an existing ISO or create your own installers.
 
-`$ sudo ./hadebox/install`
-
-3. Testing suite from an existing install
+4. Testing suite from an existing install
 
 `$ sudo ./main` to install required.
 
-3.1 Start your first VMs
+5. Start your first VMs
 
 `$ sudo ./main -s` to start the menu.
 
@@ -61,11 +58,11 @@ Choice (any key for default): exit
 [-] Exiting without encryption
 ```
 
-3.2 Single file for all conf
+6. Single file for all conf
 
 Found in root dir: `...`
 
-3.3 Config file for logs
+7. Config file for logs
 
 ```
 #FORMAT= # 1 start enabled / 0 start disabled
@@ -77,3 +74,15 @@ LOGMEM=0 # 1 Enables keeping previous log
 LOGCLR=0 # 1 Enables non standard ascii in log
 CATART=1 # 0 Disables cli art sadface
 ```
+
+### From a USB
+
+1. Get the code from Github
+
+`git clone https://github.com/h8d13/VaseOS`
+
+2. Regular USB run
+
+Simply `$ sudo ./hade_box/install -d` to run the TUI menu.
+Will launch a TUI menu for you to configure then format the disks.
+
