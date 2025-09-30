@@ -83,6 +83,5 @@ CATART=1 # 0 Disables cli art sadface
 
 2. Regular USB run
 
-Simply `$ sudo ./hade_box/install -d` to run the TUI menu.
-Will launch a TUI menu for you to configure then format the disks.
+`$ sudo ./hade_box/install` to run the regular TUI menu.
 
