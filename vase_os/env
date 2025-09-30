@@ -13,58 +13,43 @@ if file_ex "${rel}${p_lib}/${rcw_file}"; then
     . "${rel}${p_lib}/${rcw_file}"
 fi
 
-# Get ID and ID_LIKE using grep
+# Detect OS and distro
 os_type=$(uname -s)
-distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
-distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
 kernel_version=$(uname -r)
 kvm_check=$(lsmod | grep kvm || die "No Virtualization Found")
 
 info "OS Type: ${os_type}"
-case "$os_type" in
-    Linux)
-        if file_ex "/etc/os-release"; then
-            distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
-            distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
+info "Kernel: ${kernel_version}"
 
-            case "$distro_id" in
-                debian) info "Detected: Debian" ;;
-                ubuntu) info "Detected: Ubuntu" ;;
-                ## Main spot to call out follow up code on regular runs basically just installing.
-                arch) info "Detected: Arch Linux" && ./${vase_p_deps} && ./${zl_d}/setup_arch;;
-                alpine) info "Detected: Alpine Linux" ;;
-                void) info "Detected: Void Linux" ;;
-                gentoo) info "Detected: Gentoo" ;;
-                fedora) info "Detected: Fedora" ;;
-                rhel) info "Detected: Red Hat family" ;;
+# Currently only Arch Linux is supported
+# To add support for other distros, extend the case statement below
+if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
+    distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+    distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
+
+    case "$distro_id" in
+        arch)
+            info "Detected: Arch Linux"
+            ./${vase_p_deps} && ./${zl_d}/setup_arch
+            ;;
+        *)
+            # Check if it's Arch-based via ID_LIKE
+            case "$distro_like" in
+                *arch*)
+                    info "Detected: Arch-based ($distro_id)"
+                    ./${vase_p_deps} && ./${zl_d}/setup_arch
+                    ;;
                 *)
-                    case "$distro_like" in
-                        *debian*) info "Detected: Debian-based ($distro_id)" ;;
-                        *ubuntu*) info "Detected: Ubuntu-based ($distro_id)" ;;
-                        *arch*) info "Detected: Arch-based ($distro_id)" ;;
-                        *alpine*) info "Detected: Alpine-based ($distro_id)" ;;
-                        *gentoo*) info "Detected: Gentoo-based ($distro_id)" ;;
-                        *fedora*|*rhel*) info "Detected: Red Hat family ($distro_id)" ;;
-                        *) info "Unknown Linux distribution ($distro_id)" ;;
-                    esac
+                    warn "Unsupported distribution: $distro_id"
+                    warn "Currently only Arch Linux and derivatives are supported"
+                    die "To add support for $distro_id, create a setup script at ${zl_d}/setup_${distro_id}"
                     ;;
             esac
-        else
-            warn "Linux detected but /etc/os-release not found"
-        fi
-        info "Kernel: $kernel_version"
-        ;;
-
-    FreeBSD|OpenBSD|NetBSD)
-        info "Detected: BSD ($os_type)"
-        bsd_version=$(uname -r)
-        info "Version: $bsd_version"
-        ;;
-
-    *)
-        warn "Unknown or unsupported OS: $os_type"
-        ;;
-esac
+            ;;
+    esac
+else
+    die "Unsupported OS: $os_type (Linux required)"
+fi
 
 case "$kvm_check" in
     *kvm_intel*)
@@ -154,6 +139,7 @@ fi
 info "GPU(s): $gpu_type"
 
 # Get QEMU Display Settings from config as this runs just before launch
+# Ideally thiscould be based on HW?
 export QEMU_DISPLAY="$qemu_display"
 export QEMU_GL="$qemu_gl"
 info "QEMU Display: $qemu_display | GL: $qemu_gl"
