@@ -1,0 +1,76 @@
+#!/bin/sh
+#... strucs
+# This file is an absolute mess but everything is declared here
+# VM Config
+arch="x86_64"
+ram=8096
+cores=8
+size="60G" #preallocation doesnt take space directly
+vm_name="myvm1" #anyname
+vm_ext="qcow2" #raw
+iso_n="archlinux-2025.09.30-x86_64"
+iso_ext="iso" #raw, bin
+## For running with attached storage
+target_name="sde1"
+target="/dev/${target_name}"
+# QEMU Display Settings
+# Display backend: gtk, sdl, vnc, spice
+# GL acceleration: on, off
+qemu_display="sdl"
+qemu_gl="on"
+
+hide_d="."
+ext_d=".d"
+hide_d_mod=1  # 1=hidden, 0=visible
+ext_d_mod=1 # 1=hidden, 0=visible
+# Build custom_n with conditional prefix and suffix
+custom_n="pyla"
+[ "$hide_d_mod" = "1" ] && custom_n="${hide_d}${custom_n}"
+[ "$ext_d_mod" = "1" ] && custom_n="${custom_n}${ext_d}"
+s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+rel_c=""
+## Where options options:
+# ""      -> script's directory (default using dirname/pwd)
+# ".."    -> one directory up from script
+# "~"     -> user/root home directory
+# "/usr/local/lib" -> absolute path
+# "lib"   -> relative to script
+p_lib="$custom_n"
+c_file="settings"
+c_ext="conf"
+rcw_file="rcw"
+log_n="pyla"
+log_ext="log"
+cli_a="cli_art"
+cli_a_ext=".txt"
+vase_d="vase_os"
+vase_p_env="$vase_d/env"
+vase_p_deps="$vase_d/deps"
+hb_d="$vase_d/hade_box"
+zl_d="$vase_d/zazulago_vms"
+
+# Privilege escalation (ex: doas alternative)
+elev_cmd="sudo"
+
+# Resolve the path based on config
+case "$rel_c" in
+    ""|".")
+        rel="$s_dir/"
+        ;;
+    "~")
+        rel="$HOME/"
+        ;;
+    "..")
+        rel="$(dirname "$s_dir")/"
+        ;;
+    /*)
+        # Absolute path
+        rel="$rel_c/"
+        ;;
+    *)
+        # Relative to script directory
+        rel="$s_dir/$rel_c/"
+        ;;
+esac
+
+script_s=$(date +%s%6N)

@@ -1,0 +1,201 @@
+#!/bin/sh
+#main
+#set -e # Debug line
+## Helpers any POSIX compliant command
+. ./util_f
+
+parse_args "$@"
+setup_cleanup
+# Load constants
+if file_ex "./..."; then
+    . ./...
+fi
+## Magic reset line
+#rm -rf "${rel}${p_lib}"
+if [ "$RESET_MODE" = "1" ]; then
+    postop "Resetting: removing ${rel}${p_lib}"
+    rm -rf "${rel}${p_lib}"
+fi
+# Setup lib directory check the owner
+dir_excreate "${rel}${p_lib}"
+# Create settings if not exist
+if ! file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
+    preop "Creating ${rel}${p_lib}/${c_file}.${c_ext}"
+    cat > "${rel}${p_lib}/${c_file}.${c_ext}" << 'EOF'
+#FORMAT= # 1 start enabled / 0 start disabled
+COLORS=1 # 0 Disables colors of all output
+TIMING=1 # 0 Disables timing output of rcw
+DEBUGS=1 # 0 Disables info outputs from program
+TEELOG=1 # 0 Disables complete log file
+LOGMEM=0 # 1 Enables keeping previous log
+LOGCLR=0 # 1 Enables non standard ascii in log
+CATART=1 # 0 Disables cli art sadface
+EOF
+else
+    preop "Settings already exist. Skipping..."
+fi
+# Load settings > Linked to functionalities
+if file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
+    . "${rel}${p_lib}/${c_file}.${c_ext}"
+fi
+# Create if not exists rcw
+if ! file_ex "${rel}${p_lib}/${rcw_file}"; then
+    preop "Creating ${rel}${p_lib}/${rcw_file}"
+    cat > "${rel}${p_lib}/${rcw_file}" << 'EOF'
+#!/bin/sh
+#rcw
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+NC='\033[0m'
+
+info() {
+    [ "${DEBUGS:-1}" = "1" ] && echo -e "${BLUE}[INFO]${NC} $*"
+}
+warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+reop() { echo -e "${GREEN}[OKAY]${NC} $*"; }
+die() {
+    echo -e "${RED}[ERROR]${NC} $*";
+    exec 1>&- 2>&-
+    wait
+    exit 1
+}
+# Color-only functions (no tags) for inline use
+c_green() { echo -e "${GREEN}$*${NC}"; }
+c_red() { echo -e "${RED}$*${NC}"; }
+c_cyan() { echo -e "${CYAN}$*${NC}"; }
+time_c() { echo -e "${CYAN}$*${NC}"; }
+get_usec() {
+    date +%s%6N
+}
+fmt_dur() {
+    local usec=$1
+    local sec=$((usec / 1000000))
+    local us=$((usec % 1000000))
+    local ms=$((us / 1000))
+    local us_only=$((us % 1000))
+    if [ $sec -gt 0 ]; then
+        printf "%d.%03ds" $sec $((us / 1000))
+    elif [ $ms -gt 0 ]; then
+        printf "%d.%03dms" $ms $us_only
+    else
+        printf "%dμs" $us
+    fi
+}
+rcw() {
+    local cmd="$@"
+    local t_start=$(get_usec)
+    eval "$cmd"
+    local rc=$?
+    local t_end=$(get_usec)
+    local dur=$((t_end - t_start))
+    local check="✓"
+    local cross="✗"
+    local clock="【┘】"
+    [ "${DEBUGS}" = "1" ] && echo -e "${BLUE}[INFO]${NC} Running: $cmd"
+
+    if [ "$TIMING" = "1" ]; then
+        local t_str=$(fmt_dur $dur)
+        if [ "$COLORS" = "1" ]; then
+            echo -e "$(c_cyan "[TIME]") ${t_str} ${clock}"
+        else
+            echo -e "[TIME] ${t_str} ${clock}"
+        fi
+    fi
+    if [ $rc -eq 0 ]; then
+        if [ "$COLORS" = "1" ]; then
+            echo -e "$(c_green "[SUCCESS]") Exit: ${rc} ${check}"
+        else
+            echo -e "[SUCCESS] Exit: ${rc} ${check}"
+        fi
+    else
+        if [ "$COLORS" = "1" ]; then
+            echo -e "$(c_red "[ERROR]") Exit: ${rc} ${cross}"
+        else
+            echo -e "[ERROR] Exit: ${rc} ${cross}"
+        fi
+    fi
+    return $rc
+}
+init_log() {
+    if [ "$TEELOG" = "1" ]; then
+        local log_file="${1:-./pyla.log}"
+        if [ "$LOGCLR" = "1" ]; then
+            # Keep colors in log
+            if [ "$LOGMEM" = "0" ]; then
+                > "$log_file"
+            fi
+            exec > >(tee -a "$log_file") 2>&1
+        else
+            # Strip colors from log
+            if [ "$LOGMEM" = "0" ]; then
+                > "$log_file"
+                exec > >(tee -a >(sed 's/\x1b\[[0-9;]*m//g' > "$log_file")) 2>&1
+            else
+                exec > >(tee -a >(sed 's/\x1b\[[0-9;]*m//g' >> "$log_file")) 2>&1
+            fi
+        fi
+        info "Logging to: $log_file"
+    fi
+}
+EOF
+else
+    preop "Rcw already exist. Skipping..."
+fi
+if file_ex "${cli_a}${cli_a_ext}" && [ "${CATART:-1}" = "1" ]; then
+    nlp
+    cat "${cli_a}${cli_a_ext}"
+    nlp
+fi
+
+# Make exec
+file_mex "${rel}${p_lib}/${rcw_file}"
+# Check wrapper
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    # Source wrapper
+    . "${rel}${p_lib}/${rcw_file}"
+    info "Loaded ${rcw_file} from ${rel}${p_lib}"
+fi
+
+init_log "${rel}${p_lib}/${log_n}.${log_ext}"
+### Start actual usage of helpers sourced from local since we check existence
+obanner "PERMS CHECK"
+if im_groot; then
+    reop "Running with root privileges"
+    # Use reop for regular operation green output
+    if im_sudo; then
+        info "Running as elevated user..."
+        ## Do some stuff like modify user files as root
+        #export XDG for sudo user
+        gui_som "$SUDO_USER"
+        obanner "ENVIR CHECK"
+        . ./${vase_p_env}
+        cbanner "ENVIR CHECK"
+        if dir_own "${rel}${p_lib}" "root"; then
+            ## Give back to user
+            info "Changing ownership from root to $SUDO_USER"
+            chown_all "$SUDO_USER" "${rel}${p_lib}"
+            # Verify we actually gave back
+            dir_own "${rel}${p_lib}" "$SUDO_USER" || die "Failed to switch ownership"
+        else
+            info "Skipping... file already owned by $SUDO_USER"
+        fi
+        cbanner "PERMS CHECK"
+        if [ "$START_MODE" = "1" ]; then
+            preop "Starting..."
+            ./${zl_d}/vm_start && rcw true && exit
+        fi
+    else
+        reop "Running as root. Skipping..."
+    fi
+else
+    if am_iuser; then
+        die "Running as regular user." # Or die
+    fi
+fi
+
+#rcw ls -la /nonexistant
+#&& rcw sleep 1.3 && true testing timing

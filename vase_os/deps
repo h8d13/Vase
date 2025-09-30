@@ -1,0 +1,128 @@
+#!/bin/sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/../util_f"
+# Source constants if they exist
+if file_ex "$SCRIPT_DIR/../..."; then
+    . "$SCRIPT_DIR/../..."
+fi
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    . "${rel}${p_lib}/${rcw_file}"
+fi
+
+# Detect package manager
+PKG_MANAGER=""
+PKG_INSTALL_CMD=""
+
+if cmd_exists "pacman"; then
+    PKG_MANAGER="pacman"
+    PKG_INSTALL_CMD="${elev_cmd} pacman -S"
+elif cmd_exists "apt"; then
+    PKG_MANAGER="apt"
+    PKG_INSTALL_CMD="${elev_cmd} apt install"
+elif cmd_exists "dnf"; then
+    PKG_MANAGER="dnf"
+    PKG_INSTALL_CMD="${elev_cmd} dnf install"
+elif cmd_exists "yum"; then
+    PKG_MANAGER="yum"
+    PKG_INSTALL_CMD="${elev_cmd} yum install"
+elif cmd_exists "apk"; then
+    PKG_MANAGER="apk"
+    PKG_INSTALL_CMD="${elev_cmd} apk add"
+elif cmd_exists "zypper"; then
+    PKG_MANAGER="zypper"
+    PKG_INSTALL_CMD="${elev_cmd} zypper install"
+elif cmd_exists "emerge"; then
+    PKG_MANAGER="emerge"
+    PKG_INSTALL_CMD="${elev_cmd} emerge"
+elif cmd_exists "xbps-install"; then
+    PKG_MANAGER="xbps"
+    PKG_INSTALL_CMD="${elev_cmd} xbps-install"
+else
+    warn "No supported package manager found"
+    PKG_MANAGER="unknown"
+fi
+# Function to check if package is installed
+pkg_installed() {
+    local pkg="$1"
+    case "$PKG_MANAGER" in
+        pacman)
+            pacman -Qi "$pkg" &>/dev/null
+            ;;
+        apt)
+            dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"
+            ;;
+        dnf|yum)
+            rpm -q "$pkg" &>/dev/null
+            ;;
+        apk)
+            apk info -e "$pkg" &>/dev/null
+            ;;
+        zypper)
+            rpm -q "$pkg" &>/dev/null
+            ;;
+        emerge)
+            qlist -I "$pkg" &>/dev/null || equery list "$pkg" &>/dev/null
+            ;;
+        xbps)
+            xbps-query "$pkg" &>/dev/null
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# Function to get package version
+pkg_version() {
+    local pkg="$1"
+    case "$PKG_MANAGER" in
+        pacman)
+            pacman -Qi "$pkg" 2>/dev/null | grep "^Version" | awk '{print $3}'
+            ;;
+        apt)
+            dpkg -l "$pkg" 2>/dev/null | grep "^ii" | awk '{print $3}'
+            ;;
+        dnf|yum)
+            rpm -q --queryformat '%{VERSION}-%{RELEASE}' "$pkg" 2>/dev/null
+            ;;
+        apk)
+            apk info "$pkg" 2>/dev/null | head -1 | awk '{print $1}' | cut -d- -f2-
+            ;;
+        zypper)
+            rpm -q --queryformat '%{VERSION}-%{RELEASE}' "$pkg" 2>/dev/null
+            ;;
+        emerge)
+            qlist -Iv "$pkg" 2>/dev/null | head -1
+            ;;
+        xbps)
+            xbps-query -p pkgver "$pkg" 2>/dev/null
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+# Package checking
+PACKAGES="coreutils python systemd util-linux"
+
+if [ "$PKG_MANAGER" != "unknown" ]; then
+    info "Checking core packages..."
+    MISSING=""
+
+    for pkg in $PACKAGES; do
+        if pkg_installed "$pkg"; then
+            version=$(pkg_version "$pkg")
+            info "  ✓ $pkg ($version)"
+        else
+            warn "  ✗ $pkg (missing)"
+            MISSING="$MISSING $pkg"
+        fi
+    done
+
+    if [ -n "$MISSING" ]; then
+        warn "Install missing packages: $PKG_INSTALL_CMD$MISSING"
+    fi
+else
+    warn "Cannot check packages - no supported package manager found"
+fi

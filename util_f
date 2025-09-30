@@ -1,0 +1,129 @@
+#!/bin/sh
+#utilities
+preop() {
+    echo "[+] $1"
+}
+nlp() {
+    echo ""
+}
+postop() {
+    echo "[-] $1"
+}
+setup_cleanup() {
+    trap cleanup EXIT INT TERM
+}
+cleanup() {
+    if [ -n "$script_s" ] && [ "${TIMING}" = "1" ]; then
+        local script_end=$(date +%s%6N)
+        local total_dur=$((script_end - script_s))
+
+        # Format the duration
+        local sec=$((total_dur / 1000000))
+        local us=$((total_dur % 1000000))
+        local ms=$((us / 1000))
+
+        if [ $sec -gt 0 ]; then
+            postop "Runtime: ${sec}.$(printf '%03d' $((us / 1000)))s"
+        elif [ $ms -gt 0 ]; then
+            postop "Runtime: ${ms}ms"
+        else
+            postop "Runtime: ${us}μs"
+        fi
+    fi
+    postop "Cleaning up..."
+    # Add cleanup stuff here
+}
+
+## TODO
+# Add case where we want to check archinstall deps (NO USB)
+# Add case where we want to launch TUI installer.
+
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -r|--reset)
+                RESET_MODE=1
+                shift
+                ;;
+            -s|--start)
+                START_MODE=1
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                exit 1
+                ;;
+        esac
+    done
+}
+file_ex() {
+    [ -f "$1" ]
+}
+file_mex() {
+    if file_ex "$1"; then
+       chmod +x "$1"
+    fi
+}
+file_excreate() {
+    if ! file_ex "$1"; then
+        touch "$1"
+    fi
+}
+dir_ex() {
+    [ -d "$1" ]
+}
+dir_excreate() {
+    if ! dir_ex "$1"; then
+        mkdir -p "$1"
+    fi
+}
+im_groot() {
+    [ "$EUID" -eq 0 ]
+}
+am_iuser() {
+    [ "$EUID" -ne 0 ]
+}
+im_sudo() {
+    [ -n "$SUDO_USER" ]
+}
+gui_som() {
+    export XDG_RUNTIME_DIR="/run/user/$(id -u "$1")"
+}
+chown_all() {
+    chown -R "$1:$1" "$2"
+}
+who_dir() {
+    stat -c '%U' "$1"
+}
+dir_own() {
+    [ "$(who_dir "$1")" = "$2" ];
+}
+cmd_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+cmd_check() {
+    local cmd="$1"
+    if cmd_exists "$cmd"; then
+        reop "Found: $cmd"
+        return 0
+    else
+        warn "Missing: $cmd"
+        return 1
+    fi
+}
+to_devnull(){
+    "$@" >/dev/null 2>&1
+}
+obanner() {
+    echo "=== [$1] ==="
+}
+cbanner() {
+    local label="$1"
+    local banner_len=$((${#label} + 10))
+    local i=0
+    while [ $i -lt $banner_len ]; do
+        printf '='
+        i=$((i + 1))
+    done
+    echo
+}

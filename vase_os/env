@@ -1,0 +1,159 @@
+#!/bin/sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$SCRIPT_DIR/../utili_f" ]; then
+    . "$SCRIPT_DIR/../util_f"
+elif [ -f "$(dirname "$(dirname "$0")")/util_f" ]; then
+    . "$(dirname "$(dirname "$0")")/util_f"
+fi
+# Source constants if they exist
+if file_ex "$SCRIPT_DIR/../..."; then
+    . "$SCRIPT_DIR/../..."
+fi
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    . "${rel}${p_lib}/${rcw_file}"
+fi
+
+# Get ID and ID_LIKE using grep
+os_type=$(uname -s)
+distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
+kernel_version=$(uname -r)
+kvm_check=$(lsmod | grep kvm || die "No Virtualization Found")
+
+info "OS Type: ${os_type}"
+case "$os_type" in
+    Linux)
+        if file_ex "/etc/os-release"; then
+            distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+            distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
+
+            case "$distro_id" in
+                debian) info "Detected: Debian" ;;
+                ubuntu) info "Detected: Ubuntu" ;;
+                ## Main spot to call out folloz up code on regular runs basically just installing.
+                arch) info "Detected: Arch Linux" && ./${vase_p_deps} && ./${vase_d}/${zl_d}/setup_arch;;
+                alpine) info "Detected: Alpine Linux" ;;
+                void) info "Detected: Void Linux" ;;
+                gentoo) info "Detected: Gentoo" ;;
+                fedora) info "Detected: Fedora" ;;
+                rhel) info "Detected: Red Hat family" ;;
+                *)
+                    case "$distro_like" in
+                        *debian*) info "Detected: Debian-based ($distro_id)" ;;
+                        *ubuntu*) info "Detected: Ubuntu-based ($distro_id)" ;;
+                        *arch*) info "Detected: Arch-based ($distro_id)" ;;
+                        *alpine*) info "Detected: Alpine-based ($distro_id)" ;;
+                        *gentoo*) info "Detected: Gentoo-based ($distro_id)" ;;
+                        *fedora*|*rhel*) info "Detected: Red Hat family ($distro_id)" ;;
+                        *) info "Unknown Linux distribution ($distro_id)" ;;
+                    esac
+                    ;;
+            esac
+        else
+            warn "Linux detected but /etc/os-release not found"
+        fi
+        info "Kernel: $kernel_version"
+        ;;
+
+    FreeBSD|OpenBSD|NetBSD)
+        info "Detected: BSD ($os_type)"
+        bsd_version=$(uname -r)
+        info "Version: $bsd_version"
+        ;;
+
+    *)
+        warn "Unknown or unsupported OS: $os_type"
+        ;;
+esac
+
+case "$kvm_check" in
+    *kvm_intel*)
+        info "KVM: Intel ... Virtualization Found."
+        ;;
+    *kvm_amd*)
+        info "KVM: AMD ... Virtualization Found."
+        ;;
+    *)
+        info "No KVM module loaded"
+        ;;
+esac
+# Based on lscpu | grep -E "Socket|Core|Thread|^CPU"
+
+cpu_arch=$(uname -m)
+cpu_model=$(lscpu | grep "Model name" | cut -d: -f2- | xargs)
+
+# Get CPU topology
+cpu_sockets=$(lscpu | grep "Socket(s):" | awk -F: '{print $2}' | xargs)
+cpu_cores=$(lscpu | grep "Core(s) per socket:" | awk -F: '{print $2}' | xargs)
+cpu_threads=$(lscpu | grep "Thread(s) per core:" | awk -F: '{print $2}' | xargs)
+
+# Set defaults if empty
+cpu_sockets=${cpu_sockets:-1}
+cpu_cores=${cpu_cores:-1}
+cpu_threads=${cpu_threads:-1}
+
+total_cores=$((cpu_sockets * cpu_cores))
+total_threads=$((total_cores * cpu_threads))
+
+# Build CPU string
+if [ "$cpu_sockets" -gt 1 ]; then
+    cpu_info="$cpu_model (${cpu_sockets}x CPUs, ${total_cores} cores, ${total_threads} threads, $cpu_arch)"
+else
+    cpu_info="$cpu_model (${total_cores} cores, ${total_threads} threads, $cpu_arch)"
+fi
+
+info "CPU: $cpu_info"
+
+gpu_check=$(lspci | grep -iE "vga|3d")
+
+# Count each type with word boundaries
+has_nvidia=$(echo "$gpu_check" | grep -ic "nvidia")
+has_amd=$(echo "$gpu_check" | grep -icE "\bamd\b|\bati\b")
+has_intel=$(echo "$gpu_check" | grep -ic "intel")
+
+# Extract GPU models
+nvidia_models=""
+amd_models=""
+intel_models=""
+
+if [ $has_nvidia -gt 0 ]; then
+    nvidia_models=$(echo "$gpu_check" | grep -i "nvidia" | sed 's/.*NVIDIA Corporation //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
+fi
+
+if [ $has_amd -gt 0 ]; then
+    amd_models=$(echo "$gpu_check" | grep -iE "\bamd\b|\bati\b" | sed 's/.*AMD\/ATI //' | sed 's/.*ATI //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
+fi
+
+if [ $has_intel -gt 0 ]; then
+    intel_models=$(echo "$gpu_check" | grep -i "intel" | sed 's/.*Intel Corporation //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
+fi
+
+# Build GPU string
+if [ $has_nvidia -gt 0 ] && [ $has_intel -gt 0 ]; then
+    gpu_type="Hybrid: Intel ($intel_models) + NVIDIA ($nvidia_models)"
+elif [ $has_amd -gt 0 ] && [ $has_intel -gt 0 ]; then
+    gpu_type="Hybrid: Intel ($intel_models) + AMD ($amd_models)"
+elif [ $has_amd -gt 0 ] && [ $has_nvidia -gt 0 ]; then
+    gpu_type="Hybrid: AMD ($amd_models) + NVIDIA ($nvidia_models)"
+elif [ $has_nvidia -gt 1 ]; then
+    gpu_type="NVIDIA (${has_nvidia}x): $nvidia_models"
+elif [ $has_nvidia -eq 1 ]; then
+    gpu_type="NVIDIA: $nvidia_models"
+elif [ $has_amd -gt 1 ]; then
+    gpu_type="AMD (${has_amd}x): $amd_models"
+elif [ $has_amd -eq 1 ]; then
+    gpu_type="AMD: $amd_models"
+elif [ $has_intel -gt 1 ]; then
+    gpu_type="Intel (${has_intel}x): $intel_models"
+elif [ $has_intel -eq 1 ]; then
+    gpu_type="Intel: $intel_models"
+else
+    gpu_type="Unknown"
+fi
+
+info "GPU(s): $gpu_type"
+
+# Get QEMU Display Settings from config as this runs just before launch
+export QEMU_DISPLAY="$qemu_display"
+export QEMU_GL="$qemu_gl"
+info "QEMU Display: $qemu_display | GL: $qemu_gl"
