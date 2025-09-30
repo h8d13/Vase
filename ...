@@ -2,6 +2,12 @@
 #... strucs
 # This file is an absolute mess but everything is declared here
 # VM Config
+# QEMU Display Settings
+# Display backend: gtk, sdl, vnc, spice
+# GL acceleration: on, off
+qemu_display="sdl"
+qemu_gl="on"
+
 arch="x86_64"
 ram=8096
 cores=8
@@ -13,11 +19,7 @@ iso_ext="iso" #raw, bin
 ## For running with attached storage
 target_name="sde1"
 target="/dev/${target_name}"
-# QEMU Display Settings
-# Display backend: gtk, sdl, vnc, spice
-# GL acceleration: on, off
-qemu_display="sdl"
-qemu_gl="on"
+# This can also be a mount point /media/ ro smthn
 
 hide_d="."
 ext_d=".d"

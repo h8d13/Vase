@@ -140,12 +140,28 @@ qemu_cmd() {
     local display="${QEMU_DISPLAY:-gtk}"
     local gl="${QEMU_GL:-off}"
 
-    # Base command with VirtIO GPU
-    local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores} -vga none"
-    if [ "$gl" = "on" ]; then
-        cmd="$cmd -device virtio-gpu-pci -display ${display},gl=on"
+    # Base command
+    local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores}"
+    local use_display=1
+
+    # Check if headless mode is requested
+    for arg in "$@"; do
+        if [ "$arg" = "--headless" ]; then
+            use_display=0
+            break
+        fi
+    done
+
+    if [ $use_display -eq 1 ]; then
+        cmd="$cmd -vga none"
+        if [ "$gl" = "on" ]; then
+            cmd="$cmd -device virtio-gpu-pci -display ${display},gl=on"
+        else
+            cmd="$cmd -device virtio-gpu-pci -display ${display}"
+        fi
     else
-        cmd="$cmd -device virtio-gpu-pci -display ${display}"
+        # Headless: serial output to terminal, no graphical display
+        cmd="$cmd -serial mon:stdio -display none"
     fi
 
     while [ $# -gt 0 ]; do
@@ -183,8 +199,7 @@ qemu_cmd() {
                 shift 2
                 ;;
             --headless)
-                # Override display for headless mode
-                cmd=$(echo "$cmd" | sed 's/-display gtk,gl=on/-display none/')
+                # Already handled above
                 shift
                 ;;
             --vnc)
