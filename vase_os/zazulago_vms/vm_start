@@ -41,7 +41,14 @@ run_vm() {
 
 run_headless() {
     local cmd="$1"
+    preop "Starting headless VM (serial on stdio)..."
     $cmd
+    local exit_code=$?
+    if [ $exit_code -eq 0 ]; then
+        postop "VM exited cleanly"
+    else
+        warn "VM exited with code: $exit_code"
+    fi
 }
 
 get_magic_number() {
@@ -330,15 +337,13 @@ main() {
 
         bootk)
             preop "Headless boot..."
-            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --serial mon:stdio --headless)
-            run_headless "$cmd"
-            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --serial mon:stdio --headless)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --headless)
             run_headless "$cmd"
             ;;
 
         taild)
             preop "Headless run..."
-            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --serial mon:stdio --headless)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --headless)
             run_headless "$cmd"
             ;;
 

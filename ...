@@ -12,9 +12,11 @@ arch="x86_64"
 ram=8096
 cores=8
 size="60G" #preallocation doesnt take space directly
+iso_n="alpine-x86_64"
 vm_name="myvm1" #anyname
+#vm_name="myvm2" #alpine
+#vm_name="myvm3" #arch
 vm_ext="qcow2" #raw
-iso_n="archlinux-2025.09.30-x86_64"
 iso_ext="iso" #raw, bin
 ## For running with attached storage
 target_name="sde1"
