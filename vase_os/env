@@ -30,7 +30,7 @@ case "$os_type" in
             case "$distro_id" in
                 debian) info "Detected: Debian" ;;
                 ubuntu) info "Detected: Ubuntu" ;;
-                ## Main spot to call out folloz up code on regular runs basically just installing.
+                ## Main spot to call out follow up code on regular runs basically just installing.
                 arch) info "Detected: Arch Linux" && ./${vase_p_deps} && ./${vase_d}/${zl_d}/setup_arch;;
                 alpine) info "Detected: Alpine Linux" ;;
                 void) info "Detected: Void Linux" ;;
