@@ -1,0 +1,3 @@
+#!/bin/sh
+##Verify KVM is available
+lsmod | grep kvm

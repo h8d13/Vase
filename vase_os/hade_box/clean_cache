@@ -1,0 +1,28 @@
+#!/bin/python3
+import os
+import shutil
+
+# List of common cache names
+CACHE_NAMES = ['__pycache__']
+
+def clean_cache(root_dir):
+    deleted = []
+
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for dirname in dirnames:
+            if dirname.lower() in CACHE_NAMES:
+                full_path = os.path.join(dirpath, dirname)
+                try:
+                    shutil.rmtree(full_path)
+                    deleted.append(full_path)
+                    print(f"Deleted: {full_path}")
+                except Exception as e:
+                    print(f"Failed to delete {full_path}: {e}")
+
+    if not deleted:
+        print("No cache folders found.")
+    else:
+        print(f"\n✅ Done. {len(deleted)} cache folder(s) deleted.")
+
+if __name__ == "__main__":
+    clean_cache(".")

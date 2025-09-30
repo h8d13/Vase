@@ -1,0 +1,63 @@
+#!/bin/bash
+# ARCHINSTALL SYSTEM SUBDEPS SCRIPT
+PACKAGES=(
+    # Required (core features)
+    "git"
+    "arch-install-scripts"
+    "grub"
+    "mkinitcpio"
+    "pciutils"
+    "dosfstools"
+    # Optional (depending on options picked in archinstall)
+    "btrfs-progs"
+    #"cryptsetup"
+    #"libfido2"
+    # Core (sanity check)
+    "coreutils"
+    "e2fsprogs"
+    "glibc"
+    "shadow"
+    "systemd"
+    "util-linux"
+    "python"
+)
+
+MISSING=()
+
+# reliable hacky way of knowing we are using ISO
+if [ -d "/run/archiso" ]; then
+    echo "Running from Arch Linux ISO / USB Medium"
+else
+    echo "Running from live system"
+    echo "Cheching system subdeps"
+    for pkg in "${PACKAGES[@]}"; do
+        if pacman -Qi "$pkg" &>/dev/null; then
+            version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')
+            echo "OK $pkg ($version)"
+        else
+            echo "MISSING $pkg"
+            MISSING+=("$pkg")
+        fi
+    done
+fi
+
+# Always check python modules even tho they should be in ISO
+PYTHON_MODULES=(
+    "cryptography:python-cryptography"
+    "parted:python-pyparted"
+    "pydantic:python-pydantic"
+)
+
+for module_pkg in "${PYTHON_MODULES[@]}"; do
+    module="${module_pkg%%:*}"
+    package="${module_pkg##*:}"
+    if python -c "import $module" 2>/dev/null; then
+        version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
+        echo "OK $package (${version:-unknown})"
+    else
+        echo "MISSING $package ($module)"
+        MISSING+=("$package")
+    fi
+done
+
+[ ${#MISSING[@]} -gt 0 ] && echo -e "\nInstall missing:\n sudo pacman -S ${MISSING[*]}"

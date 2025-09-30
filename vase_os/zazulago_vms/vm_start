@@ -1,0 +1,406 @@
+#!/bin/sh
+# VM Manager 2.0 - Bash implementation
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+script_dir="$(dirname "$0")"
+iso_dir_path="${script_dir}/d/"
+iso_name="${script_dir}/d/${iso_n}.$iso_ext"
+disks_dir_path="${script_dir}/c/"
+image_name="${script_dir}/c/${vm_name}.${vm_ext}"
+
+# Global state
+session_uuid=$(cat /proc/sys/kernel/random/uuid)
+short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
+
+# Encryption/decryption tool
+hedgen_bin="${script_dir}/lib/hedgen2c"
+key_file="${script_dir}/.vmkey.local"
+
+spin_animation() {
+    local duration=${1:-10}
+    local chars='\ | / -'
+    local start=$(date +%s)
+    local i=0
+
+    while [ $(($(date +%s) - start)) -lt "$duration" ]; do
+        printf "\r%s" "$(echo "$chars" | cut -d' ' -f$((i % 4 + 1)))"
+        i=$((i + 1))
+        sleep 0.1
+    done
+    printf "\r"
+}
+
+run_vm() {
+    local cmd="$1"
+    local display="${QEMU_DISPLAY:-gtk}"
+    local gl="${QEMU_GL:-off}"
+    preop "Starting VM (display: ${display}, gl: ${gl})..."
+    $cmd
+}
+
+run_headless() {
+    local cmd="$1"
+    $cmd
+}
+
+get_magic_number() {
+    echo $((RANDOM * RANDOM % 4294957296 + 9999))
+}
+
+save_key() {
+    local key="$1"
+    echo "$key" > "$key_file"
+}
+
+load_key() {
+    if file_ex "$key_file"; then
+        head -n1 "$key_file" | tr -d '[:space:]'
+    else
+        postop "Encryption key not found."
+        exit 1
+    fi
+}
+
+decrypt_vm() {
+    local image="$1"
+    local key="$2"
+
+    $hedgen_bin d "${image}.bin" "$image" "$key"
+    rm -f "${image}.bin"
+
+    # Log launch
+    local hashed_name=$(echo "$image" | sha256sum | cut -c1-8)
+    {
+        echo ""
+        echo "#I$(date '+%Y-%m-%d %H:%M:%S')"
+        echo "#${session_uuid}"
+        echo "#${hashed_name}"
+    } >> "$key_file"
+}
+
+encrypt_vm() {
+    local image="$1"
+    local key="$2"
+
+    $hedgen_bin e "$image" "${image}.bin" "$key"
+    rm -f "$image"
+
+    # Log exit
+    {
+        echo ""
+        echo "#O$(date '+%Y-%m-%d %H:%M:%S')"
+        echo "#${session_uuid}"
+    } >> "$key_file"
+}
+
+copy_disk() {
+    local image="$1"
+    local temp_name="$(dirname "$image")/${short_uuid}$(basename "$image")"
+
+    preop "Copying $image > $temp_name..."
+
+    if ! file_ex "$image"; then
+        postop "Error: $image not found"
+        exit 1
+    fi
+
+    cp "$image" "$temp_name" &
+    local cp_pid=$!
+
+    # Spinner while copying
+    local chars='\ | / -'
+    local i=0
+    while kill -0 "$cp_pid" 2>/dev/null; do
+        printf "\r%s" "$(echo "$chars" | cut -d' ' -f$((i % 4 + 1)))"
+        i=$((i + 1))
+        sleep 0.1
+    done
+
+    wait "$cp_pid"
+    printf "\nCopied to %s\n" "$temp_name"
+    echo "$temp_name"
+}
+
+generate_mac() {
+    local mac="52:54:00:$(printf '%02x:%02x:%02x' $((RANDOM % 256)) $((RANDOM % 256)) $((RANDOM % 256)))"
+    preop "Generated MAC: $mac"
+    echo "$mac"
+}
+
+qemu_cmd() {
+    local image="$1"
+    shift
+    # Display/GL settings auto-detected from vase_os/env module based on GPU:
+    # - NVIDIA: Uses SDL with GL (GTK+EGL doesn't work with proprietary driver)
+    # - AMD/Intel: Uses GTK with GL (Mesa drivers work well with EGL)
+    # - Unknown: Falls back to GTK without GL
+    # To modify detection logic, edit vase_os/env lines 151-178
+    # To override manually: export QEMU_DISPLAY=gtk|sdl and QEMU_GL=on|off
+    local display="${QEMU_DISPLAY:-gtk}"
+    local gl="${QEMU_GL:-off}"
+
+    # Base command with VirtIO GPU
+    local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores} -vga none"
+    if [ "$gl" = "on" ]; then
+        cmd="$cmd -device virtio-gpu-pci -display ${display},gl=on"
+    else
+        cmd="$cmd -device virtio-gpu-pci -display ${display}"
+    fi
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --hda)
+                cmd="$cmd -hda $2"
+                shift 2
+                ;;
+            --cdrom)
+                cmd="$cmd -cdrom $2"
+                shift 2
+                ;;
+            --boot)
+                cmd="$cmd -boot $2"
+                shift 2
+                ;;
+            --serial)
+                cmd="$cmd -serial $2"
+                shift 2
+                ;;
+            --display)
+                cmd="$cmd -display $2"
+                shift 2
+                ;;
+            --spice)
+                cmd="$cmd -spice $2"
+                shift 2
+                ;;
+            --usb-drive)
+                cmd="$cmd -usb -device usb-storage,drive=mydrive -drive file=$2,format=raw,if=none,id=mydrive"
+                shift 2
+                ;;
+            --network)
+                cmd="$cmd -netdev user,id=mynet0 -device e1000,netdev=mynet0,mac=$2"
+                shift 2
+                ;;
+            --headless)
+                # Override display for headless mode
+                cmd=$(echo "$cmd" | sed 's/-display gtk,gl=on/-display none/')
+                shift
+                ;;
+            --vnc)
+                # Use VNC instead of auto-detected display
+                cmd=$(echo "$cmd" | sed 's/-display [^ ]*/-vnc :0/')
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    echo "$cmd"
+}
+
+show_menu() {
+    echo "########################################"
+    echo "Zazulago VM Tooling: rdisk, then brick."
+    echo "Display: ${QEMU_DISPLAY:-auto} | GL: ${QEMU_GL:-auto}"
+    echo "########################################"
+    echo " rk      : Refresh key"
+    echo " rdisk   : Reset ${vm_name} ${size}"
+    echo " dupk    : Permanent copy"
+    echo " duck    : Temporary copy"
+    echo " mayk    : Maybe save copy"
+    echo " brick   : Boot ISO + Run"
+    echo " vncd    : Boot ISO (VNC)"
+    echo " vnck    : Run (VNC)"
+    echo " std     : Run (standard VGA)"
+    echo " cupkd   : Boot ISO w ${target}"
+    echo " cupk    : Run w ${target}"
+    echo " taild   : Headless w logs"
+    echo " bootk   : Boot headless w/ logs"
+    echo " macg    : Generate MAC + run"
+    echo " conkd   : Boot ISO w ${target} and disk"
+    echo " conk    : Run w ${target} and disk"
+    echo " potk    : Delete key + encrypt"
+    echo " exit    : Exit without encrypt"
+    echo "########################################"
+}
+
+main() {
+    # Setup
+    file_mex "$hedgen_bin"
+    dir_excreate "${script_dir}/c/"
+    dir_excreate "${script_dir}/d/"
+
+    # Create disk if it doesn't exist
+    if ! file_ex "$image_name" && ! file_ex "${image_name}.bin"; then
+        preop "Creating initial disk: $image_name"
+        qemu-img create -f qcow2 "$image_name" "$size"
+    fi
+
+    # Load or create key
+    if file_ex "${image_name}.bin"; then
+        preop "Encrypted ${image_name}.bin detected"
+        key=$(load_key)
+        decrypt_vm "$image_name" "$key"
+    elif file_ex "$key_file"; then
+        key=$(load_key)
+    else
+        key=$(get_magic_number)
+        save_key "$key"
+        preop "Created new key"
+    fi
+
+    # Show menu
+    show_menu
+    printf "Choice (any key for default): "
+    read -r choice
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
+
+    # Handle choices
+    case "$choice" in
+        rk)
+            key=$(get_magic_number)
+            save_key "$key"
+            postop "Key refreshed"
+            return 0
+            ;;
+
+        rdisk)
+            qemu-img create -f qcow2 "$image_name" "$size"
+            postop "Reset disk $image_name"
+            return 0
+            ;;
+
+        potk)
+            encrypt_vm "$image_name" "$key"
+            rm -f "$key_file"
+            preop "Encrypted and deleted key"
+            return 0
+            ;;
+
+        exit)
+            postop "Exiting without encryption"
+            return 0
+            ;;
+
+        brick)
+            preop "Booting from ISO..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
+            run_vm "$cmd"
+            preop "Running VM..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c)
+            run_vm "$cmd"
+            preop "Setup complete"
+            ;;
+
+        vncd)
+            preop "Booting from ISO (VNC)..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --vnc)
+            run_vm "$cmd"
+            ;;
+
+        vnck)
+            preop "Running VM (VNC)..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --vnc)
+            run_vm "$cmd"
+            ;;
+
+        std)
+            preop "Running VM (standard VGA)..."
+            cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores} -vga std -hda $image_name -boot c"
+            $cmd
+            ;;
+
+        bootk)
+            preop "Headless boot..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --serial mon:stdio --headless)
+            run_headless "$cmd"
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --serial mon:stdio --headless)
+            run_headless "$cmd"
+            ;;
+
+        taild)
+            preop "Headless run..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --serial mon:stdio --headless)
+            run_headless "$cmd"
+            ;;
+
+        duck)
+            temp_name=$(copy_disk "$image_name")
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
+            run_vm "$cmd"
+            rm -f "$temp_name"
+            preop "Temp disk removed"
+            ;;
+
+        dupk)
+            temp_name=$(copy_disk "$image_name")
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
+            run_vm "$cmd"
+            preop "Permanent copy: $temp_name"
+            ;;
+
+        mayk)
+            temp_name=$(copy_disk "$image_name")
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
+            run_vm "$cmd"
+            printf "Save? (enc/raw/no): "
+            read -r save_choice
+            save_choice=$(echo "$save_choice" | tr '[:upper:]' '[:lower:]')
+            case "$save_choice" in
+                enc)
+                    encrypt_vm "$temp_name" "$key"
+                    ;;
+                raw)
+                    ;;
+                *)
+                    rm -f "$temp_name"
+                    ;;
+            esac
+            ;;
+
+        macg)
+            mac=$(generate_mac)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --network "$mac")
+            run_vm "$cmd"
+            ;;
+
+        cupk)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --usb-drive "$target")
+            run_vm "$cmd"
+            ;;
+
+        cupkd)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --usb-drive "$target")
+            run_vm "$cmd"
+            ;;
+
+        conk)
+            cmd=$(qemu_cmd "" --boot c --usb-drive "$target")
+            run_vm "$cmd"
+            return 0
+            ;;
+
+        conkd)
+            cmd=$(qemu_cmd "" --cdrom "$iso_name" --boot d --usb-drive "$target")
+            run_vm "$cmd"
+            return 0
+            ;;
+
+        *)
+            # Default run
+            preop "Running VM..."
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c)
+            run_vm "$cmd"
+            ;;
+    esac
+
+    # Encrypt after use (unless we returned early)
+    encrypt_vm "$image_name" "$key"
+    postop "Done... Encrypted now exiting."
+}
+
+# Run main
+main

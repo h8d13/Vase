@@ -1,0 +1,38 @@
+#!/bin/sh
+# Main packages needed
+
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+# Base QEMU packages
+pkgs_needed="qemu-system-x86 qemu-img qemu-hw-display-virtio-gpu-pci qemu-hw-display-virtio-gpu"
+
+# Add display backend packages based on config
+case "$qemu_display" in
+    gtk) pkgs_needed="$pkgs_needed qemu-ui-gtk" ;;
+    sdl) pkgs_needed="$pkgs_needed qemu-ui-sdl" ;;
+    spice) pkgs_needed="$pkgs_needed qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice" ;;
+esac
+
+# Add GL renderer if enabled
+[ "$qemu_gl" = "on" ] && pkgs_needed="$pkgs_needed virglrenderer"
+#pkgs_optional="libvirt qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice bridge-utils dmidecode dnsmasq iptables-nft tigervnc qemu-ui-spice-app qemu-hw-display-qxl"
+missing_pkgs=""
+
+preop "Checking VM packages..."
+for pkg in $pkgs_needed; do
+    if ! to_devnull pacman -Qi "$pkg"; then
+        postop "Missing: $pkg"
+        missing_pkgs="$missing_pkgs $pkg"
+    else
+        preop "Found: $pkg"
+    fi
+done
+
+if [ -n "$missing_pkgs" ]; then
+    preop "Installing missing packages:$missing_pkgs"
+    pacman -S --noconfirm --needed $missing_pkgs
+    #qemu-full for other architectures
+else
+    preop "All packages already installed. Skipping..."
+fi

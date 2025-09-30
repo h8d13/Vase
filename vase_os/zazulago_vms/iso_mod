@@ -1,0 +1,29 @@
+#!/bin/bash
+#set -e
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+# Archiso Build Script - Add hade_box/ to Arch Linux ISO
+OVERLAY_DIR="../hade_box"
+PROFILE_DIR="./archiso_profile"
+OUTPUT_DIR="./d"
+
+echo "Setting up archiso profile..."
+#rm -rf "$PROFILE_DIR"
+mkdir -p "$PROFILE_DIR"
+cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
+
+echo "Adding $OVERLAY_DIR to airootfs..."
+mkdir -p "$PROFILE_DIR/airootfs/root"
+cp -r "$OVERLAY_DIR" "$PROFILE_DIR/airootfs/root/"
+
+echo "Building ISO with mkarchiso..."
+WORK_DIR="./archiso-work"
+mkdir -p "$WORK_DIR"
+sudo mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" "$PROFILE_DIR"
+
+echo "Cleaning up..."
+rm -rf "$PROFILE_DIR"
+sudo rm -rf "$WORK_DIR"
+
+echo "Done! New ISO created in: $OUTPUT_DIR"

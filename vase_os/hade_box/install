@@ -1,0 +1,95 @@
+#!/bin/bash
+set -e
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -d|--deps)
+            DEPS_ONLY=true
+            shift
+            ;;
+        *)
+            # Pass unknown arguments to archinstall
+            ARCHINSTALL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: This script must be run as root"
+    exit 1
+fi
+
+echo "KADEBOOT - ARCHINSTALL"
+echo "============================="
+
+# Determine if we running from ISO or not
+if [ -d "/run/archiso" ]; then
+    echo "Running from Arch Linux ISO / USB Medium"
+else # If deps-only mode, exit after dependency check
+    if [ "$DEPS_ONLY" = true ]; then
+    	chmod +x ./devs/altodeps
+    	./devs/altodeps
+        echo "Dependency check complete. Exiting."
+        exit 0
+    fi
+fi
+
+# Always check python modules even tho they should be in ISO
+PYTHON_MODULES=(
+    "cryptography:python-cryptography"
+    "parted:python-pyparted"
+    "pydantic:python-pydantic"
+)
+
+for module_pkg in "${PYTHON_MODULES[@]}"; do
+    module="${module_pkg%%:*}"
+    package="${module_pkg##*:}"
+    if python -c "import $module" 2>/dev/null; then
+        version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
+        echo "OK $package (${version:-unknown})"
+    else
+        echo "MISSING $package ($module)"
+        MISSING+=("$package")
+        exit 0
+    fi
+done
+
+echo "All dependencies found!"
+export PYTHONPATH="$(pwd):$PYTHONPATH"
+python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
+
+#### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
+
+# All available archinstall command line options:
+#
+# -h, --help            show this help message and exit
+# --config [CONFIG]     JSON configuration file
+# --config-url [CONFIG_URL]
+#                       Url to a JSON configuration file
+# --creds [CREDS]       JSON credentials configuration file
+# --creds-url [CREDS_URL]
+#                       Url to a JSON credentials configuration file
+# --creds-decryption-key [CREDS_DECRYPTION_KEY]
+#                       Decryption key for credentials file
+# --silent              WARNING: Disables all prompts for input and
+#                       confirmation. If no configuration is provided, this is
+#                       ignored
+# --dry-run, --dry_run  Generates a configuration file and then exits instead
+#                       of performing an installation
+# --script [SCRIPT]     Script to run for installation
+# --mountpoint [MOUNTPOINT]
+#                       Define an alternate mount point for installation
+#                       (default: /mnt)
+# --skip-ntp            Disables NTP checks during installation
+# --skip-wkd            Disables checking if archlinux keyring wkd sync is
+#                       complete
+# --skip-boot           Disables installation of a boot loader (note: only use
+#                       this when problems arise with the boot loader step)
+# --offline             Disabled online upstream services such as package
+#                       search and key-ring auto update
+# --no-pkg-lookups      Disabled package validation specifically prior to
+#                       starting installation
+# --advanced            Enabled advanced options
+# --verbose             Enabled verbose options
+# --debug               Adds debug info into the log

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Already root since we are in ISO
+pacman-key --init && ./install
