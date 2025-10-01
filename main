@@ -185,6 +185,11 @@ if im_groot; then
         fi
         cbanner "PERMS CHECK"
         if [ "$START_MODE" = "1" ]; then
+            obanner "FILES CHECK"
+            if ! file_ex "./${zl_d}/d/${iso_n}.${iso_ext}"; then
+                die "ISO Not found."
+            fi
+            cbanner "FILES CHECK"
             preop "Starting..."
             ./${zl_d}/vm_start && rcw true && exit
         fi

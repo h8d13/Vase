@@ -8,6 +8,10 @@ OVERLAY_DIR="../hade_box"
 PROFILE_DIR="./archiso_profile"
 OUTPUT_DIR="./d"
 
+if ! dir_exists "$OVERLAY_DIR"; then
+   die "Did not find overlay dir."
+fi
+
 echo "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
 mkdir -p "$PROFILE_DIR"
