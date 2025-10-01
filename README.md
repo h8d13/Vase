@@ -1,4 +1,5 @@
 # Vase
+
 A testing suite to run VMs and perform system installations.
 > Made for archlinux to be able to test future installs without going into BIOS.
 
@@ -86,6 +87,8 @@ Choice (any key for default): exit
 ```
 
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
+
+## Specifications for Contribs
 
 Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
 
