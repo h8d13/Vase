@@ -87,6 +87,7 @@ fmt_dur() {
 }
 rcw() {
     local cmd="$@"
+    [ "${DEBUGS}" = "1" ] && echo -e "${BLUE}[INFO]${NC} Running: $cmd"
     local t_start=$(get_usec)
     eval "$cmd"
     local rc=$?
@@ -95,7 +96,6 @@ rcw() {
     local check="✓"
     local cross="✗"
     local clock="【┘】"
-    [ "${DEBUGS}" = "1" ] && echo -e "${BLUE}[INFO]${NC} Running: $cmd"
 
     if [ "$TIMING" = "1" ]; then
         local t_str=$(fmt_dur $dur)
