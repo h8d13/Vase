@@ -1,6 +1,6 @@
-# VaseOS
+# Vase
 A testing suite to run VMs and perform system installations.
-Made for archlinux to be able to test installs without going into BIOS.
+> Made for archlinux to be able to test future installs without going into BIOS.
 
 ## Usage
 
@@ -16,3 +16,7 @@ Made for archlinux to be able to test installs without going into BIOS.
 > Includes the TUI inside the ISO directly by default
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
+
+### From a USB
+
+`$ sudo ./main -t` : Launch TUI forked KDE install
