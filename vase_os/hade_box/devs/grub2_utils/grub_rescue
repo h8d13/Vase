@@ -1,0 +1,157 @@
+#!/bin/bash
+
+# Copy Arch ISO to /rescue and create grub entry
+# Stores ISO on assumed rooted partition inside /rescue
+
+set -e # exit on error
+
+DEVICE="/dev/sda"  # The Arch ISO device
+RESCUE_DIR="/rescue"  # Store on root partition
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo -e "${RED}Error: Please run as root (use sudo)${NC}"
+    exit 1
+fi
+
+
+# Check if device exists
+if [ ! -b "$DEVICE" ]; then
+    echo -e "${RED}Error: Device $DEVICE not found${NC}"
+    exit 1
+fi
+
+# Try to get the ISO label to determine version
+ISO_LABEL=$(lsblk -no LABEL "$DEVICE" 2>/dev/null | head -1)
+if [ -n "$ISO_LABEL" ]; then
+    # Extract version from label (e.g., ARCH_202509 -> 2025.09)
+    VERSION=$(echo "$ISO_LABEL" | grep -oP '\d{6}' | sed 's/\(....\)\(..\)/\1\2/')
+    ISO_NAME="archlinux_${VERSION}.iso"
+else
+    ISO_NAME="archlinux-rescue.iso"
+fi
+
+echo -e "${GREEN}=== Arch ISO Rescue Environment Setup ===${NC}"
+echo -e "Source device: ${YELLOW}$DEVICE${NC}"
+echo -e "Target directory: ${YELLOW}$RESCUE_DIR${NC} (on root partition)"
+echo -e "ISO will be saved as: ${YELLOW}$ISO_NAME${NC}"
+
+# Get actual ISO size using isosize (standard tool for ISO9660 images)
+echo -e "\n${GREEN}Detecting ISO size...${NC}"
+ISO_SIZE=$(isosize "$DEVICE" 2>/dev/null)
+
+if [ -z "$ISO_SIZE" ] || [ "$ISO_SIZE" -eq 0 ]; then
+    echo -e "${RED}Error: Could not detect ISO size. Is this a valid ISO9660 image?${NC}"
+    exit 1
+fi
+
+ISO_SIZE_MB=$((ISO_SIZE / 1024 / 1024))
+echo -e "ISO size: ${GREEN}${ISO_SIZE_MB} MB${NC} (${ISO_SIZE} bytes)"
+
+# Show device size for comparison
+DEVICE_SIZE=$(blockdev --getsize64 "$DEVICE" 2>/dev/null)
+if [ -n "$DEVICE_SIZE" ]; then
+    DEVICE_SIZE_MB=$((DEVICE_SIZE / 1024 / 1024))
+    echo -e "Device size: ${YELLOW}${DEVICE_SIZE_MB} MB${NC}"
+
+    WASTED_MB=$((DEVICE_SIZE_MB - ISO_SIZE_MB))
+    if [ "$WASTED_MB" -gt 1024 ]; then
+        echo -e "${GREEN}Smart copy will save ${WASTED_MB} MB by only copying the ISO content!${NC}"
+    fi
+fi
+
+# Create rescue directory on root partition
+echo -e "\n${GREEN}Creating rescue directory...${NC}"
+mkdir -p "$RESCUE_DIR"
+
+# Check available space
+AVAILABLE_SPACE=$(df / | tail -1 | awk '{print $4}')
+AVAILABLE_SPACE_MB=$((AVAILABLE_SPACE / 1024))
+echo -e "Available space on root partition: ${GREEN}${AVAILABLE_SPACE_MB} MB${NC}"
+
+REQUIRED_SPACE_MB=$((ISO_SIZE_MB + 100))  # Add 100MB buffer
+if [ "$AVAILABLE_SPACE_MB" -lt "$REQUIRED_SPACE_MB" ]; then
+    echo -e "${RED}Error: Not enough space. Need ${REQUIRED_SPACE_MB}MB, have ${AVAILABLE_SPACE_MB}MB${NC}"
+    exit 1
+fi
+
+# Copy only the exact ISO size
+echo -e "\n${GREEN}Copying ISO to rescue directory...${NC}"
+echo -e "${YELLOW}Copying exactly ${ISO_SIZE_MB} MB${NC}"
+
+# Calculate count for dd (using 4M blocks for speed)
+BLOCK_SIZE=$((4 * 1024 * 1024))
+COUNT=$(( (ISO_SIZE + BLOCK_SIZE - 1) / BLOCK_SIZE ))
+
+dd if="$DEVICE" of="$RESCUE_DIR/$ISO_NAME" bs=4M count="$COUNT" status=progress
+
+# Verify copy
+if [ -f "$RESCUE_DIR/$ISO_NAME" ]; then
+    FINAL_SIZE=$(stat -c%s "$RESCUE_DIR/$ISO_NAME")
+    FINAL_SIZE_MB=$((FINAL_SIZE / 1024 / 1024))
+    echo -e "\n${GREEN}ISO copied successfully: ${FINAL_SIZE_MB} MB${NC}"
+
+    # Verify it's actually an ISO
+    FILE_TYPE=$(file -b "$RESCUE_DIR/$ISO_NAME" 2>/dev/null)
+    if [[ "$FILE_TYPE" == *"ISO 9660"* ]]; then
+        echo -e "${GREEN}✓ Valid ISO 9660 image verified${NC}"
+    fi
+else
+    echo -e "${RED}Error: Failed to copy ISO${NC}"
+    exit 1
+fi
+
+# Get the UUID of the root partition for GRUB
+ROOT_UUID=$(findmnt -n -o UUID /)
+echo -e "Root partition UUID: ${YELLOW}$ROOT_UUID${NC}"
+
+# Create GRUB custom entry that references ISO from root partition
+echo -e "\n${GREEN}Creating GRUB configuration entry...${NC}"
+cat > /etc/grub.d/40_rescue_env << EOF
+#!/bin/sh
+exec tail -n +3 \$0
+# Arch Linux Rescue Environment - ISO stored on root partition
+
+menuentry "Rescue Environment" --class arch --class gnu-linux --class gnu --class os {
+    set gfxpayload=keep
+    insmod gzio
+    insmod part_gpt
+    insmod part_msdos
+    insmod fat
+    insmod ext2
+    insmod loopback
+    insmod iso9660
+
+    # Find and mount the root partition by UUID
+    search --no-floppy --fs-uuid --set=root $ROOT_UUID
+
+    # Load the ISO from /rescue on the root partition
+    set isofile="/rescue/$ISO_NAME"
+
+    echo 'Loading Arch Linux ISO from /rescue/$ISO_NAME...'
+    loopback loop \${isofile}
+
+    # Load kernel and initramfs directly from the ISO
+    echo 'Loading kernel...'
+    linux (loop)/arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archisodevice=/dev/loop0 img_dev=/dev/disk/by-uuid/$ROOT_UUID img_loop=/rescue/$ISO_NAME earlymodules=loop
+    echo 'Loading initramfs...'
+    initrd (loop)/arch/boot/x86_64/initramfs-linux.img
+}
+EOF
+
+chmod +x /etc/grub.d/40_rescue_env
+
+echo -e "${GREEN}Regenerating GRUB configuration...${NC}"
+grub-mkconfig -o /boot/grub/grub.cfg
+
+echo -e "\n${GREEN}=== Installation Complete ===${NC}"
+echo -e "✓ ISO copied to: ${YELLOW}$RESCUE_DIR/$ISO_NAME${NC} (${FINAL_SIZE_MB} MB)"
+echo -e "✓ GRUB entry added: ${YELLOW}Rescue Environment - Arch Linux ISO${NC}"
+echo -e "  Boots directly from the ISO file with kernel and initramfs"
+echo -e "\nReboot to access the rescue environment from GRUB menu!"

@@ -1,45 +1,50 @@
 #!/bin/sh
 # script to set the keymap properly in grub2
-# prereq: ckbcomp from aur #https://aur.archlinux.org/ckbcomp.git
+# includes bundled ckbcomp perl script
 # heavily inspired by fitzcarraldoblog cheers 
 # assumes standard /boot/ 
+
+KB_LAYOUT="be"
+KB_VARIANT="nodeadkeys"
+
 GRUB_DEF="/etc/default/grub"
 GRUB_LAY="/boot/grub/layouts"
 BOOT_DIR="/boot/efi"
 GRUB_CFG="/boot/grub/grub.cfg"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOCALE=$(locale | grep "^LANG=" | sed 's/LANG=//; s/\.UTF-8.*//')
-KB_LAYOUT=$(localectl status | grep "VC Keymap" | cut -d':' -f2 | tr -d ' ')
-### Pre-checks
+
 # Check if running as root
-if [[ $EUID -eq 0 ]]; then
-    echo "Don't run this as root"
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root (use sudo)"
     exit 1
 fi
+
 ### S1 ckbcomp
-# Check if ckbcomp is installed
-if command -v ckbcomp >/dev/null 2>&1; then
-    echo "ckbcomp is already installed"
-else 
-        # Create temp directory
-        TMPDIR=$(mktemp -d)
-        cd "$TMPDIR"
-        # Clone and build
-        echo "Downloading ckbcomp from AUR..."
-        curl -sL https://aur.archlinux.org/cgit/aur.git/snapshot/ckbcomp.tar.gz | tar xz
-        cd ckbcomp
-        echo "Building ckbcomp..."
-        makepkg
-        echo "Installing..."
-        pacman -U --noconfirm *.pkg.tar.*
-        # Cleanup
-        rm -rf "$TMPDIR"
-        echo "ckbcomp installation complete"
+# Use bundled ckbcomp script
+CKBCOMP="$SCRIPT_DIR/lib/ckbcomp"
+
+# Check if bundled ckbcomp exists
+if [ ! -f "$CKBCOMP" ]; then
+    echo "Error: ckbcomp not found at $CKBCOMP"
+    exit 1
+else
+    chmod +x "$CKBCOMP"
 fi
+"$SCRIPT_DIR/lib/symap_main.py" $KB_LAYOUT $KB_VARIANT || { echo "Error: Invalid keyboard layout or variant"; exit 1; } 
+
 ### S2 prepare files for grub
 mkdir -p $GRUB_LAY
 ### S2.1 gen layout compatible with grub
 # this might generate a bunch of errors since grub only supports 1-127. but this is fine for standard terminal use.
-ckbcomp $KB_LAYOUT | grub-mklayout -o $GRUB_LAY/$KB_LAYOUT.gkb
+"$CKBCOMP" $KB_LAYOUT $KB_VARIANT | grub-mklayout -o $GRUB_LAY/$KB_LAYOUT.gkb
+
+if [ -f $GRUB_LAY/$KB_LAYOUT.gkb ]; then
+    echo "Successfully generated layout file"
+else
+    echo "Failed to generate layout file"
+    exit 1
+fi
 ### S3 modify grub files
 if grep -q "GRUB_TERMINAL_INPUT.*console" $GRUB_DEF; then
     echo "Found console setting, replacing..."
@@ -49,20 +54,22 @@ else
     exit 1
 fi
 if ! grep -q "insmod keylayouts" /etc/grub.d/40_custom; then
+    echo "Adding mods to grub 40__custom"
     tee -a /etc/grub.d/40_custom << EOF
 insmod keylayouts
 keymap \$prefix/layouts/$KB_LAYOUT.gkb
 EOF
+else 
+    echo "40__custom not found or already modified"
+    exit 1
 fi
 ### S4 modify some more and apply
 # Add to GRUB if not already there
 if ! grep -q "locale=$LOCALE" $GRUB_DEF; then
     sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/&locale=$LOCALE /" $GRUB_DEF
-    grub-mkconfig -o $GRUB_CFG
+else 
+    echo "Locale setting not found or already modified"
+    exit 1
 fi
-if [ -d /sys/firmware/efi ]; then
-    echo "UEFI boot detected"
-    grub-install --efi-directory=$BOOT_DIR
-else
-    echo "Legacy BIOS boot detected, skipping."
-fi
+# regen config
+grub-mkconfig -o $GRUB_CFG

@@ -32,7 +32,6 @@ done
 if [ -n "$missing_pkgs" ]; then
     preop "Installing missing packages:$missing_pkgs"
     pacman -S --noconfirm --needed $missing_pkgs
-    #qemu-full for other architectures
 else
     preop "All packages already installed. Skipping..."
 fi
