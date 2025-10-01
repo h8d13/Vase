@@ -243,28 +243,25 @@ def save_config(config: ArchConfig) -> None:
 			config_output.save(dest_path, creds=True, password=enc_password)
 
 
+def _get_hade_box_path() -> Path | None:
+	"""Find and return the hade_box root directory"""
+	current_path = Path(__file__).resolve()
+	while current_path.parent != current_path:
+		if (current_path / 'vase_os' / 'hade_box').exists():
+			return current_path / 'vase_os' / 'hade_box'
+		if current_path.name == 'hade_box':
+			return current_path
+		current_path = current_path.parent
+	return None
+
+
 def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
 	"""Auto-save config and credentials to hade_box folder without prompting
 	Returns: (success, list of saved files)
 	"""
 	try:
 		config_output = ConfigurationOutput(config)
-
-		# Find the hade_box root directory
-		current_path = Path(__file__).resolve()
-		hade_box_path = None
-		while current_path.parent != current_path:
-			if (current_path / 'vase_os' / 'hade_box').exists():
-				hade_box_path = current_path / 'vase_os' / 'hade_box'
-				break
-			if current_path.name == 'hade_box':
-				hade_box_path = current_path
-				break
-			current_path = current_path.parent
-
-		if not hade_box_path:
-			hade_box_path = Path.cwd()
-
+		hade_box_path = _get_hade_box_path() or Path.cwd()
 		saved_files = []
 
 		# Always save user config
@@ -285,38 +282,21 @@ def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
 
 def has_saved_config() -> bool:
 	"""Check if there's a saved config in hade_box folder"""
-	# Find the hade_box root directory
-	current_path = Path(__file__).resolve()
-	while current_path.parent != current_path:
-		if (current_path / 'vase_os' / 'hade_box').exists():
-			config_file = current_path / 'vase_os' / 'hade_box' / 'user_configuration.json'
-			return config_file.exists()
-		if current_path.name == 'hade_box':
-			config_file = current_path / 'user_configuration.json'
-			return config_file.exists()
-		current_path = current_path.parent
-	return False
+	hade_box_path = _get_hade_box_path()
+	if not hade_box_path:
+		return False
+	config_file = hade_box_path / 'user_configuration.json'
+	return config_file.exists()
 
 
 def load_saved_config() -> dict | None:
 	"""Load saved config and credentials from hade_box folder"""
 	try:
-		config_data = {}
-
-		# Find the hade_box root directory
-		current_path = Path(__file__).resolve()
-		hade_box_path = None
-		while current_path.parent != current_path:
-			if (current_path / 'vase_os' / 'hade_box').exists():
-				hade_box_path = current_path / 'vase_os' / 'hade_box'
-				break
-			if current_path.name == 'hade_box':
-				hade_box_path = current_path
-				break
-			current_path = current_path.parent
-
+		hade_box_path = _get_hade_box_path()
 		if not hade_box_path:
 			return None
+
+		config_data = {}
 
 		# Load main config
 		config_file = hade_box_path / 'user_configuration.json'
