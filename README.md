@@ -10,6 +10,8 @@ Written in raw shell to wrap Archinstall.
 
 ### From an existing arch installation
 
+`$ git clone https://github.com/h8d13/Vase`
+
 `$ sudo ./main`    : Check envir deps for QEMU/KVM
 
 `$ sudo ./main -s` : Start VMs testing suite menu
@@ -24,7 +26,13 @@ Written in raw shell to wrap Archinstall.
 
 ### From USB/ISO
 
-`$ sudo ./main -t` : Launch TUI forked KDE install
+> By default you are already root in the ISO env.
+
+`$ pacman-key --init && pacman -Sy git`
+
+`$ git clone https://github.com/h8d13/Vase`
+
+`$ ./main -t` : Launch TUI forked KDE install
 
 ### Settings
 
