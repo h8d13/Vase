@@ -44,6 +44,8 @@ CATART=1 # 0 Disables cli art sadface
 
 ### Main VM Menu
 
+Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
+
 ```
 ########################################
 Zazulago VM Tooling: rdisk, then brick.
@@ -73,3 +75,22 @@ Choice (any key for default): exit
 ```
 
 > Useful to run QEMU with specific options or with attached storage.
+
+Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
+
+Inside `vase_os/zazulago_vms/setup_arch` for needed packages for QEMU/KVM.
+
+Inside `vase_os/zazulago_vms/iso_mod` to create custom ISOs. And inside `vase_os/hade_box` to change overlay files/installer.
+
+Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
+
+### Main utilities
+
+Inside `util_f` can find all shell utility functions used throughout codebase.
+
+> Useful for simple syntax like:
+```
+if file_ex "${file_p}${file_n}"; then
+    echo "Do something"
+fi
+```
