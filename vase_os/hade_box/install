@@ -1,61 +1,40 @@
 #!/bin/bash
 set -e
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+. "$SCRIPT_DIR/../../util_f"
+# Source constants if they exist
+if file_ex "$SCRIPT_DIR/../../..."; then
+    . "$SCRIPT_DIR/../../..."
+fi
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -d|--deps)
-            DEPS_ONLY=true
-            shift
-            ;;
         *)
-            # Pass unknown arguments to archinstall
             ARCHINSTALL_ARGS+=("$1")
             shift
             ;;
     esac
 done
+
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
     echo "Error: This script must be run as root"
     exit 1
 fi
 
-echo "KADEBOOT - ARCHINSTALL"
-echo "============================="
+preop "KADEBOOT - ARCHINSTALL"
 
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
-    echo "Running from Arch Linux ISO / USB Medium"
-else # If deps-only mode, exit after dependency check
-    if [ "$DEPS_ONLY" = true ]; then
-    	chmod +x ./devs/altodeps
-    	./devs/altodeps
-        echo "Dependency check complete. Exiting."
-        exit 0
-    fi
+    preop "Running from Arch Linux ISO / USB Medium"
+    preop "Dependency check. Skipping..."
+else # Always check deps when not running with ISO
+   	chmod +x "$SCRIPT_DIR/altodeps"
+   	"$SCRIPT_DIR/altodeps"
+    preop "Dependency check complete. Continuing..."
 fi
 
-# Always check python modules even tho they should be in ISO
-PYTHON_MODULES=(
-    "cryptography:python-cryptography"
-    "parted:python-pyparted"
-    "pydantic:python-pydantic"
-)
-
-for module_pkg in "${PYTHON_MODULES[@]}"; do
-    module="${module_pkg%%:*}"
-    package="${module_pkg##*:}"
-    if python -c "import $module" 2>/dev/null; then
-        version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
-        echo "OK $package (${version:-unknown})"
-    else
-        echo "MISSING $package ($module)"
-        MISSING+=("$package")
-        exit 0
-    fi
-done
-
-echo "All dependencies found!"
 export PYTHONPATH="$(pwd):$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 

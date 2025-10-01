@@ -1,5 +1,40 @@
 #!/bin/sh
 #utilities
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -r|--reset)
+                RESET=1
+                shift
+                ;;
+            -s|--start)
+                START=1
+                shift
+                ;;
+            -i |--isomod)
+                ISO=1
+                shift
+                ;;
+            -t |--tuimenu)
+                TUI=1
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                exit 1
+                ;;
+        esac
+    done
+}
+exec_args() {
+    case "$1" in
+        RESET) [ "${RESET}" = "1" ] ;;
+        START) [ "${START}" = "1" ] ;;
+        ISO) [ "${ISO}" = "1" ] ;;
+        TUI)  [ "${TUI}" = "1" ] ;;
+        *) return 1 ;;
+    esac
+}
 preop() {
     echo "[+] $1"
 }
@@ -32,29 +67,6 @@ cleanup() {
     fi
     postop "Cleaning up..."
     # Add cleanup stuff here
-}
-
-## TODO
-# Add case where we want to check archinstall deps (NO USB)
-# Add case where we want to launch TUI installer.
-
-parse_args() {
-    while [ $# -gt 0 ]; do
-        case $1 in
-            -r|--reset)
-                RESET_MODE=1
-                shift
-                ;;
-            -s|--start)
-                START_MODE=1
-                shift
-                ;;
-            *)
-                echo "Unknown option: $1"
-                exit 1
-                ;;
-        esac
-    done
 }
 file_ex() {
     [ -f "$1" ]

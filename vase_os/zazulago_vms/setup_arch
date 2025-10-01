@@ -25,7 +25,8 @@ for pkg in $pkgs_needed; do
         postop "Missing: $pkg"
         missing_pkgs="$missing_pkgs $pkg"
     else
-        preop "Found: $pkg"
+        version=$(pacman -Qi "$pkg" 2>/dev/null | grep "^Version" | awk '{print $3}')
+        preop "Found: $pkg ($version)"
     fi
 done
 

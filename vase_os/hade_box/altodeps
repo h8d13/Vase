@@ -1,4 +1,11 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/../../util_f"
+# Source constants if they exist
+if file_ex "$SCRIPT_DIR/../../..."; then
+    . "$SCRIPT_DIR/../../..."
+fi
+
 # ARCHINSTALL SYSTEM SUBDEPS SCRIPT
 PACKAGES=(
     # Required (core features)
@@ -26,16 +33,16 @@ MISSING=()
 
 # reliable hacky way of knowing we are using ISO
 if [ -d "/run/archiso" ]; then
-    echo "Running from Arch Linux ISO / USB Medium"
+    preop "Running from Arch Linux ISO / USB Medium"
 else
-    echo "Running from live system"
-    echo "Cheching system subdeps"
+    preop "Running from live system"
+    preop "Cheching system subdeps"
     for pkg in "${PACKAGES[@]}"; do
         if pacman -Qi "$pkg" &>/dev/null; then
             version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')
-            echo "OK $pkg ($version)"
+            preop "Found: $pkg ($version)"
         else
-            echo "MISSING $pkg"
+            postop "Missing: $pkg"
             MISSING+=("$pkg")
         fi
     done
@@ -53,11 +60,16 @@ for module_pkg in "${PYTHON_MODULES[@]}"; do
     package="${module_pkg##*:}"
     if python -c "import $module" 2>/dev/null; then
         version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
-        echo "OK $package (${version:-unknown})"
+        preop "Found: $package (${version:-unknown})"
     else
-        echo "MISSING $package ($module)"
+        postop "Missing: $package ($module)"
         MISSING+=("$package")
     fi
 done
 
-[ ${#MISSING[@]} -gt 0 ] && echo -e "\nInstall missing:\n sudo pacman -S ${MISSING[*]}"
+if [ ${#MISSING[@]} -gt 0 ]; then
+    postop -e "\nInstall missing:\n ${elev_cmd} pacman -S ${MISSING[*]}"
+    exit 1
+else
+    exit 0
+fi

@@ -30,7 +30,7 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
     case "$distro_id" in
         arch)
             info "Detected: Arch Linux"
-            ./${vase_p_deps} && ./${zl_d}/setup_arch
+            ./${zl_d}/setup_arch
             ;;
         *)
             # Check if it's Arch-based via ID_LIKE
