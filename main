@@ -175,6 +175,20 @@ if im_groot; then
         obanner "ENVIR CHECK"
         . ./${vase_p_env}
         cbanner "ENVIR CHECK"
+        if exec_args "START"; then
+            obanner "FILES CHECK"
+            rcw du -sh ./${zl_d}/d/
+            rcw du -sh ./${zl_d}/c/
+
+            if ! file_ex "./${zl_d}/d/${iso_n}.${iso_ext}"; then
+                die "ISO Not found."
+            else
+                info "Found $iso_n" in proper location.
+            fi
+            cbanner "FILES CHECK"
+            preop "Starting..."
+            ./${zl_d}/vm_start && rcw true && exit
+        fi
         if dir_own "${rel}${p_lib}" "root"; then
             ## Give back to user
             info "Changing ownership from root to $SUDO_USER"
@@ -190,23 +204,12 @@ if im_groot; then
         if exec_args "ISO"; then
             ./${zl_d}/iso_mod && rcw true && exit
         fi
-        if exec_args "START"; then
-            obanner "FILES CHECK"
-            if ! file_ex "./${zl_d}/d/${iso_n}.${iso_ext}"; then
-                die "ISO Not found."
-            else
-                info "Found $iso_n" in proper location.
-            fi
-            cbanner "FILES CHECK"
-            preop "Starting..."
-            ./${zl_d}/vm_start && rcw true && exit
-        fi
     else
         reop "Running as root. Skipping..."
     fi
 else
     if am_iuser; then
-        die "Running as regular user." # Or die
+        die "Running as regular user." # Or warn and do smthn else
     fi
 fi
 cbanner "PERMS CHECK"

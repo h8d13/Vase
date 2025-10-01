@@ -53,8 +53,6 @@ hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazulago_vms"
 
 vase_p_env="$vase_d/env"
-vase_p_deps="$vase_d/deps"
-
 # Privilege escalation (ex: doas alternative)
 elev_cmd="sudo"
 

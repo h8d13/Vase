@@ -33,9 +33,8 @@ spin_animation() {
 
 run_vm() {
     local cmd="$1"
-    local display="${QEMU_DISPLAY:-gtk}"
-    local gl="${QEMU_GL:-off}"
-    preop "Starting VM (display: ${display}, gl: ${gl})..."
+    local display="${qemu_display:-gtk}"
+    local gl="${qemu_gl:-off}"
     $cmd
 }
 
@@ -138,15 +137,6 @@ generate_mac() {
 qemu_cmd() {
     local image="$1"
     shift
-    # Display/GL settings auto-detected from vase_os/env module based on GPU:
-    # - NVIDIA: Uses SDL with GL (GTK+EGL doesn't work with proprietary driver)
-    # - AMD/Intel: Uses GTK with GL (Mesa drivers work well with EGL)
-    # - Unknown: Falls back to GTK without GL
-    # To modify detection logic, edit vase_os/env lines 151-178
-    # To override manually: export QEMU_DISPLAY=gtk|sdl and QEMU_GL=on|off
-    local display="${QEMU_DISPLAY:-gtk}"
-    local gl="${QEMU_GL:-off}"
-
     # Base command
     local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores}"
     local use_display=1
@@ -226,16 +216,16 @@ qemu_cmd() {
 show_menu() {
     echo "########################################"
     echo "Zazulago VM Tooling: rdisk, then brick."
-    echo "Display: ${QEMU_DISPLAY:-auto} | GL: ${QEMU_GL:-auto}"
+    echo "Display: ${qemu_display} | GL: ${qemu_gl}"
     echo "########################################"
     echo " rk      : Refresh key"
     echo " rdisk   : Reset ${vm_name} ${size}"
     echo " dupk    : Permanent copy"
     echo " duck    : Temporary copy"
-    echo " mayk    : Maybe save copy"
+    echo " mayk    : Maybe Y/N copy"
     echo " brick   : Boot ISO + Run"
     echo " vncd    : Boot ISO (VNC)"
-    echo " vnck    : Run (VNC)"
+    echo " vnck    : Run with (VNC)"
     echo " std     : Run (standard VGA)"
     echo " cupkd   : Boot ISO w ${target}"
     echo " cupk    : Run w ${target}"

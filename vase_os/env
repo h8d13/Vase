@@ -37,7 +37,7 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
             case "$distro_like" in
                 *arch*)
                     info "Detected: Arch-based ($distro_id)"
-                    ./${vase_p_deps} && ./${zl_d}/setup_arch
+                    ./${zl_d}/setup_arch
                     ;;
                 *)
                     warn "Unsupported distribution: $distro_id"
@@ -137,9 +137,3 @@ else
 fi
 
 info "GPU(s): $gpu_type"
-
-# Get QEMU Display Settings from config as this runs just before launch
-# Ideally thiscould be based on HW?
-export QEMU_DISPLAY="$qemu_display"
-export QEMU_GL="$qemu_gl"
-info "QEMU Display: $qemu_display | GL: $qemu_gl"
