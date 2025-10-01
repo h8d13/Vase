@@ -6,6 +6,8 @@
 
 # Base QEMU packages
 pkgs_needed="qemu-system-x86 qemu-img qemu-hw-display-virtio-gpu-pci qemu-hw-display-virtio-gpu"
+#pkgs_optional="libvirt qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice bridge-utils dmidecode dnsmasq iptables-nft tigervnc qemu-ui-spice-app qemu-hw-display-qxl"
+#can also install qemu-full and test other architectures
 
 # Add display backend packages based on config
 case "$qemu_display" in
@@ -16,7 +18,6 @@ esac
 
 # Add GL renderer if enabled
 [ "$qemu_gl" = "on" ] && pkgs_needed="$pkgs_needed virglrenderer"
-#pkgs_optional="libvirt qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice bridge-utils dmidecode dnsmasq iptables-nft tigervnc qemu-ui-spice-app qemu-hw-display-qxl"
 missing_pkgs=""
 
 preop "Checking VM packages..."
