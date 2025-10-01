@@ -21,3 +21,19 @@ A testing suite to run VMs and perform system installations.
 ### From USB/ISO
 
 `$ sudo ./main -t` : Launch TUI forked KDE install
+
+### Settings
+
+In project root, `...` file contains every single configuration constants.
+
+For logging: Inside `.pyla.d` you can find:
+```
+#FORMAT= # 1 Start enabled / 0 Start disabled
+COLORS=1 # 0 Disables colors of all output
+TIMING=1 # 0 Disables timing output of rcw
+DEBUGS=1 # 0 Disables info outputs from program
+TEELOG=1 # 0 Disables complete log file
+LOGMEM=0 # 1 Enables keeping previous log
+LOGCLR=0 # 1 Enables non standard ascii in log
+CATART=1 # 0 Disables cli art sadface
+```

@@ -1,7 +1,7 @@
 #!/bin/sh
 #... strucs
 # This file is an absolute mess but everything is declared here
-# VM Config
+################## VM STUFF
 # QEMU Display Settings
 # Display backend: gtk, sdl, vnc, spice
 # GL acceleration: on, off
@@ -22,7 +22,12 @@ iso_ext="iso" #raw, bin
 target_name="sde1"
 target="/dev/${target_name}"
 # This can also be a mount point /media/ ro smthn
+################## VM STUFF END
 
+################## DIRS/LOGS/PERMS
+# Privilege escalation (ex: doas alternative)
+elev_cmd="sudo"
+# Dir mods
 hide_d="."
 ext_d=".d"
 hide_d_mod=1  # 1=hidden, 0=visible
@@ -40,21 +45,19 @@ rel_c=""
 # "/usr/local/lib" -> absolute path
 # "lib"   -> relative to script
 p_lib="$custom_n"
-c_file="settings"
+c_file="logs"
 c_ext="conf"
 rcw_file="rcw"
 log_n="pyla"
 log_ext="log"
 cli_a="cli_art"
 cli_a_ext=".txt"
-####
+#### More paths
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazulago_vms"
 
 vase_p_env="$vase_d/env"
-# Privilege escalation (ex: doas alternative)
-elev_cmd="sudo"
 
 # Resolve the path based on config
 case "$rel_c" in
@@ -76,5 +79,5 @@ case "$rel_c" in
         rel="$s_dir/$rel_c/"
         ;;
 esac
-
+## For runtime output
 script_s=$(date +%s%6N)

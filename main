@@ -22,7 +22,7 @@ dir_excreate "${rel}${p_lib}"
 if ! file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
     preop "Creating ${rel}${p_lib}/${c_file}.${c_ext}"
     cat > "${rel}${p_lib}/${c_file}.${c_ext}" << 'EOF'
-#FORMAT= # 1 start enabled / 0 start disabled
+#FORMAT= # 1 Start enabled / 0 Start disabled
 COLORS=1 # 0 Disables colors of all output
 TIMING=1 # 0 Disables timing output of rcw
 DEBUGS=1 # 0 Disables info outputs from program
