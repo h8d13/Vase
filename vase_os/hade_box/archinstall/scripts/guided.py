@@ -63,8 +63,8 @@ def _check_for_saved_config() -> None:
 					print(f'Failed to load saved selections: {e}')
 		elif choice == 'fresh':
 			# Remove both saved config files
-			config_file = Path.cwd() / 'user_configuration.json'
-			creds_file = Path.cwd() / 'user_credentials.json'
+			config_file = Path.cwd() / 'vase_os' / 'hade_box' / 'user_configuration.json'
+			creds_file = Path.cwd() / 'vase_os' / 'hade_box' / 'user_credentials.json'
 
 			if config_file.exists():
 				config_file.unlink()

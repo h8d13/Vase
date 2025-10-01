@@ -147,7 +147,7 @@ class Journald:
 
 
 class Logger:
-	def __init__(self, path: Path = Path.cwd() / 'logs') -> None:
+	def __init__(self, path: Path = Path.cwd() / 'vase_os' / 'hade_box' / 'logs') -> None:
 		self._path = path
 
 	@property

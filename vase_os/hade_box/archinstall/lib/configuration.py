@@ -28,8 +28,8 @@ class ConfigurationOutput:
 
 		self._config = config
 		self._default_save_path = logger.directory
-		self._user_config_file = Path('user_configuration.json')
-		self._user_creds_file = Path('user_credentials.json')
+		self._user_config_file = Path('vase_os/hade_box/user_configuration.json')
+		self._user_creds_file = Path('vase_os/hade_box/user_credentials.json')
 
 	@property
 	def user_configuration_file(self) -> Path:
@@ -244,22 +244,37 @@ def save_config(config: ArchConfig) -> None:
 
 
 def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
-	"""Auto-save config and credentials to KADEBOOT folder without prompting
+	"""Auto-save config and credentials to hade_box folder without prompting
 	Returns: (success, list of saved files)
 	"""
 	try:
 		config_output = ConfigurationOutput(config)
-		kadeboot_path = Path.cwd()
+
+		# Find the hade_box root directory
+		current_path = Path(__file__).resolve()
+		hade_box_path = None
+		while current_path.parent != current_path:
+			if (current_path / 'vase_os' / 'hade_box').exists():
+				hade_box_path = current_path / 'vase_os' / 'hade_box'
+				break
+			if current_path.name == 'hade_box':
+				hade_box_path = current_path
+				break
+			current_path = current_path.parent
+
+		if not hade_box_path:
+			hade_box_path = Path.cwd()
+
 		saved_files = []
 
 		# Always save user config
-		config_output.save_user_config(kadeboot_path)
+		config_output.save_user_config(hade_box_path)
 		saved_files.append('user_configuration.json')
 
 		# Only save credentials if there are any (not just empty JSON)
 		creds_json = config_output.user_credentials_to_json()
 		if creds_json and creds_json.strip() != '{}':
-			config_output.save_user_creds(kadeboot_path, password=None)
+			config_output.save_user_creds(hade_box_path, password=None)
 			saved_files.append('user_credentials.json')
 
 		return True, saved_files
@@ -269,31 +284,48 @@ def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
 
 
 def has_saved_config() -> bool:
-	"""Check if there's a saved config in KADEBOOT folder"""
-	# Ensure we check KADEBOOT directory, not logs subdirectory
-	current_path = Path.cwd()
-	if current_path.name == 'logs':
-		kadeboot_path = current_path.parent
-	else:
-		kadeboot_path = current_path
-	config_file = kadeboot_path / 'user_configuration.json'
-	return config_file.exists()
+	"""Check if there's a saved config in hade_box folder"""
+	# Find the hade_box root directory
+	current_path = Path(__file__).resolve()
+	while current_path.parent != current_path:
+		if (current_path / 'vase_os' / 'hade_box').exists():
+			config_file = current_path / 'vase_os' / 'hade_box' / 'user_configuration.json'
+			return config_file.exists()
+		if current_path.name == 'hade_box':
+			config_file = current_path / 'user_configuration.json'
+			return config_file.exists()
+		current_path = current_path.parent
+	return False
 
 
 def load_saved_config() -> dict | None:
-	"""Load saved config and credentials from KADEBOOT folder"""
+	"""Load saved config and credentials from hade_box folder"""
 	try:
 		config_data = {}
-		kadeboot_path = Path.cwd()
+
+		# Find the hade_box root directory
+		current_path = Path(__file__).resolve()
+		hade_box_path = None
+		while current_path.parent != current_path:
+			if (current_path / 'vase_os' / 'hade_box').exists():
+				hade_box_path = current_path / 'vase_os' / 'hade_box'
+				break
+			if current_path.name == 'hade_box':
+				hade_box_path = current_path
+				break
+			current_path = current_path.parent
+
+		if not hade_box_path:
+			return None
 
 		# Load main config
-		config_file = kadeboot_path / 'user_configuration.json'
+		config_file = hade_box_path / 'user_configuration.json'
 		if config_file.exists():
 			with open(config_file, 'r') as f:
 				config_data.update(json.load(f))
 
 		# Load credentials if they exist (follows same pattern as args.py)
-		creds_file = kadeboot_path / 'user_credentials.json'
+		creds_file = hade_box_path / 'user_credentials.json'
 		if creds_file.exists():
 			with open(creds_file, 'r') as f:
 				creds_data = json.load(f)
