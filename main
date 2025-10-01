@@ -189,10 +189,11 @@ if im_groot; then
                 info "Found $iso_n" in proper location.
             fi
             cbanner "FILES CHECK"
-            preop "Starting..."
+            preop "Starting VM Menu..."
             ./${zl_d}/vm_start && rcw true && exit
         fi
         if exec_args "ISO"; then
+            preop "Starting ISO Modifier..."
             ./${zl_d}/iso_mod && rcw true && exit
         fi
         if dir_own "${rel}${p_lib}" "root"; then
