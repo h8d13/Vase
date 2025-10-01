@@ -164,6 +164,9 @@ fi
 if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
+if exec_args "TUI"; then
+    ./${hb_d}/install && rcw true && exit
+fi
 ### Start actual usage of helpers sourced from local since we check existence
 obanner "PERMS CHECK"
 if im_groot; then
@@ -189,6 +192,9 @@ if im_groot; then
             preop "Starting..."
             ./${zl_d}/vm_start && rcw true && exit
         fi
+        if exec_args "ISO"; then
+            ./${zl_d}/iso_mod && rcw true && exit
+        fi
         if dir_own "${rel}${p_lib}" "root"; then
             ## Give back to user
             info "Changing ownership from root to $SUDO_USER"
@@ -197,12 +203,6 @@ if im_groot; then
             dir_own "${rel}${p_lib}" "$SUDO_USER" || die "Failed to switch ownership"
         else
             info "Skipping... file already owned by $SUDO_USER"
-        fi
-        if exec_args "TUI"; then
-            ./${hb_d}/install && rcw true && exit
-        fi
-        if exec_args "ISO"; then
-            ./${zl_d}/iso_mod && rcw true && exit
         fi
     else
         reop "Running as root. Skipping..."
