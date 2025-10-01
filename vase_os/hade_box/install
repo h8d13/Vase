@@ -35,7 +35,7 @@ else # Always check deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
-export PYTHONPATH="$(pwd):$PYTHONPATH"
+export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 
 #### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
