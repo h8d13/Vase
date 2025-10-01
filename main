@@ -145,9 +145,9 @@ EOF
 else
     preop "Rcw already exist. Skipping..."
 fi
-if file_ex "${cli_a}${cli_a_ext}" && [ "${CATART:-1}" = "1" ]; then
+if file_ex "${cli_a} && [ "${CATART:-1}" = "1" ]; then
     nlp
-    cat "${cli_a}${cli_a_ext}"
+    cat "${cli_a}"
     nlp
 fi
 

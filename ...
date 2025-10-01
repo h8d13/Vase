@@ -51,7 +51,6 @@ rcw_file="rcw"
 log_n="vase"
 log_ext="log"
 cli_a="cli_art"
-cli_a_ext=".txt"
 #### More paths
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
