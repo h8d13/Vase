@@ -28,7 +28,7 @@ Written in raw shell to wrap Archinstall.
 
 In project root, `...` file contains every single configuration constants.
 
-For logging: Inside `.pyla.d` you can find:
+For logging: Inside `.pyla.d` you can find `logs.conf`:
 ```
 #FORMAT= # 1 Start enabled / 0 Start disabled
 COLORS=1 # 0 Disables colors of all output
