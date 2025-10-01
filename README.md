@@ -4,6 +4,8 @@ A testing suite to run VMs and perform system installations.
 
 Written in raw shell to wrap Archinstall.
 
+---
+
 ## Usage
 
 ### From an existing arch installation
@@ -27,13 +29,14 @@ Written in raw shell to wrap Archinstall.
 ### Settings
 
 In project root, `...` file contains every single configuration constants.
+> VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf`:
 ```
 #FORMAT= # 1 Start enabled / 0 Start disabled
 COLORS=1 # 0 Disables colors of all output
 TIMING=1 # 0 Disables timing output of rcw
-DEBUGS=1 # 0 Disables info outputs from program
+DEBUGS=1 # 0 Disables all info outputs
 TEELOG=1 # 0 Disables complete log file
 LOGMEM=0 # 1 Enables keeping previous log
 LOGCLR=0 # 1 Enables non standard ascii in log
