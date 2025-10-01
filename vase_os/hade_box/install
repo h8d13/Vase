@@ -28,8 +28,26 @@ preop "KADEBOOT - ARCHINSTALL"
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
     preop "Running from Arch Linux ISO / USB Medium"
-    preop "Dependency check. Skipping..."
-else # Always check deps when not running with ISO
+    # Always check python modules even tho they should be in ISO
+    PYTHON_MODULES=(
+        "cryptography:python-cryptography"
+        "parted:python-pyparted"
+        "pydantic:python-pydantic"
+    )
+
+    for module_pkg in "${PYTHON_MODULES[@]}"; do
+        module="${module_pkg%%:*}"
+        package="${module_pkg##*:}"
+        if python -c "import $module" 2>/dev/null; then
+            version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
+            preop "Found: $package (${version:-unknown})"
+        else
+            postop "Missing: $package ($module)"
+            MISSING+=("$package")
+        fi
+    done
+    preop "Checked only python deps. Skipping full check..."
+else # Always check full deps when not running with ISO
    	chmod +x "$SCRIPT_DIR/altodeps"
    	"$SCRIPT_DIR/altodeps"
     preop "Dependency check complete. Continuing..."
@@ -39,7 +57,6 @@ export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 
 #### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
-
 # All available archinstall command line options:
 #
 # -h, --help            show this help message and exit

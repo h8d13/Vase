@@ -48,25 +48,6 @@ else
     done
 fi
 
-# Always check python modules even tho they should be in ISO
-PYTHON_MODULES=(
-    "cryptography:python-cryptography"
-    "parted:python-pyparted"
-    "pydantic:python-pydantic"
-)
-
-for module_pkg in "${PYTHON_MODULES[@]}"; do
-    module="${module_pkg%%:*}"
-    package="${module_pkg##*:}"
-    if python -c "import $module" 2>/dev/null; then
-        version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
-        preop "Found: $package (${version:-unknown})"
-    else
-        postop "Missing: $package ($module)"
-        MISSING+=("$package")
-    fi
-done
-
 if [ ${#MISSING[@]} -gt 0 ]; then
     postop -e "\nInstall missing:\n ${elev_cmd} pacman -S ${MISSING[*]}"
     exit 1
