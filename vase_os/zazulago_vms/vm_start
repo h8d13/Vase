@@ -17,6 +17,9 @@ short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 hedgen_bin="${script_dir}/lib/hedgen2c"
 key_file="${script_dir}/.vmkey.local"
 
+display="${qemu_display:-gtk}"
+gl="${qemu_gl:-off}"
+
 spin_animation() {
     local duration=${1:-10}
     local chars='\ | / -'
@@ -33,8 +36,6 @@ spin_animation() {
 
 run_vm() {
     local cmd="$1"
-    local display="${qemu_display:-gtk}"
-    local gl="${qemu_gl:-off}"
     $cmd
 }
 
