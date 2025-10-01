@@ -31,22 +31,18 @@ PACKAGES=(
 
 MISSING=()
 
-# reliable hacky way of knowing we are using ISO
-if [ -d "/run/archiso" ]; then
-    preop "Running from Arch Linux ISO / USB Medium"
-else
-    preop "Running from live system"
-    preop "Cheching system subdeps"
-    for pkg in "${PACKAGES[@]}"; do
-        if pacman -Qi "$pkg" &>/dev/null; then
-            version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')
-            preop "Found: $pkg ($version)"
-        else
-            postop "Missing: $pkg"
-            MISSING+=("$pkg")
-        fi
-    done
-fi
+preop "Running from live system"
+preop "Cheching system subdeps"
+for pkg in "${PACKAGES[@]}"; do
+    if pacman -Qi "$pkg" &>/dev/null; then
+        version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')
+        preop "Found: $pkg ($version)"
+    else
+        postop "Missing: $pkg"
+        MISSING+=("$pkg")
+    fi
+done
+
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     postop -e "\nInstall missing:\n ${elev_cmd} pacman -S ${MISSING[*]}"
