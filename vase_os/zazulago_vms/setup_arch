@@ -1,6 +1,4 @@
 #!/bin/sh
-# Main packages needed
-
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
 
