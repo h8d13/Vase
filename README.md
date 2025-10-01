@@ -4,7 +4,8 @@ A testing suite to run VMs and perform system installations.
 
 ## Usage
 
-### From an existing installation
+### From an existing arch installation
+
 `$ sudo ./main`    : Check envir deps for QEMU/KVM
 
 `$ sudo ./main -s` : Start VMs testing suite menu
@@ -17,6 +18,6 @@ A testing suite to run VMs and perform system installations.
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
-### From a USB
+### From USB/ISO
 
 `$ sudo ./main -t` : Launch TUI forked KDE install
