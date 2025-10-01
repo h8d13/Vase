@@ -8,6 +8,16 @@ Written in raw shell to wrap Archinstall.
 
 ## Usage
 
+### From USB/ISO
+
+> By default you are already root in the ISO env.
+
+`$ pacman-key --init && pacman -Sy git`
+
+`$ git clone https://github.com/h8d13/Vase && cd Vase`
+
+`$ ./main -t` : Launch TUI forked KDE install
+
 ### From an existing arch installation
 
 `$ git clone https://github.com/h8d13/Vase`
@@ -23,16 +33,6 @@ Written in raw shell to wrap Archinstall.
 > Includes the TUI inside the ISO directly by default
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
-
-### From USB/ISO
-
-> By default you are already root in the ISO env.
-
-`$ pacman-key --init && pacman -Sy git`
-
-`$ git clone https://github.com/h8d13/Vase`
-
-`$ ./main -t` : Launch TUI forked KDE install
 
 ### Settings
 
@@ -85,7 +85,7 @@ Choice (any key for default): exit
 [-] Exiting without encryption
 ```
 
-> Useful to run QEMU with specific options or with attached storage.
+> Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
 Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
 
