@@ -2,6 +2,8 @@
 A testing suite to run VMs and perform system installations.
 > Made for archlinux to be able to test future installs without going into BIOS.
 
+Written in raw shell to wrap Archinstall.
+
 ## Usage
 
 ### From an existing arch installation
@@ -37,3 +39,37 @@ LOGMEM=0 # 1 Enables keeping previous log
 LOGCLR=0 # 1 Enables non standard ascii in log
 CATART=1 # 0 Disables cli art sadface
 ```
+
+## Features
+
+### Main VM Menu
+
+```
+########################################
+Zazulago VM Tooling: rdisk, then brick.
+Display: sdl | GL: on
+########################################
+ rk      : Refresh key
+ rdisk   : Reset myvm1 60G
+ dupk    : Permanent copy
+ duck    : Temporary copy
+ mayk    : Maybe Y/N copy
+ brick   : Boot ISO + Run
+ vncd    : Boot ISO (VNC)
+ vnck    : Run with (VNC)
+ std     : Run (standard VGA)
+ cupkd   : Boot ISO w /dev/sde1
+ cupk    : Run w /dev/sde1
+ taild   : Headless w logs
+ bootk   : Boot headless w/ logs
+ macg    : Generate MAC + run
+ conkd   : Boot ISO w /dev/sde1 and disk
+ conk    : Run w /dev/sde1 and disk
+ potk    : Delete key + encrypt
+ exit    : Exit without encrypt
+########################################
+Choice (any key for default): exit
+[-] Exiting without encryption
+```
+
+> Useful to run QEMU with specific options or with attached storage.
