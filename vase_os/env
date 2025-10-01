@@ -59,7 +59,7 @@ case "$kvm_check" in
         info "KVM: AMD ... Virtualization Found."
         ;;
     *)
-        info "No KVM module loaded"
+        die "No KVM module loaded"
         ;;
 esac
 # Based on lscpu | grep -E "Socket|Core|Thread|^CPU"
