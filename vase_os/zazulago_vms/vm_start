@@ -128,6 +128,11 @@ qemu_cmd() {
         fi
     done
 
+    # virtio-vga-gl option could be useful
+    # currently std option let's me test GRUB configs
+    # see vase_os/hade_box/archinstall/grub2_utils
+    # and main isntaller.py file for grub options
+
     if [ $use_display -eq 1 ]; then
         cmd="$cmd -vga none"
         if [ "$gl" = "on" ]; then
