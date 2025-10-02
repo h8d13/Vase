@@ -108,3 +108,9 @@ if file_ex "${file_p}${file_n}"; then
     echo "Do something"
 fi
 ```
+
+### Info for nerds / Benchmarks
+
+**TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~900s for complete install (with a 5-8mb/s mirror) 
+**WEIGHTS:** ~1,42Gb ISO, ~5,7 Gb after initial install (Firmware, drivers for video/sound/bluetooth, KDE, essentials) 
+**PACKGS:** 757 With post install script (Flatpak, Zsh, Pythongobject, Adw, Gtk4, Firefox) Extra ~30s 
