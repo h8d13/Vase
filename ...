@@ -28,8 +28,9 @@ target="/dev/${target_name}"
 ################## VM STUFF END
 
 ################## DIRS/LOGS/PERMS
-# Privilege escalation (ex: doas alternative)
-elev_cmd="sudo"
+s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+rel="$s_dir/"
+
 # Dir mods
 hide_d="."
 ext_d=".d"
@@ -39,14 +40,8 @@ ext_d_mod=1 # 1=hidden, 0=visible
 custom_n="vase"
 [ "$hide_d_mod" = "1" ] && custom_n="${hide_d}${custom_n}"
 [ "$ext_d_mod" = "1" ] && custom_n="${custom_n}${ext_d}"
-s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-rel_c=""
-## Where options options:
-# ""      -> script's directory (default using dirname/pwd)
-# ".."    -> one directory up from script
-# "~"     -> user/root home directory
-# "/usr/local/lib" -> absolute path
-# "lib"   -> relative to script
+
+#### Names
 p_lib="$custom_n"
 c_file="logs"
 c_ext="conf"
@@ -58,28 +53,9 @@ cli_a="cli_art"
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazulago_vms"
-
 vase_p_env="$vase_d/env"
-
-# Resolve the path based on config
-case "$rel_c" in
-    ""|".")
-        rel="$s_dir/"
-        ;;
-    "~")
-        rel="$HOME/"
-        ;;
-    "..")
-        rel="$(dirname "$s_dir")/"
-        ;;
-    /*)
-        # Absolute path
-        rel="$rel_c/"
-        ;;
-    *)
-        # Relative to script directory
-        rel="$s_dir/$rel_c/"
-        ;;
-esac
+#### Future alpine imp 
+# Privilege escalation (ex: doas alternative)
+elev_cmd="sudo"
 ## For runtime output
 script_s=$(date +%s%6N)
