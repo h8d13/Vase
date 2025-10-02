@@ -19,13 +19,11 @@ from ..output import debug, error, info
 if TYPE_CHECKING:
 	from ..installer import Installer
 
-
 class ProfileSerialization(TypedDict):
 	main: NotRequired[str]
 	details: NotRequired[list[str]]
 	custom_settings: NotRequired[dict[str, dict[str, str | None]]]
 	path: NotRequired[str]
-
 
 class ProfileHandler:
 	def __init__(self) -> None:
@@ -320,6 +318,5 @@ class ProfileHandler:
 		for profile in self.get_top_level_profiles():
 			if profile.name not in excluded_profiles:
 				profile.reset()
-
 
 profile_handler = ProfileHandler()

@@ -1,5 +1,4 @@
 #!/bin/sh
-# VM Manager 2.0 - Bash implementation
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
 
@@ -302,12 +301,7 @@ main() {
             preop "Booting from ISO..."
             cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
             run_vm "$cmd"
-            preop "Running VM..."
-            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c)
-            run_vm "$cmd"
-            preop "Setup complete"
             ;;
-
         vncd)
             preop "Booting from ISO (VNC)..."
             cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --vnc)

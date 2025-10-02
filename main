@@ -16,8 +16,15 @@ if exec_args "RESET"; then
     postop "Resetting: removing ${rel}${p_lib}"
     rm -rf "${rel}${p_lib}"
 fi
-# Setup lib directory check the owner
+# Setup lib directory
 dir_excreate "${rel}${p_lib}"
+dir_excreate "${rel}${zl_d}/d"  # Create ISO dir 
+dir_excreate "${rel}${zl_d}/c" # Create Disks dir
+
+# Awlays give these back to sudo user
+chown_all "$SUDO_USER" "${rel}${zl_d}/d" && dir_own "${rel}${zl_d}/d" "$SUDO_USER" 
+chown_all "$SUDO_USER" "${rel}${zl_d}/c" && dir_own "${rel}${zl_d}/c" "$SUDO_USER" 
+
 # Create settings if not exist
 if ! file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
     preop "Creating ${rel}${p_lib}/${c_file}.${c_ext}"
@@ -180,8 +187,8 @@ if im_groot; then
         cbanner "ENVIR CHECK"
         if exec_args "START"; then
             obanner "FILES CHECK"
-            rcw du -sh ./${zl_d}/d/
-            rcw du -sh ./${zl_d}/c/
+            rcw "echo \"d/: \$(du -sh ./${zl_d}/d/ | cut -f1) (\$(find ./${zl_d}/d/ -type f | wc -l))\""
+            rcw "echo \"c/: \$(du -sh ./${zl_d}/c/ | cut -f1) (\$(find ./${zl_d}/c/ -type f | wc -l))\""
 
             if ! file_ex "./${zl_d}/d/${iso_n}.${iso_ext}"; then
                 die "ISO Not found."
