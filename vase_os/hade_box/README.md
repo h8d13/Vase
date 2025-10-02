@@ -1,4 +1,4 @@
-# KADEBOOT - KDE ARCH LINUX
+# Hade_box - KDE ARCH LINUX
 
 ----
 
@@ -14,15 +14,9 @@ This version is for users who know they want KDE and it's dependencies **(Networ
 **Pre-req:** 1 USB (minimum 2GB), 1 target Drive (minimum 16GB).
 
 Boot Arch Linux Live ISO (using f10, f12 or del), get internet access, then:
+
 - No secureboot or set to `other OS`
 
-```bash
-pacman -Sy git
-
-git clone https://github.com/h8d13/KADEBOOT
-
-cd KADEBOOT && ./install
-```
 
 ## After initial install
 
@@ -58,9 +52,6 @@ After running the script it will restart one last time. **And you are done!**
 
 For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 
-<img width="736" height="456" alt="image" src="https://github.com/user-attachments/assets/ae511cc6-ff58-4026-8689-f7e3ff662501" />
-
-
 ### Modifications
 
 - Hybrid setup detection (common case of Nvidia-Intel) in `hardware.py` > VM Setups additional packages for QEMU/KVM
@@ -86,7 +77,7 @@ Here is the exact code block in question: [Here](https://github.com/h8d13/KADEBO
 
 And the reference for why: [Wiki-KernelParameters](https://wiki.archlinux.org/title/Kernel_parameters) and [Wiki-Env](https://wiki.archlinux.org/title/Environment_variables)
 
-## KADEBOOT under the hood
+## Hade_box Explained
 
 **Boot ISO** → Run KADEBOOT (Archinstall but modified for KDE)
 
