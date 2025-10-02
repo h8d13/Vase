@@ -111,11 +111,13 @@ fi
 
 ### Info for nerds / Benchmarks
 
-**TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~900s for complete install (with a 5-8mb/s mirror) 
+**TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror) 
 
-**WEIGHTS:** ~1,42Gb installation image size
+**WEIGHTS:** ~1,42Gb ISO installation image size 
 
 ~5,7 Gb after initial install (minimal Intel graphics)
+> Btrfs will be much lighter as it uses compression built-in (+CoW optional) + integrated snapshots using snapper/timeshift.
+> Note: Best is usually to use what you already have on other disks for compatibility (stick to your choices).
 
 - base, base-devel, linux-firmware, kernel variants, grub2-bootloader
 - file compression/dec utils (needed to build)
@@ -127,6 +129,10 @@ fi
 - bluetooth (optional)
 - extra x11 legacy libs (optional)
 
-Including about 250mb of wallpapers.
+**PACKGS:** ~720 Base then ~790 with post install script essentials (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
 
-**PACKGS:** 757 With post install script (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
+> Built this tool because I knew that maintaining Archinstall seems like hell (judging by issues reported) 
+> So I had to have a safe space to test AND change installer code OR create ISOs directly. 
+> This would let me expand on sections I thought were missing out on like grub configs, hardware specific stuff, snapshots, etc... 
+
+Special shout to the devs at archinstall and other open-source contributors for making this project possible. 
