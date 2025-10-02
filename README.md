@@ -19,6 +19,16 @@ Written in bash to wrap Archinstall.
 
 `$ ./main -t` : Launch TUI forked KDE install
 
+---
+
+Go grab some coffee during installation.
+
+After initial install pick `Reboot` and switch to hard disk.
+
+Open `Konsole` and type `cd KAES-ARCH`
+
+Then `sudo vim post` edit to desired values then `sudo ./post`
+
 ### From an existing arch installation
 
 `$ git clone https://github.com/h8d13/Vase`
