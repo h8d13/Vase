@@ -79,7 +79,7 @@ And the reference for why: [Wiki-KernelParameters](https://wiki.archlinux.org/ti
 
 ## Hade_box Explained
 
-**Boot ISO** → Run KADEBOOT (Archinstall but modified for KDE)
+**Boot ISO** → Run Hade_box (Archinstall but modified for KDE)
 
 → **Reboot to hard disk** → (Clones for you) KAES-ARCH → Run post script (Many improvements to defaults)
 
