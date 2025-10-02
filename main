@@ -182,6 +182,7 @@ if im_groot; then
     if im_sudo; then
         info "Running as elevated user..."
         gui_som "$SUDO_USER" #export XDG for sudo user
+        cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
         . ./${vase_p_env}
         cbanner "ENVIR CHECK"
@@ -220,6 +221,5 @@ else
         die "Running as regular user." # Or warn and do smthn else
     fi
 fi
-cbanner "PERMS CHECK"
 #rcw ls -la /nonexistant
 #&& rcw sleep 1.3 && true testing timing
