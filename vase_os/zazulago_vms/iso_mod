@@ -19,25 +19,24 @@ if ! dir_ex "$OVERLAY_DIR"; then
    die "Did not find overlay dir."
 fi
 
-echo "Setting up archiso profile..."
+info "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
 mkdir -p "$PROFILE_DIR"
 # Use standard release engeneering profile (same as ISO)
 cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
 
-echo "Adding $OVERLAY_DIR to airootfs..."
+info "Adding $OVERLAY_DIR to airootfs..."
 ## Main overlay is defined here we append to root "/" our "hade_box" folder. 
 mkdir -p "$PROFILE_DIR/airootfs/root"
 cp -r "$OVERLAY_DIR" "$PROFILE_DIR/airootfs/root/"
 
-echo "Building ISO with mkarchiso..."
+info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
 mkdir -p "$WORK_DIR"
 mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" "$PROFILE_DIR"
-
-echo "Cleaning up..."
+info "Cleaning up..."
 rm -rf "$PROFILE_DIR"
 rm -rf "$WORK_DIR"
 chown_all "$SUDO_USER" "$OUTPUT_DIR" 
 
-echo "Done! New ISO created in: $OUTPUT_DIR"
+reop "Done! New ISO created in: $OUTPUT_DIR"

@@ -5,7 +5,7 @@
 # QEMU Display Settings
 # Display backend: gtk, sdl, vnc, spice
 # GL acceleration: on, off
-qemu_display="sdl"
+qemu_display="gtk"
 qemu_gl="on"
 
 arch="x86_64"
@@ -13,7 +13,9 @@ ram=8096
 cores=8
 size="60G" #preallocation doesnt take space directly
 #iso_n="archlinux-x86_64"
-iso_n="alpine-x86_64"
+vm_d="d" # Change me to "a" when using test isos -i option > Example output from mkarchiso archlinux-YYYY.MM.DD-x86_64
+iso_n="archlinux-x86_64"
+#iso_n="archlinux-YYYY.MM.DD-x86_64"
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch

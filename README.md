@@ -1,7 +1,7 @@
 # Vase
 
-A testing suite to run VMs and perform system installations.
-> Made for archlinux to be able to test future installs without going into BIOS.
+A testing suite to run VMs and perform archlinux system installations.
+> Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
 
 Written in raw shell to wrap Archinstall.
 
@@ -27,9 +27,9 @@ Written in raw shell to wrap Archinstall.
 
 `$ sudo ./main -s` : Start VMs testing suite menu
 
-`$ sudo ./main -t` : Launch TUI forked KDE install
-
 `$ sudo ./main -i` : Create ISO overlays w RELENG
+
+`$ sudo ./main -t` : Launch TUI forked KDE install
 
 > Includes the TUI inside the ISO directly by default
 

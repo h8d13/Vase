@@ -3,8 +3,8 @@
 . "$(dirname "$0")/../../..."
 
 script_dir="$(dirname "$0")"
-iso_dir_path="${script_dir}/d/"
-iso_name="${script_dir}/d/${iso_n}.$iso_ext"
+iso_dir_path="${script_dir}/${vm_d}/"
+iso_name="${script_dir}/${vm_d}/${iso_n}.$iso_ext"
 disks_dir_path="${script_dir}/c/"
 image_name="${script_dir}/c/${vm_name}.${vm_ext}"
 
@@ -18,20 +18,6 @@ key_file="${script_dir}/.vmkey.local"
 
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
-
-spin_animation() {
-    local duration=${1:-10}
-    local chars='\ | / -'
-    local start=$(date +%s)
-    local i=0
-
-    while [ $(($(date +%s) - start)) -lt "$duration" ]; do
-        printf "\r%s" "$(echo "$chars" | cut -d' ' -f$((i % 4 + 1)))"
-        i=$((i + 1))
-        sleep 0.1
-    done
-    printf "\r"
-}
 
 run_vm() {
     local cmd="$1"
