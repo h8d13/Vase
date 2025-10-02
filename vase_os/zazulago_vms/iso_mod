@@ -1,33 +1,43 @@
 #!/bin/sh
-#set -e
+set -e
+
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
 
-# Archiso Build Script - Add hade_box/ to Arch Linux ISO
-OVERLAY_DIR="../hade_box"
-PROFILE_DIR="./archiso_profile"
-OUTPUT_DIR="./d"
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    # Source wrapper
+    . "${rel}${p_lib}/${rcw_file}"
+fi
 
-if ! dir_exists "$OVERLAY_DIR"; then
+SCRIPT_DIR="$(dirname "$0")"
+OVERLAY_DIR="$SCRIPT_DIR/../hade_box"
+PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
+WORK_DIR="$SCRIPT_DIR/archiso_work"
+OUTPUT_DIR="$SCRIPT_DIR/a"
+  
+if ! dir_ex "$OVERLAY_DIR"; then
    die "Did not find overlay dir."
 fi
 
 echo "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
 mkdir -p "$PROFILE_DIR"
+# Use standard release engeneering profile (same as ISO)
 cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
 
 echo "Adding $OVERLAY_DIR to airootfs..."
+## Main overlay is defined here we append to root "/" our "hade_box" folder. 
 mkdir -p "$PROFILE_DIR/airootfs/root"
 cp -r "$OVERLAY_DIR" "$PROFILE_DIR/airootfs/root/"
 
 echo "Building ISO with mkarchiso..."
-WORK_DIR="./archiso-work"
+## Think of this as a temp file for intermediate building
 mkdir -p "$WORK_DIR"
-sudo mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" "$PROFILE_DIR"
+mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" "$PROFILE_DIR"
 
 echo "Cleaning up..."
 rm -rf "$PROFILE_DIR"
-sudo rm -rf "$WORK_DIR"
+rm -rf "$WORK_DIR"
+chown_all "$SUDO_USER" "$OUTPUT_DIR" 
 
 echo "Done! New ISO created in: $OUTPUT_DIR"

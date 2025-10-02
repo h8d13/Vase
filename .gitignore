@@ -1,5 +1,9 @@
 .vase.d/
+vase_os/zazulago_vms/a/
 vase_os/zazulago_vms/c/
 vase_os/zazulago_vms/d/
 vase_os/zazulago_vms/.vmkey.local
+vase_os/zazulago_vms/archiso_work/
+vase_os/zazulago_vms/archiso_profile
 .zed/
+.vscode/
