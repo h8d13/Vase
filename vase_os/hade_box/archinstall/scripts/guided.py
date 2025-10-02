@@ -176,8 +176,8 @@ def perform_installation(mountpoint: Path) -> None:
 				installation.create_users(config.auth_config.users)
 				auth_handler.setup_auth(installation, config.auth_config, config.hostname)
 
-		#mandatory_package = ['git']
-		#installation.add_additional_packages(mandatory_package)
+		mandatory_package = ['git']
+		installation.add_additional_packages(mandatory_package)
 
 		if timezone := config.timezone:
 			installation.set_timezone(timezone)
