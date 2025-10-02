@@ -113,6 +113,20 @@ fi
 
 **TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~900s for complete install (with a 5-8mb/s mirror) 
 
-**WEIGHTS:** ~1,42Gb ISO, ~5,7 Gb after initial install (Firmware, drivers for video/sound/bluetooth, KDE, essentials) 
+**WEIGHTS:** ~1,42Gb installation image size
 
-**PACKGS:** 757 With post install script (Flatpak, Zsh, Pythongobject, Adw, Gtk4, Firefox) Extra ~30s 
+~5,7 Gb after initial install (minimal Intel graphics)
+
+- base, base-devel, linux-firmware, kernel variants, grub2-bootloader
+- file compression/dec utils (needed to build)
+- microcode (based on hardware detection)
+- xorg / waylands libs + SDDM (display server + manager)
+- alsa + utils (sound)
+- graphics drivers (based on choice/hardware detection)
+- network-manager (connectivity)
+- bluetooth (optional)
+- extra x11 legacy libs (optional)
+
+Including about 250mb of wallpapers.
+
+**PACKGS:** 757 With post install script (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
