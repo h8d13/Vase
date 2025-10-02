@@ -97,19 +97,8 @@ copy_disk() {
         exit 1
     fi
 
-    cp "$image" "$temp_name" &
-    local cp_pid=$!
+    cp "$image" "$temp_name"
 
-    # Spinner while copying
-    local chars='\ | / -'
-    local i=0
-    while kill -0 "$cp_pid" 2>/dev/null; do
-        printf "\r%s" "$(echo "$chars" | cut -d' ' -f$((i % 4 + 1)))"
-        i=$((i + 1))
-        sleep 0.1
-    done
-
-    wait "$cp_pid"
     printf "\nCopied to %s\n" "$temp_name"
     echo "$temp_name"
 }

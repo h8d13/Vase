@@ -139,16 +139,4 @@ cbanner() {
     done
     echo
 }
-spin_anim() {
-    local duration=${1:-10}
-    local chars='\ | / -'
-    local start=$(date +%s)
-    local i=0
 
-    while [ $(($(date +%s) - start)) -lt "$duration" ]; do
-        printf "\r%s" "$(echo "$chars" | cut -d' ' -f$((i % 4 + 1)))"
-        i=$((i + 1))
-        sleep 0.1
-    done
-    printf "\r"
-}

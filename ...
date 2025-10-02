@@ -13,7 +13,8 @@ ram=8096
 cores=8
 size="60G" #preallocation doesnt take space directly
 #iso_n="archlinux-x86_64"
-vm_d="d" # Change me to "a" when using test isos -i option > Example output from mkarchiso archlinux-YYYY.MM.DD-x86_64
+vm_d="d" # Change me to "a" when using test isos
+# or drag -i ISOs from a/ to d/
 iso_n="archlinux-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64"
 vm_name="myvm1" #anyname
