@@ -19,8 +19,6 @@ Written in bash to wrap Archinstall.
 
 `$ ./main -t` : Launch TUI forked KDE install
 
----
-
 Go grab some coffee during installation.
 
 After initial install pick `Reboot` and switch to hard disk.
