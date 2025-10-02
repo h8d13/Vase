@@ -13,10 +13,14 @@ This version is for users who know they want KDE and it's dependencies **(Networ
 
 **Pre-req:** 1 USB (minimum 2GB), 1 target Drive (minimum 16GB).
 
-Boot Arch Linux Live ISO (using f10, f12 or del), get internet access, then:
+Boot Arch Linux Live ISO (using f10, f12 or del)
+
+Get internet access; `iwctl station wlan0 connect "SSID"` SSID being the name of your WiFi (case sensitive) and it should prompt you for password.
+Ethernet works out of the box. Plug a cable and go.
+
+Test: ping archlinux.org, you should see 64 bytes from xx.xxx.xxx.xxx (xx.xxx.xxx.xxxx): icmp_seq=1 ttl=109 time=13.9 ms then means you are all good to go!
 
 - No secureboot or set to `other OS`
-
 
 ## After initial install
 
