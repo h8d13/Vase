@@ -177,7 +177,7 @@ fi
 ### Start actual usage of helpers sourced from local since we check existence
 obanner "PERMS CHECK"
 if im_groot; then
-    reop "Running with root privileges"
+    info "Running with root privileges"
     # Use reop for regular operation green output
     if im_sudo; then
         info "Running as elevated user..."
