@@ -29,6 +29,11 @@ cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
 info "Adding $OVERLAY_DIR to airootfs..."
 ## Main overlay is defined here we append to root "/" our "hade_box" folder. 
 mkdir -p "$PROFILE_DIR/airootfs/root"
+
+# We could for example overlay all the plasma files directly into the ISO too
+# That would speedup install time considerably at the cost of a larger ISO
+## We can do this by editing $PROFILE_DIR/packages.x86_64
+
 cp -r "$OVERLAY_DIR" "$PROFILE_DIR/airootfs/root/"
 
 info "Building ISO with mkarchiso..."
