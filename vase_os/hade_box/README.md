@@ -73,7 +73,7 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 
 - These are widely *debated/changing*and can result in performance enhancements/or correcting non-functional hardware.
 
-Here is the exact code block in question: [Here](https://github.com/h8d13/KADEBOOT/blob/master/archinstall/lib/installer.py#L963) This could be expanded upon to build hardware-aware and optimized presets considering hardware detection modules.
+Here is the exact code block in question: [Here](https://github.com/h8d13/Vase/blob/2247002707d68fb5b92542aae27d1fbfd18ed978/vase_os/hade_box/archinstall/lib/installer.py#L871C1-L875C10) This could be expanded upon to build hardware-aware and optimized presets considering hardware detection modules.
 
 And the reference for why: [Wiki-KernelParameters](https://wiki.archlinux.org/title/Kernel_parameters) and [Wiki-Env](https://wiki.archlinux.org/title/Environment_variables)
 
