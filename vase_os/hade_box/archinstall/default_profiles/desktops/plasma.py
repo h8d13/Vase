@@ -12,8 +12,8 @@ class PlasmaProfile(Profile):
 			ProfileType.DesktopEnv,
 			packages=[
 				'xorg-server',
-				'xorg-xinit',
-				'xorg-xrandr',
+				'xorg-xinit', # I believe we can move this to legacy part
+				'xorg-xrandr', # This too 
 			],
 			services=['sddm'],
 			support_gfx_driver=True,
