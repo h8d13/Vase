@@ -197,7 +197,7 @@ if im_groot; then
 
             if ! file_ex "./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"; then
                 info "Looking for ./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
-                die "ISO Not found."
+                die "ISO Not found. Build using -i or change ... config or get the official ISO from archlinux.org/download"
             else
                 info "Found $iso_n" in proper location.
             fi
