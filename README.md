@@ -28,10 +28,9 @@ Written in bash to wrap Archinstall.
 `$ sudo ./main -s` : Start VMs testing suite menu
 
 `$ sudo ./main -i` : Create ISO overlays w RELENG
+> Includes the TUI inside the ISO directly by default
 
 `$ sudo ./main -t` : Launch TUI forked KDE install
-
-> Includes the TUI inside the ISO directly by default
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
