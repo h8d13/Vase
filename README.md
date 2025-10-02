@@ -42,6 +42,8 @@ Then `sudo vim post` edit to desired values then `sudo ./post`
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
+All avaible commands: `--tuimenu --reset --isomod --start`
+
 ### Settings
 
 In project root, `...` file contains every single configuration constants.
