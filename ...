@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #... strucs
 # This file is an absolute mess but everything is declared here
 ################## VM STUFF

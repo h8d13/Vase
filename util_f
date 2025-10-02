@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 #utilities
 parse_args() {
     while [ $# -gt 0 ]; do
@@ -49,7 +50,8 @@ setup_cleanup() {
 }
 cleanup() {
     if [ -n "$script_s" ] && [ "${TIMING}" = "1" ]; then
-        local script_end=$(date +%s%6N)
+        local script_end
+        script_end=$(date +%s%6N)
         local total_dur=$((script_end - script_s))
 
         # Format the duration
@@ -99,7 +101,9 @@ im_sudo() {
     [ -n "$SUDO_USER" ]
 }
 gui_som() {
-    export XDG_RUNTIME_DIR="/run/user/$(id -u "$1")"
+    local runtime_dir
+    runtime_dir="/run/user/$(id -u "$1")"
+    export XDG_RUNTIME_DIR="$runtime_dir"
 }
 chown_all() {
     chown -R "$1:$1" "$2"

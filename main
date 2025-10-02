@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 #main
 #set -e # Debug line
 ## Helpers any POSIX compliant command
@@ -49,7 +50,7 @@ fi
 if ! file_ex "${rel}${p_lib}/${rcw_file}"; then
     preop "Creating ${rel}${p_lib}/${rcw_file}"
     cat > "${rel}${p_lib}/${rcw_file}" << 'EOF'
-#!/bin/sh
+#!/bin/bash
 #rcw
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -93,19 +94,22 @@ fmt_dur() {
     fi
 }
 rcw() {
-    local cmd="$@"
+    local cmd="$*"
     [ "${DEBUGS}" = "1" ] && echo -e "${BLUE}[INFO]${NC} Running: $cmd"
-    local t_start=$(get_usec)
+    local t_start
+    t_start=$(get_usec)
     eval "$cmd"
     local rc=$?
-    local t_end=$(get_usec)
+    local t_end
+    t_end=$(get_usec)
     local dur=$((t_end - t_start))
     local check="✓"
     local cross="✗"
     local clock="【┘】"
 
     if [ "$TIMING" = "1" ]; then
-        local t_str=$(fmt_dur $dur)
+        local t_str
+        t_str=$(fmt_dur $dur)
         if [ "$COLORS" = "1" ]; then
             echo -e "$(c_cyan "[TIME]") ${t_str} ${clock}"
         else
@@ -133,13 +137,13 @@ init_log() {
         if [ "$LOGCLR" = "1" ]; then
             # Keep colors in log
             if [ "$LOGMEM" = "0" ]; then
-                > "$log_file"
+                true > "$log_file"
             fi
             exec > >(tee -a "$log_file") 2>&1
         else
             # Strip colors from log
             if [ "$LOGMEM" = "0" ]; then
-                > "$log_file"
+                true > "$log_file"
                 exec > >(tee -a >(sed 's/\x1b\[[0-9;]*m//g' > "$log_file")) 2>&1
             else
                 exec > >(tee -a >(sed 's/\x1b\[[0-9;]*m//g' >> "$log_file")) 2>&1
@@ -172,7 +176,7 @@ if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
 if exec_args "TUI"; then
-    ./${hb_d}/install && rcw true && exit
+    "./${hb_d}/install" && rcw true && exit
 fi
 ### Start actual usage of helpers sourced from local since we check existence
 obanner "PERMS CHECK"
@@ -184,12 +188,12 @@ if im_groot; then
         gui_som "$SUDO_USER" #export XDG for sudo user
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
-        . ./${vase_p_env}
+        . "./${vase_p_env}"
         cbanner "ENVIR CHECK"
         if exec_args "START"; then
             obanner "FILES CHECK"
-            rcw "echo \"${vm_d}/: \$(du -sh ./${zl_d}/${vm_d}/ | cut -f1) (\$(find ./${zl_d}/${vm_d}/ -type f | wc -l))\""
-            rcw "echo \"c/: \$(du -sh ./${zl_d}/c/ | cut -f1) (\$(find ./${zl_d}/c/ -type f | wc -l))\""
+            rcw "echo \"${vm_d}/: \$(du -sh \"./${zl_d}/${vm_d}/\" | cut -f1) (\$(find \"./${zl_d}/${vm_d}/\" -type f | wc -l))\""
+            rcw "echo \"c/: \$(du -sh \"./${zl_d}/c/\" | cut -f1) (\$(find \"./${zl_d}/c/\" -type f | wc -l))\""
 
             if ! file_ex "./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"; then
                 info "Looking for ./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
@@ -199,11 +203,11 @@ if im_groot; then
             fi
             cbanner "FILES CHECK"
             preop "Starting VM Menu..."
-            ./${zl_d}/vm_start && rcw true && exit
+            "./${zl_d}/vm_start" && rcw true && exit
         fi
         if exec_args "ISO"; then
             preop "Starting ISO Modifier..."
-            ./${zl_d}/iso_mod && rcw true && exit
+            "./${zl_d}/iso_mod" && rcw true && exit
         fi
         if dir_own "${rel}${p_lib}" "root"; then
             ## Give back to user

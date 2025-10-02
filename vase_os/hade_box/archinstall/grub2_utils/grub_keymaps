@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # script to set the keymap properly in grub2
 # includes bundled ckbcomp perl script
 # heavily inspired by fitzcarraldoblog cheers 
@@ -9,7 +9,6 @@ KB_VARIANT="nodeadkeys"
 
 GRUB_DEF="/etc/default/grub"
 GRUB_LAY="/boot/grub/layouts"
-BOOT_DIR="/boot/efi"
 GRUB_CFG="/boot/grub/grub.cfg"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOCALE=$(locale | grep "^LANG=" | sed 's/LANG=//; s/\.UTF-8.*//')

@@ -3,7 +3,7 @@
 A testing suite to run VMs and perform archlinux system installations.
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
 
-Written in raw shell to wrap Archinstall.
+Written in bash to wrap Archinstall.
 
 ---
 

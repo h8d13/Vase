@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [ -f "$SCRIPT_DIR/../utili_f" ]; then
     . "$SCRIPT_DIR/../util_f"
@@ -30,14 +31,14 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
     case "$distro_id" in
         arch)
             info "Detected: Arch Linux"
-            ./${zl_d}/setup_arch
+            "./${zl_d}/setup_arch"
             ;;
         *)
             # Check if it's Arch-based via ID_LIKE
             case "$distro_like" in
                 *arch*)
                     info "Detected: Arch-based ($distro_id)"
-                    ./${zl_d}/setup_arch
+                    "./${zl_d}/setup_arch"
                     ;;
                 *)
                     warn "Unsupported distribution: $distro_id"
@@ -101,36 +102,36 @@ nvidia_models=""
 amd_models=""
 intel_models=""
 
-if [ $has_nvidia -gt 0 ]; then
+if [ "$has_nvidia" -gt 0 ]; then
     nvidia_models=$(echo "$gpu_check" | grep -i "nvidia" | sed 's/.*NVIDIA Corporation //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
 fi
 
-if [ $has_amd -gt 0 ]; then
+if [ "$has_amd" -gt 0 ]; then
     amd_models=$(echo "$gpu_check" | grep -iE "\bamd\b|\bati\b" | sed 's/.*AMD\/ATI //' | sed 's/.*ATI //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
 fi
 
-if [ $has_intel -gt 0 ]; then
+if [ "$has_intel" -gt 0 ]; then
     intel_models=$(echo "$gpu_check" | grep -i "intel" | sed 's/.*Intel Corporation //' | sed 's/ (rev.*//' | sed 's/\[//' | sed 's/\]//')
 fi
 
 # Build GPU string
-if [ $has_nvidia -gt 0 ] && [ $has_intel -gt 0 ]; then
+if [ "$has_nvidia" -gt 0 ] && [ "$has_intel" -gt 0 ]; then
     gpu_type="Hybrid: Intel ($intel_models) + NVIDIA ($nvidia_models)"
-elif [ $has_amd -gt 0 ] && [ $has_intel -gt 0 ]; then
+elif [ "$has_amd" -gt 0 ] && [ "$has_intel" -gt 0 ]; then
     gpu_type="Hybrid: Intel ($intel_models) + AMD ($amd_models)"
-elif [ $has_amd -gt 0 ] && [ $has_nvidia -gt 0 ]; then
+elif [ "$has_amd" -gt 0 ] && [ "$has_nvidia" -gt 0 ]; then
     gpu_type="Hybrid: AMD ($amd_models) + NVIDIA ($nvidia_models)"
-elif [ $has_nvidia -gt 1 ]; then
+elif [ "$has_nvidia" -gt 1 ]; then
     gpu_type="NVIDIA (${has_nvidia}x): $nvidia_models"
-elif [ $has_nvidia -eq 1 ]; then
+elif [ "$has_nvidia" -eq 1 ]; then
     gpu_type="NVIDIA: $nvidia_models"
-elif [ $has_amd -gt 1 ]; then
+elif [ "$has_amd" -gt 1 ]; then
     gpu_type="AMD (${has_amd}x): $amd_models"
-elif [ $has_amd -eq 1 ]; then
+elif [ "$has_amd" -eq 1 ]; then
     gpu_type="AMD: $amd_models"
-elif [ $has_intel -gt 1 ]; then
+elif [ "$has_intel" -gt 1 ]; then
     gpu_type="Intel (${has_intel}x): $intel_models"
-elif [ $has_intel -eq 1 ]; then
+elif [ "$has_intel" -eq 1 ]; then
     gpu_type="Intel: $intel_models"
 else
     gpu_type="Unknown"

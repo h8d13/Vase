@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
 
@@ -62,7 +63,8 @@ decrypt_vm() {
     rm -f "${image}.bin"
 
     # Log launch
-    local hashed_name=$(echo "$image" | sha256sum | cut -c1-8)
+    local hashed_name
+    hashed_name=$(echo "$image" | sha256sum | cut -c1-8)
     {
         echo ""
         echo "#I$(date '+%Y-%m-%d %H:%M:%S')"
@@ -88,7 +90,8 @@ encrypt_vm() {
 
 copy_disk() {
     local image="$1"
-    local temp_name="$(dirname "$image")/${short_uuid}$(basename "$image")"
+    local temp_name
+    temp_name="$(dirname "$image")/${short_uuid}$(basename "$image")"
 
     preop "Copying $image > $temp_name..."
 
@@ -104,7 +107,8 @@ copy_disk() {
 }
 
 generate_mac() {
-    local mac="52:54:00:$(printf '%02x:%02x:%02x' $((RANDOM % 256)) $((RANDOM % 256)) $((RANDOM % 256)))"
+    local mac
+    mac="52:54:00:$(printf '%02x:%02x:%02x' $((RANDOM % 256)) $((RANDOM % 256)) $((RANDOM % 256)))"
     preop "Generated MAC: $mac"
     echo "$mac"
 }
