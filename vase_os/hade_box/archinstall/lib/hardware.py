@@ -46,6 +46,7 @@ class GfxPackage(Enum):
 	NvidiaDkms = 'nvidia-dkms'
 	NvidiaOpenDkms = 'nvidia-open-dkms'
 	NvidiaPrime = 'nvidia-prime'
+	NvidiaUtils = 'nvidia-utils'
 	QemuGuestAgent = 'qemu-guest-agent'
 	SpiceVdAgent = 'spice-vdagent'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
@@ -126,6 +127,7 @@ class GfxDriver(Enum):
 					GfxPackage.NvidiaOpenDkms,
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
+					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.NvidiaOpenSource:
 				packages += [
@@ -139,6 +141,7 @@ class GfxDriver(Enum):
 					GfxPackage.NvidiaDkms,
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
+					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.IntelNvidiaHybrid:
 				packages += [
@@ -149,6 +152,7 @@ class GfxDriver(Enum):
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
 					GfxPackage.NvidiaPrime,
+					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.VMOpenSource:
 				packages += [
