@@ -27,6 +27,8 @@ Open `Konsole` and type `cd KAES-ARCH`
 
 Then `sudo vim post` edit to desired values then `sudo ./post`
 
+---
+
 ### From an existing arch installation
 
 `$ git clone https://github.com/h8d13/Vase`
@@ -48,6 +50,8 @@ Then `sudo vim post` edit to desired values then `sudo ./post`
 
 All available commands: `--tuimenu --reset --isomod --start --quick <cmd> --update`
 
+---
+
 ### Settings
 
 In project root, `...` file contains every single configuration constants.
@@ -64,6 +68,8 @@ LOGMEM=0 # 1 Enables keeping previous log
 LOGCLR=0 # 1 Enables non standard ascii in log
 CATART=1 # 0 Disables cli art sadface
 ```
+
+---
 
 ## Features
 
@@ -101,6 +107,8 @@ Choice (any key for default): exit
 
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
+---
+
 ## Specifications for Contribs
 
 Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
@@ -111,16 +119,7 @@ Inside `vase_os/zazulago_vms/iso_mod` to create custom ISOs. And inside `vase_os
 
 Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 
-### Main utilities
-
-Inside `util_f` can find all shell utility functions used throughout codebase.
-
-> Useful for simple syntax like:
-```
-if file_ex "${file_p}${file_n}"; then
-    echo "Do something"
-fi
-```
+---
 
 ### Info for nerds / Benchmarks
 
