@@ -102,7 +102,7 @@ Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 
 ---
 
-### Info for nerds / Benchmarks
+## Info for nerds / Benchmarks
 
 **TIMINGS:** Original: 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror).
 
@@ -117,8 +117,11 @@ If you are wondering what I'm talking about Inside `vase_os/zazulago_vms/iso_mod
 **WEIGHTS:** Original: ~1,42Gb ISO installation image size / New: ~2,31Gb ISO with plasma overlay (extra ~150s to generate ISO)
 
 ~4-5 Gb after initial install (minimal Intel graphics)
+
 > Btrfs will be much lighter as it uses compression built-in (+CoW optional) + integrated snapshots using snapper/timeshift.
 > Note: Best is usually to use what you already have on other disks for compatibility (stick to your choices).
+
+## Order of operations
 
 - base, base-devel, linux-firmware, kernel variants, grub2-bootloader
 - file compression/dec utils (needed to build)
