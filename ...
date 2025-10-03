@@ -11,20 +11,24 @@ qemu_gl="on"
 arch="x86_64"
 ram=8096
 cores=8
-size="60G" #preallocation doesnt take space directly
-#iso_n="archlinux-x86_64"
-vm_d="d" # Change me to "a" when using test isos or drag built ISO from a/ to d/
+# Specs
+size="60G" 
+# Preallocation doesnt take space directly
+vm_d="d" 
+# Change me to "a" when using test isos or drag built ISO from a/ to d/
 iso_n="archlinux-x86_64"
-#iso_n="archlinux-YYYY.MM.DD-x86_64"
+#iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
 vm_ext="qcow2" #raw
 iso_ext="iso" #raw, bin
-## For running with attached storage
-target_name="sde1"
-target="/dev/${target_name}"
-# This can also be a mount point /media/ ro smthn
+## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
+target_p="sdd3"
+target_t="/dev/"
+target="${target_t}${target_p}"
+# Mount it first. Check lsblk output to find which partition it is. 
+# sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 ################## VM STUFF END
 
 ################## DIRS/LOGS/PERMS
