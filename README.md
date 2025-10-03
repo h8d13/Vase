@@ -35,6 +35,8 @@ Then `sudo vim post` edit to desired values then `sudo ./post`
 
 `$ sudo ./main -s` : Start VMs testing suite menu
 
+`$ sudo ./main -q brick` : Skip menu pass directly
+
 `$ sudo ./main -i` : Create ISO overlays w RELENG
 > Includes the TUI inside the ISO directly by default
 
@@ -42,7 +44,9 @@ Then `sudo vim post` edit to desired values then `sudo ./post`
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
-All avaible commands: `--tuimenu --reset --isomod --start`
+`$ ./main -u` : Check for updates from GitHub
+
+All available commands: `--tuimenu --reset --isomod --start --quick <cmd> --update`
 
 ### Settings
 

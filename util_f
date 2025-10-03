@@ -20,6 +20,15 @@ parse_args() {
                 TUI=1
                 shift
                 ;;
+            -q|--quick)
+                QUICK=1
+                QUICK_CMD="$2"
+                shift 2
+                ;;
+            -u|--update)
+                UPDATE=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -33,8 +42,13 @@ exec_args() {
         START) [ "${START}" = "1" ] ;;
         ISO) [ "${ISO}" = "1" ] ;;
         TUI)  [ "${TUI}" = "1" ] ;;
+        QUICK) [ "${QUICK}" = "1" ] ;;
+        UPDATE) [ "${UPDATE}" = "1" ] ;;
         *) return 1 ;;
     esac
+}
+get_quick_cmd() {
+    echo "${QUICK_CMD}"
 }
 preop() {
     echo "[+] $1"
@@ -142,4 +156,52 @@ cbanner() {
         i=$((i + 1))
     done
     echo
+}
+check_updates() {
+    local repo_url="https://github.com/h8d13/Vase"
+
+    preop "Checking for updates..."
+
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        warn "Not a git repository. Clone from ${repo_url}"
+        return 1
+    fi
+
+    local local_hash=$(git rev-parse HEAD 2>/dev/null)
+    if [ -z "$local_hash" ]; then
+        warn "Failed to get local commit hash"
+        return 1
+    fi
+
+    preop "Fetching from GitHub..."
+    if ! GIT_TERMINAL_PROMPT=0 git fetch https://github.com/h8d13/Vase.git master --quiet 2>/dev/null; then
+        warn "Failed to fetch updates. Check network connection."
+        warn "Alternatively, run: git fetch origin master"
+        return 1
+    fi
+
+    local remote_hash=$(git rev-parse FETCH_HEAD 2>/dev/null)
+
+    if [ -z "$remote_hash" ]; then
+        warn "Failed to get remote commit hash"
+        return 1
+    fi
+
+    if [ "$local_hash" = "$remote_hash" ]; then
+        reop "Already up to date! (${local_hash:0:8})"
+        return 0
+    fi
+
+    warn "Updates available!"
+    echo ""
+    echo "Current: ${local_hash:0:8}"
+    echo "Latest:  ${remote_hash:0:8}"
+    echo ""
+    echo "Changes:"
+    git log --oneline --decorate --color=always HEAD..FETCH_HEAD | head -10
+    echo ""
+    echo "To update run: git pull in project root"
+    echo "View all: git log HEAD..FETCH_HEAD"
+
+    return 0
 }

@@ -224,6 +224,8 @@ show_menu() {
 }
 
 main() {
+    local quick_cmd="${1:-}"  # Get quick command from argument
+
     # Setup
     file_mex "$hedgen_bin"
     dir_excreate "${script_dir}/c/"
@@ -248,10 +250,16 @@ main() {
         preop "Created new key"
     fi
 
-    # Show menu
-    show_menu
-    printf "Choice (any key for default): "
-    read -r choice
+    # Check for quick command from argument (bypass menu)
+    if [ -n "$quick_cmd" ]; then
+        choice="$quick_cmd"
+        preop "Quick command: $choice"
+    else
+        # Show menu
+        show_menu
+        printf "Choice (any key for default): "
+        read -r choice
+    fi
     choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
     # Handle choices
@@ -282,9 +290,11 @@ main() {
             ;;
 
         brick)
-            preop "Booting from ISO..."
+            preop "Booting from ISO (first boot - no encryption after)..."
             cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
             run_vm "$cmd"
+            postop "Skipping encryption for brick (fresh install)"
+            return 0
             ;;
         vncd)
             preop "Booting from ISO (VNC)..."
@@ -386,10 +396,10 @@ main() {
             ;;
     esac
 
-    # Encrypt after use (unless we returned early)
+    # Encrypt after use (unless we returned early or used brick for first boot)
     encrypt_vm "$image_name" "$key"
     postop "Done... Encrypted now exiting."
 }
 
-# Run main
-main
+# Run main with all arguments
+main "$@"

@@ -175,6 +175,9 @@ fi
 if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
+if exec_args "UPDATE"; then
+    check_updates && exit
+fi
 if exec_args "TUI"; then
     "./${hb_d}/install" && rcw true && exit
 fi
@@ -186,6 +189,7 @@ if im_groot; then
     if im_sudo; then
         info "Running as elevated user..."
         gui_som "$SUDO_USER" #export XDG for sudo user
+
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
         . "./${vase_p_env}"
@@ -204,6 +208,10 @@ if im_groot; then
             cbanner "FILES CHECK"
             preop "Starting VM Menu..."
             "./${zl_d}/vm_start" && rcw true && exit
+        fi
+        if exec_args "QUICK"; then
+            "./${zl_d}/vm_start" "$(get_quick_cmd)"
+            exit $?
         fi
         if exec_args "ISO"; then
             preop "Starting ISO Modifier..."
