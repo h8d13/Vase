@@ -1,10 +1,7 @@
 #!/bin/python3
 import os
 import shutil
-
-# List of common cache names
 CACHE_NAMES = ['__pycache__']
-
 def clean_cache(root_dir):
     deleted = []
 
@@ -22,7 +19,7 @@ def clean_cache(root_dir):
     if not deleted:
         print("No cache folders found.")
     else:
-        print(f"\n✅ Done. {len(deleted)} cache folder(s) deleted.")
+        print(f"\n Done. {len(deleted)} cache folder(s) deleted.")
 
 if __name__ == "__main__":
     clean_cache(".")

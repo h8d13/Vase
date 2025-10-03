@@ -1,11 +1,11 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$SCRIPT_DIR/../../util_f"
-# Source constants if they exist
+
 if file_ex "$SCRIPT_DIR/../../..."; then
     . "$SCRIPT_DIR/../../..."
 fi
-
+MISSING=()
 # ARCHINSTALL SYSTEM SUBDEPS SCRIPT
 PACKAGES=(
     # Required (core features)
@@ -28,13 +28,9 @@ PACKAGES=(
     "util-linux"
     "python"
 )
-
-MISSING=()
-
-preop "Running from live system"
 preop "Cheching system subdeps"
 for pkg in "${PACKAGES[@]}"; do
-    if pacman -Qi "$pkg" &>/dev/null; then
+    if to_devnull pacman -Qi "$pkg"; then
         version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')
         preop "Found: $pkg ($version)"
     else
@@ -42,11 +38,8 @@ for pkg in "${PACKAGES[@]}"; do
         MISSING+=("$pkg")
     fi
 done
-
-
 if [ ${#MISSING[@]} -gt 0 ]; then
-    postop -e "\nInstall missing:\n ${elev_cmd} pacman -S ${MISSING[*]}"
-    exit 1
+    pacman -S --noconfirm ${MISSING[*]} || postop "Failed to install missing deps" && exit 1
 else
-    exit 0
+    exit 0 
 fi
