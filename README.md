@@ -59,7 +59,7 @@ All long-form commands:
 --tuimenu               # Launch modified TUI
 --isomod <profile>      # Create iso default "fat"
 --start                 # Start VM menu
---quick <command>       # Lanch VM with X
+--quick <command>       # Lanch VM with default "help" to see menu options
 ```
 
 ---
@@ -88,46 +88,17 @@ CATART=1 # 0 Disables cli art sadface
 ### Main VM Menu
 
 Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
-
-```
-########################################
-Zazulago VM Tooling: rdisk, then brick.
-Display: sdl | GL: on
-########################################
- rk      : Refresh key
- rdisk   : Reset myvm1 60G
- dupk    : Permanent copy
- duck    : Temporary copy
- mayk    : Maybe Y/N copy
- brick   : Boot ISO + Run
- vncd    : Boot ISO (VNC)
- vnck    : Run with (VNC)
- std     : Run (standard VGA)
- cupkd   : Boot ISO w /dev/sde1
- cupk    : Run w /dev/sde1
- taild   : Headless w logs
- bootk   : Boot headless w/ logs
- macg    : Generate MAC + run
- conkd   : Boot ISO w /dev/sde1 and disk
- conk    : Run w /dev/sde1 and disk
- potk    : Delete key + encrypt
- exit    : Exit without encrypt
-########################################
-Choice (any key for default): exit
-[-] Exiting without encryption
-```
-
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
 ---
 
-## Specifications for Contribs
+## Specifications of other files
 
-Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
+- Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
 
-Inside `vase_os/zazulago_vms/setup_arch` for needed packages for QEMU/KVM.
+- Inside `vase_os/zazulago_vms/setup_arch` for needed packages for QEMU/KVM.
 
-Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB.
+- Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
 ---
 

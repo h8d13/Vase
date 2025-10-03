@@ -264,6 +264,11 @@ main() {
 
     # Handle choices
     case "$choice" in
+        help|--help|-h)
+            show_menu
+            return 0
+            ;;
+
         rk)
             key=$(get_magic_number)
             save_key "$key"
