@@ -72,10 +72,8 @@ python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 #                       confirmation. If no configuration is provided, this is
 #                       ignored
 # --script [SCRIPT]     Script to run for installation ## Last line of installer
-####################### Could be super useful
-# --mountpoint [MOUNTPOINT]
-#                       Define an alternate mount point for installation
-#                       (default: /mnt)
+####################### Could be super useful (ckbcomp and grub keymaps)
+# --mountpoint [/mnt]   Define an alternate mount point for installation
 # --skip-ntp            Disables NTP checks during installation
 # --skip-wkd            Disables checking if archlinux keyring wkd sync is
 #                       complete
