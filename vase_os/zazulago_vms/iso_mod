@@ -80,7 +80,7 @@ if [ "$ADD_PROFILE" = "1" ]; then
             # Download packages (pacman resolves dependencies automatically)
             if pacman -Sw --noconfirm $packages; then
                 # Recursively get ALL dependencies (not just first level)
-                info "Resolving complete dependency tree (this may take a minute)..."
+                info "Resolving complete dependency tree..."
                 all_packages="$packages"
                 to_check="$packages"
                 checked=""
@@ -161,7 +161,6 @@ fi
 
 ## xz/squashfs compression keeps ISO size efficient: 2.3GB with Plasma pre-cached (~800MB of packages)
 ## This saves ~800MB download during install (1.5GB → 700MB) while only adding ~500MB to ISO (compressed)
-## Full Plasma install completes in ~400s with pre-cached packages vs ~800s without (5-10mbs mirror)
 
 info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
