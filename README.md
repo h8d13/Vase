@@ -41,9 +41,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -q brick` : Skip menu pass directly
 
-`$ sudo ./main -i <profile>` : Create ISO overlays w RELENG
-
-> See `vase_os/zazulago_vms/iso_profiles` for available options: "plasma" or "fat"
+`$ sudo ./main -i` : Create ISO overlays w RELENG
 
 `$ sudo ./main -t` : Launch TUI forked KDE install
 
@@ -57,7 +55,7 @@ All long-form commands:
 --reset                 # Resets logs
 --update                # Checks git for updates
 --tuimenu               # Launch modified TUI
---isomod <profile>      # Create iso default "fat"
+--isomod                # Create iso default `iso_profiles/fat.conf`
 --start                 # Start VM menu
 --quick <command>       # Lanch VM "help" to see options
 ```
