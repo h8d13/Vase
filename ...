@@ -4,9 +4,9 @@
 vase_v="0.0.01"
 ################## VM STUFF
 arch="x86_64"
-ram=16384
-# 8096 4048 2024 1012
-cores=12
+ram="8096"
+# 16384 4048 2024 1012
+cores="6"
 # vCPUS so actually threads but named it cores
 size="60G" 
 # Preallocation doesnt take space directly

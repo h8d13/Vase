@@ -170,16 +170,16 @@ if file_ex "${rel}${p_lib}/${rcw_file}"; then
     . "${rel}${p_lib}/${rcw_file}"
     info "Loaded ${rcw_file} from ${rel}${p_lib}"
 fi
-
+if exec_args "UPDATE"; then
+    check_updates && rcw true && exit
+fi
 # Skip logging for TUI mode (breaks curses)
 if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
-if exec_args "UPDATE"; then
-    check_updates && exit
-fi
+# TUI with args 
 if exec_args "TUI"; then
-    "./${hb_d}/install" && rcw true && exit
+    "./${hb_d}/install" "$(get_tui_cmd)" && rcw true && exit
 fi
 ### Start actual usage of helpers sourced from local since we check existence
 obanner "PERMS CHECK"
@@ -236,3 +236,5 @@ else
 fi
 #rcw ls -la /nonexistant
 #&& rcw sleep 1.3 && true testing timing
+
+# 3 FUCKING MINUTES

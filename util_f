@@ -14,18 +14,12 @@ parse_args() {
                 ;;
             -i |--isomod)
                 ISO=1
-                # Check if next arg is a profile name
-                if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-                    ISO_PROFILE="$2"
-                    shift
-                else
-                    ISO_PROFILE="fat"  # Default profile
-                fi
                 shift
                 ;;
             -t |--tuimenu)
                 TUI=1
-                shift
+                TUI_CMD="$2"
+                shift 2 ## Pass to archinstall
                 ;;
             -q|--quick)
                 QUICK=1
@@ -56,6 +50,9 @@ exec_args() {
 }
 get_quick_cmd() {
     echo "${QUICK_CMD}"
+}
+get_tui_cmd() {
+    echo "${TUI_CMD}"
 }
 get_iso_profile() {
     echo "${ISO_PROFILE:-fat}"

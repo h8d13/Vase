@@ -23,7 +23,7 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-preop "Hade_boot - ARCHINSTALL"
+preop "HADE_BOOT - ARCHINSTALL"
 
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
