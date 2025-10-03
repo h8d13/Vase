@@ -15,7 +15,6 @@ BASE_URL_PKG_SEARCH = 'https://archlinux.org/packages/search/json/'
 # BASE_URL_PKG_CONTENT = 'https://archlinux.org/packages/search/json/'
 BASE_GROUP_URL = 'https://archlinux.org/groups/search/json/'
 
-
 def _make_request(url: str, params: dict[str, str]) -> addinfourl:
 	ssl_context = ssl.create_default_context()
 	ssl_context.check_hostname = False
@@ -25,7 +24,6 @@ def _make_request(url: str, params: dict[str, str]) -> addinfourl:
 	full_url = f'{url}?{encoded}'
 
 	return urlopen(full_url, context=ssl_context)
-
 
 def group_search(name: str) -> list[PackageSearchResult]:
 	# TODO UPSTREAM: Implement /json/ for the groups search
@@ -42,7 +40,6 @@ def group_search(name: str) -> list[PackageSearchResult]:
 
 	return [PackageSearchResult(**package) for package in json.loads(data)['results']]
 
-
 def package_search(package: str) -> PackageSearch:
 	"""
 	Finds a specific package via the package database.
@@ -58,7 +55,6 @@ def package_search(package: str) -> PackageSearch:
 	data = response.read().decode('UTF-8')
 	json_data = json.loads(data)
 	return PackageSearch.from_json(json_data)
-
 
 def find_package(package: str) -> list[PackageSearchResult]:
 	data = package_search(package)
@@ -77,7 +73,6 @@ def find_package(package: str) -> list[PackageSearchResult]:
 
 	return results
 
-
 def find_packages(*names: str) -> dict[str, PackageSearchResult]:
 	"""
 	This function returns the search results for many packages.
@@ -91,7 +86,6 @@ def find_packages(*names: str) -> dict[str, PackageSearchResult]:
 
 	return result
 
-
 def validate_package_list(packages: list[str]) -> tuple[list[str], list[str]]:
 	"""
 	Validates a list of given packages.
@@ -102,7 +96,6 @@ def validate_package_list(packages: list[str]) -> tuple[list[str], list[str]]:
 	invalid_packages = set(packages) - valid_packages
 
 	return list(valid_packages), list(invalid_packages)
-
 
 def installed_package(package: str) -> LocalPackage | None:
 	try:
@@ -116,7 +109,6 @@ def installed_package(package: str) -> LocalPackage | None:
 
 	return None
 
-
 @lru_cache
 def check_package_upgrade(package: str) -> str | None:
 	try:
@@ -127,11 +119,9 @@ def check_package_upgrade(package: str) -> str | None:
 
 	return None
 
-
 @lru_cache(maxsize=128)
 def _normalize_key_name(key: str) -> str:
 	return key.strip().lower().replace(' ', '_')
-
 
 def _parse_package_output(
 	package_meta: list[str],

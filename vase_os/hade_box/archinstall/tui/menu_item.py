@@ -85,7 +85,6 @@ class MenuItem:
 		"""Check if item has a default value and hasn't been modified"""
 		return self.default_value is not None and not self._value_modified
 
-
 class MenuItemGroup:
 	def __init__(
 		self,
@@ -439,7 +438,6 @@ class MenuItemGroup:
 				return False
 
 		return True
-
 
 class MenuItemsState:
 	def __init__(

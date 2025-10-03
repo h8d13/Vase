@@ -103,7 +103,7 @@ def select_language(preset: str | None = None) -> str | None:
 
 def add_number_of_parallel_downloads(preset: int | None = None) -> int | None:
 	max_recommended = 5
-
+	
 	header = ('This option enables the number of parallel downloads that can occur during package downloads') + '\n'
 	header += ('Enter the number of parallel downloads to be enabled.\n\nNote:\n')
 	header += (' - Maximum recommended value : {} ( Allows {} parallel downloads at a time )').format(max_recommended, max_recommended) + '\n'

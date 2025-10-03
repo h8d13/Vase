@@ -3,12 +3,10 @@ from enum import Enum, auto
 
 from .menu_item import MenuItem
 
-
 class ResultType(Enum):
 	Selection = auto()
 	Skip = auto()
 	Reset = auto()
-
 
 @dataclass
 class Result[ValueT]:

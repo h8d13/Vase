@@ -2,25 +2,20 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Any, NotRequired, TypedDict
 
-
 class BluetoothConfigSerialization(TypedDict):
 	enabled: bool
-
 
 class Audio(StrEnum):
 	NO_AUDIO = 'No audio server'
 	PIPEWIRE = auto()
 	PULSEAUDIO = auto()
 
-
 class AudioConfigSerialization(TypedDict):
 	audio: str
-
 
 class ApplicationSerialization(TypedDict):
 	bluetooth_config: NotRequired[BluetoothConfigSerialization]
 	audio_config: NotRequired[AudioConfigSerialization]
-
 
 @dataclass
 class AudioConfiguration:
@@ -37,7 +32,6 @@ class AudioConfiguration:
 			Audio(arg['audio']),
 		)
 
-
 @dataclass
 class BluetoothConfiguration:
 	enabled: bool
@@ -48,7 +42,6 @@ class BluetoothConfiguration:
 	@staticmethod
 	def parse_arg(arg: dict[str, Any]) -> 'BluetoothConfiguration':
 		return BluetoothConfiguration(arg['enabled'])
-
 
 @dataclass
 class ApplicationConfiguration:

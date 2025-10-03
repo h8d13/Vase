@@ -12,7 +12,6 @@ from ..menu.list_manager import ListManager
 from ..models.users import User
 from ..utils.util import get_password
 
-
 class UserList(ListManager[User]):
 	def __init__(self, prompt: str, lusers: list[User]):
 		self._actions = [
@@ -111,7 +110,6 @@ class UserList(ListManager[User]):
 				raise ValueError('Unhandled result type')
 
 		return User(username, password, sudo)
-
 
 def ask_for_additional_users(prompt: str = '', defined_users: list[User] = []) -> list[User]:
 	users = UserList(prompt, defined_users).run()

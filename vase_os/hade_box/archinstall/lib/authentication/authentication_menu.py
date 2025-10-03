@@ -11,7 +11,6 @@ from archinstall.tui.menu_item import MenuItem, MenuItemGroup
 from archinstall.tui.result import ResultType
 from archinstall.tui.types import Alignment, FrameProperties, Orientation
 
-
 class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 	def __init__(self, preset: AuthenticationConfiguration | None = None):
 		if preset:

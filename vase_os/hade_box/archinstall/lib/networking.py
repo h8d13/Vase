@@ -16,7 +16,6 @@ from .exceptions import DownloadTimeout, SysCallError
 from .output import debug, error, info
 from .pacman import Pacman
 
-
 class DownloadTimer:
 	"""
 	Context manager for timing downloads with timeouts.
@@ -67,14 +66,12 @@ class DownloadTimer:
 						signal.alarm(remaining_time)
 		self.start_time = None
 
-
 def get_hw_addr(ifname: str) -> str:
 	import fcntl
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	ret = fcntl.ioctl(s.fileno(), 0x8927, struct.pack('256s', bytes(ifname, 'utf-8')[:15]))
 	return ':'.join(f'{b:02x}' for b in ret[18:24])
-
 
 def list_interfaces(skip_loopback: bool = True) -> dict[str, str]:
 	interfaces = {}
@@ -88,7 +85,6 @@ def list_interfaces(skip_loopback: bool = True) -> dict[str, str]:
 
 	return interfaces
 
-
 def update_keyring() -> bool:
 	info('Updating archlinux-keyring ...')
 	try:
@@ -99,7 +95,6 @@ def update_keyring() -> bool:
 			error("update_keyring() uses 'pacman -Sy archlinux-keyring' which requires root.")
 
 	return False
-
 
 def enrich_iface_types(interfaces: list[str]) -> dict[str, str]:
 	result = {}
@@ -119,7 +114,6 @@ def enrich_iface_types(interfaces: list[str]) -> dict[str, str]:
 			result[iface] = 'UNKNOWN'
 
 	return result
-
 
 def fetch_data_from_url(url: str, params: dict[str, str] | None = None) -> str:
 	ssl_context = ssl.create_default_context()
@@ -141,7 +135,6 @@ def fetch_data_from_url(url: str, params: dict[str, str] | None = None) -> str:
 	except Exception as e:
 		raise ValueError(f'Unexpected error when parsing response: {e}')
 
-
 def calc_checksum(icmp_packet: bytes) -> int:
 	# Calculate the ICMP checksum
 	checksum = 0
@@ -153,7 +146,6 @@ def calc_checksum(icmp_packet: bytes) -> int:
 
 	return checksum
 
-
 def build_icmp(payload: bytes) -> bytes:
 	# Define the ICMP Echo Request packet
 	icmp_packet = struct.pack('!BBHHH', 8, 0, 0, 0, 1) + payload
@@ -161,7 +153,6 @@ def build_icmp(payload: bytes) -> bytes:
 	checksum = calc_checksum(icmp_packet)
 
 	return struct.pack('!BBHHH', 8, 0, checksum, 0, 1) + payload
-
 
 def ping(hostname: str, timeout: int = 5) -> int:
 	watchdog = select.epoll()

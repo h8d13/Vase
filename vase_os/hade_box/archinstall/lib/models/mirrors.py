@@ -10,9 +10,7 @@ from typing import Any, TypedDict, override
 from pydantic import BaseModel, field_validator, model_validator
 
 from ..models.packages import Repository
-from ..networking import DownloadTimer, ping
 from ..output import debug
-
 
 class MirrorStatusEntryV3(BaseModel):
 	url: str
@@ -54,6 +52,7 @@ class MirrorStatusEntryV3(BaseModel):
 				req = urllib.request.Request(url=f'{self.url}core/os/x86_64/core.db')
 
 				try:
+					from ..networking import DownloadTimer
 					with urllib.request.urlopen(req, None, 5) as handle, DownloadTimer(timeout=5) as timer:
 						size = len(handle.read())
 
@@ -87,6 +86,7 @@ class MirrorStatusEntryV3(BaseModel):
 		We do this because some hosts blocks ICMP so we'll have to rely on .speed() instead which is slower.
 		"""
 		if self._latency is None:
+			from ..networking import ping
 			debug(f'Checking latency for {self.url}')
 			assert self._hostname is not None
 			self._latency = ping(self._hostname, timeout=2)
@@ -111,7 +111,6 @@ class MirrorStatusEntryV3(BaseModel):
 		debug(f'Loaded mirror {self._hostname}' + (f' with current score of {self.score}' if self.score else ''))
 		return self
 
-
 class MirrorStatusListV3(BaseModel):
 	cutoff: int
 	last_check: datetime.datetime
@@ -130,7 +129,6 @@ class MirrorStatusListV3(BaseModel):
 
 		raise ValueError('MirrorStatusListV3 only accepts version 3 data from https://archlinux.org/mirrors/status/json/')
 
-
 @dataclass
 class MirrorRegion:
 	name: str
@@ -145,24 +143,20 @@ class MirrorRegion:
 			return NotImplemented
 		return self.name == other.name
 
-
 class SignCheck(Enum):
 	Never = 'Never'
 	Optional = 'Optional'
 	Required = 'Required'
 
-
 class SignOption(Enum):
 	TrustedOnly = 'TrustedOnly'
 	TrustAll = 'TrustAll'
-
 
 class _CustomRepositorySerialization(TypedDict):
 	name: str
 	url: str
 	sign_check: str
 	sign_option: str
-
 
 @dataclass
 class CustomRepository:
@@ -202,7 +196,6 @@ class CustomRepository:
 
 		return configs
 
-
 @dataclass
 class CustomServer:
 	url: str
@@ -223,13 +216,11 @@ class CustomServer:
 
 		return configs
 
-
 class _MirrorConfigurationSerialization(TypedDict):
 	mirror_regions: dict[str, list[str]]
 	custom_servers: list[CustomServer]
 	optional_repositories: list[str]
 	custom_repositories: list[_CustomRepositorySerialization]
-
 
 @dataclass
 class MirrorConfiguration:

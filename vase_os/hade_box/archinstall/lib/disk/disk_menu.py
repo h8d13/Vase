@@ -20,13 +20,11 @@ from ..interactions.disk_conf import select_disk_config
 from ..menu.abstract_menu import AbstractSubMenu
 from ..output import FormattedOutput, info
 
-
 @dataclass
 class DiskMenuConfig:
 	disk_config: DiskLayoutConfiguration | None
 	btrfs_snapshot_config: SnapshotConfig | None
 	swap_config: 'SwapConfiguration | None' = None
-
 
 class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 	def __init__(self, disk_layout_config: DiskLayoutConfiguration | None, swap_config: 'SwapConfiguration | None' = None):
@@ -118,7 +116,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 
 		return None
 
-
 	def _check_dep_btrfs(self) -> bool:
 		disk_layout_conf: DiskLayoutConfiguration | None = self._menu_item_group.find_by_key('disk_config').value
 
@@ -126,7 +123,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 			return disk_layout_conf.has_default_btrfs_vols()
 
 		return False
-
 
 	def _select_disk_layout_config(self, preset: DiskLayoutConfiguration | None) -> DiskLayoutConfiguration | None:
 		disk_config = select_disk_config(preset)
@@ -137,7 +133,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 				self._disk_menu_config.btrfs_snapshot_config = None
 
 		return disk_config
-
 
 	def _select_btrfs_snapshots(self, preset: SnapshotConfig | None) -> SnapshotConfig | None:
 		preset_type = preset.snapshot_type if preset else None

@@ -28,7 +28,6 @@ from .types import (
 	ViewportEntry,
 )
 
-
 class AbstractCurses[ValueT](metaclass=ABCMeta):
 	def __init__(self) -> None:
 		self._help_window = self._set_help_viewport()
@@ -99,7 +98,6 @@ class AbstractCurses[ValueT](metaclass=ABCMeta):
 			full_header += [ViewportEntry(line, cur_row, 0, STYLE.NORMAL)]
 
 		return full_header
-
 
 class AbstractViewport:
 	def __init__(self) -> None:
@@ -276,7 +274,6 @@ class AbstractViewport:
 
 		return '\n'.join(view)
 
-
 class EditViewport(AbstractViewport):
 	def __init__(
 		self,
@@ -379,7 +376,6 @@ class EditViewport(AbstractViewport):
 
 		self._textbox.edit(self._process_key_cb)
 
-
 class Viewport(AbstractViewport):
 	def __init__(
 		self,
@@ -445,7 +441,6 @@ class Viewport(AbstractViewport):
 			)
 
 		self._main_win.refresh()
-
 
 class EditMenu(AbstractCurses[str]):
 	def __init__(
@@ -674,7 +669,6 @@ class EditMenu(AbstractCurses[str]):
 			return False
 
 		return True
-
 
 class SelectMenu[ValueT](AbstractCurses[ValueT]):
 	def __init__(
@@ -1305,7 +1299,6 @@ class SelectMenu[ValueT](AbstractCurses[ValueT]):
 				self._item_group.focus_first()
 			case 'last':
 				self._item_group.focus_last()
-
 
 class Tui:
 	_t: Tui | None = None

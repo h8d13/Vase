@@ -33,7 +33,6 @@ class CpuVendor(Enum):
 			return Path(self.value + '-ucode.img')
 		return None
 
-
 class GfxPackage(Enum):
 	Dkms = 'dkms'
 	IntelMediaDriver = 'intel-media-driver'
@@ -176,7 +175,8 @@ class GfxDriver(Enum):
 				#       packages += [
 				#           GfxPackage.Mesa,
 				#       ]
-				# This minimal setup caused Mesa errors because of missing libs.
+				# This minimal setup caused Mesa errors because of missing libs. 
+				# Still the same error in mesa libs.
 				# Now split into separate QEMU/KVM and VirtualBox drivers with proper packages.
 
 		return packages
@@ -246,7 +246,6 @@ class _SysInfo:
 				_, identifier = line.split(b': ', 1)
 				cards[identifier.strip().decode('UTF-8')] = str(line)
 		return cards
-
 
 _sys_info = _SysInfo()
 

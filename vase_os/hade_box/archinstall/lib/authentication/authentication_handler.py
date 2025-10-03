@@ -5,7 +5,6 @@ from archinstall.lib.models.authentication import AuthenticationConfiguration
 if TYPE_CHECKING:
 	from archinstall.lib.installer import Installer
 
-
 class AuthenticationHandler:
 	def setup_auth(
 		self,
@@ -15,6 +14,5 @@ class AuthenticationHandler:
 	) -> None:
 		# KDE installer - no U2F setup needed
 		pass
-
 
 auth_handler = AuthenticationHandler()

@@ -24,7 +24,6 @@ from .models.packages import Repository
 from .networking import fetch_data_from_url
 from .output import FormattedOutput, debug
 
-
 class CustomMirrorRepositoriesList(ListManager[CustomRepository]):
 	def __init__(self, custom_repositories: list[CustomRepository]):
 		self._actions = [
@@ -146,7 +145,6 @@ class CustomMirrorRepositoriesList(ListManager[CustomRepository]):
 
 		return CustomRepository(name, url, sign_check, sign_opt)
 
-
 class CustomMirrorServersList(ListManager[CustomServer]):
 	def __init__(self, custom_servers: list[CustomServer]):
 		self._actions = [
@@ -204,7 +202,6 @@ class CustomMirrorServersList(ListManager[CustomServer]):
 				return preset
 
 		return None
-
 
 class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def __init__(
@@ -299,7 +296,6 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 		super().run(additional_title=additional_title)
 		return self._mirror_config
 
-
 def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	Tui.print('Loading mirror regions...', clear_screen=True)
 
@@ -334,16 +330,13 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			selected_mirrors = result.get_values()
 			return selected_mirrors
 
-
 def add_custom_mirror_servers(preset: list[CustomServer] = []) -> list[CustomServer]:
 	custom_mirrors = CustomMirrorServersList(preset).run()
 	return custom_mirrors
 
-
 def select_custom_mirror(preset: list[CustomRepository] = []) -> list[CustomRepository]:
 	custom_mirrors = CustomMirrorRepositoriesList(preset).run()
 	return custom_mirrors
-
 
 def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
 	"""
@@ -374,7 +367,6 @@ def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
 			return []
 		case ResultType.Selection:
 			return result.get_values()
-
 
 class MirrorListHandler:
 	def __init__(
@@ -513,6 +505,5 @@ class MirrorListHandler:
 				mirror_list[current_region].append(mirror_entry)
 
 		return mirror_list
-
 
 mirror_list_handler = MirrorListHandler()

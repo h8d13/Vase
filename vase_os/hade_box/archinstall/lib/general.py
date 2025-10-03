@@ -26,25 +26,20 @@ from .output import debug, error, logger
 _VT100_ESCAPE_REGEX = r'\x1B\[[?0-9;]*[a-zA-Z]'
 _VT100_ESCAPE_REGEX_BYTES = _VT100_ESCAPE_REGEX.encode()
 
-
 def generate_password(length: int = 64) -> str:
 	haystack = string.printable  # digits, ascii_letters, punctuation (!"#$[] etc) and whitespace
 	return ''.join(secrets.choice(haystack) for _ in range(length))
-
 
 def locate_binary(name: str) -> str:
 	if path := which(name):
 		return path
 	raise RequirementError(f'Binary {name} does not exist.')
 
-
 def clear_vt100_escape_codes(data: bytes) -> bytes:
 	return re.sub(_VT100_ESCAPE_REGEX_BYTES, b'', data)
 
-
 def clear_vt100_escape_codes_from_str(data: str) -> str:
 	return re.sub(_VT100_ESCAPE_REGEX, '', data)
-
 
 def jsonify(obj: object, safe: bool = True) -> object:
 	"""
@@ -77,7 +72,6 @@ def jsonify(obj: object, safe: bool = True) -> object:
 
 	return obj
 
-
 class JSON(json.JSONEncoder, json.JSONDecoder):
 	"""
 	A safe JSON encoder that will omit private information in dicts (starting with !)
@@ -87,7 +81,6 @@ class JSON(json.JSONEncoder, json.JSONDecoder):
 	def encode(self, o: object) -> str:
 		return super().encode(jsonify(o))
 
-
 class UNSAFE_JSON(json.JSONEncoder, json.JSONDecoder):
 	"""
 	UNSAFE_JSON will call/encode and keep private information in dicts (starting with !)
@@ -96,7 +89,6 @@ class UNSAFE_JSON(json.JSONEncoder, json.JSONDecoder):
 	@override
 	def encode(self, o: object) -> str:
 		return super().encode(jsonify(o, safe=False))
-
 
 class SysCommandWorker:
 	def __init__(
@@ -306,7 +298,6 @@ class SysCommandWorker:
 	def decode(self, encoding: str = 'UTF-8') -> str:
 		return self._trace_log.decode(encoding)
 
-
 class SysCommand:
 	def __init__(
 		self,
@@ -413,7 +404,6 @@ class SysCommand:
 			return self.session._trace_log
 		return None
 
-
 def _append_log(file: str, content: str) -> None:
 	path = logger.directory / file
 
@@ -429,15 +419,12 @@ def _append_log(file: str, content: str) -> None:
 		# If the file does not exist, ignore the error
 		pass
 
-
 def _cmd_history(cmd: list[str]) -> None:
 	content = f'{time.time()} {cmd}\n'
 	_append_log('cmd_history.txt', content)
 
-
 def _cmd_output(output: str) -> None:
 	_append_log('cmd_output.txt', output)
-
 
 def run(
 	cmd: list[str],
@@ -452,7 +439,6 @@ def run(
 		stderr=subprocess.STDOUT,
 		check=True,
 	)
-
 
 def _pid_exists(pid: int) -> bool:
 	try:

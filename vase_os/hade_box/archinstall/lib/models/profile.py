@@ -5,18 +5,15 @@ from typing import TYPE_CHECKING, TypedDict
 
 from archinstall.default_profiles.profile import GreeterType, Profile
 
-from ..hardware import GfxDriver
-
 if TYPE_CHECKING:
 	from archinstall.lib.profile.profiles_handler import ProfileSerialization
-
+	from ..hardware import GfxDriver
 
 class _ProfileConfigurationSerialization(TypedDict):
 	profile: ProfileSerialization
 	gfx_driver: str | None
 	greeter: str | None
 	plasma_x11_session: bool | None
-
 
 @dataclass
 class ProfileConfiguration:
@@ -37,6 +34,7 @@ class ProfileConfiguration:
 
 	@classmethod
 	def parse_arg(cls, arg: _ProfileConfigurationSerialization) -> 'ProfileConfiguration':
+		from ..hardware import GfxDriver
 		from ..profile.profiles_handler import profile_handler
 
 		profile = profile_handler.parse_profile_config(arg['profile'])

@@ -72,8 +72,6 @@ def _check_for_saved_config() -> None:
 			if creds_file.exists():
 				creds_file.unlink()
 
-			print('Saved configuration cleared - starting fresh')
-
 def ask_user_questions() -> None:
 	"""
 	First, we'll ask the user for a bunch of user input.

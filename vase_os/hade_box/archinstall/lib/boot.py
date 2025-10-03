@@ -8,7 +8,6 @@ from .installer import Installer
 from .output import error
 from .storage import storage
 
-
 class Boot:
 	def __init__(self, installation: Installer):
 		self.instance = installation

@@ -12,7 +12,7 @@ from ..menu.list_manager import ListManager
 from ..models.network import NetworkConfiguration, Nic, NicType
 from ..networking import list_interfaces
 
-
+## Think a lot of dead code here
 class ManualNetworkConfig(ListManager[Nic]):
 	def __init__(self, prompt: str, preset: list[Nic]):
 		self._actions = [

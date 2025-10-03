@@ -524,7 +524,6 @@ def ask_for_swap(preset: str = 'zram') -> str:
 		case ResultType.Reset:
 			raise ValueError('Unhandled result type')
 
-
 def ask_for_swap_size(preset: str = '4G') -> str:
 	"""Ask user for swap size in GiB"""
 	# Get total RAM and calculate recommendations

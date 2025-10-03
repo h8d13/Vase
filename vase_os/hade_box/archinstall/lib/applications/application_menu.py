@@ -7,7 +7,6 @@ from archinstall.tui.menu_item import MenuItem, MenuItemGroup
 from archinstall.tui.result import ResultType
 from archinstall.tui.types import Alignment, FrameProperties, Orientation
 
-
 class ApplicationMenu(AbstractSubMenu[ApplicationConfiguration]):
 	def __init__(
 		self,
@@ -107,10 +106,9 @@ def select_bluetooth(preset: BluetoothConfiguration | None) -> BluetoothConfigur
 		case _:
 			raise ValueError('Unhandled result type')
 
-
 def select_audio(preset: AudioConfiguration | None = None) -> AudioConfiguration | None:
 	"""
-	KDE installer - PipeWire only (best for KDE)
+	KDE installer - PipeWire only
 	"""
 	# Always return PipeWire configuration for KDE
 	return AudioConfiguration(audio=Audio.PIPEWIRE)

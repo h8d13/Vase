@@ -11,7 +11,6 @@ from archinstall.tui.types import FrameProperties, PreviewStyle
 if TYPE_CHECKING:
 	from archinstall.lib.installer import Installer
 
-
 class DesktopProfile(Profile):
 	def __init__(self, current_selection: list[Profile] = []) -> None:
 		super().__init__(

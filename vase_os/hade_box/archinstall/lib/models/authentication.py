@@ -3,10 +3,8 @@ from typing import Any, TypedDict
 
 from archinstall.lib.models.users import Password, User
 
-
 class AuthenticationSerialization(TypedDict):
 	pass
-
 
 @dataclass
 class AuthenticationConfiguration:

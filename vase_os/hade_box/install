@@ -11,7 +11,9 @@ fi
 while [[ $# -gt 0 ]]; do
     case $1 in
         *)
-            ARCHINSTALL_ARGS+=("$1")
+            if [ -n "$1" ]; then
+                ARCHINSTALL_ARGS+=("$1")
+            fi
             shift
             ;;
     esac
@@ -37,8 +39,8 @@ if [ -d "/run/archiso" ]; then
     for module_pkg in "${PYTHON_MODULES[@]}"; do
         module="${module_pkg%%:*}"
         package="${module_pkg##*:}"
-        if to_devnull python -c "import $module"; then
-            to_devnull version=$(pacman -Qi "$package" | grep "^Version" | awk '{print $3}')
+        if python -c "import $module" 2>/dev/null; then
+            version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
             preop "Found: $package (${version:-unknown})"
         else
             postop "Missing: $package ($module)"

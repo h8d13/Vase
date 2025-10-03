@@ -27,7 +27,6 @@ from ..output import FormattedOutput
 from ..utils.util import prompt_dir
 from .subvolume_menu import SubvolumeMenu
 
-
 class FreeSpace:
 	def __init__(self, start: Size, end: Size) -> None:
 		self.start = start
@@ -46,7 +45,6 @@ class FreeSpace:
 			'End': self.end.format_size(Unit.sectors, self.start.sector_size, include_unit=False),
 			'Size': self.length.format_highest(),
 		}
-
 
 class DiskSegment:
 	def __init__(self, segment: PartitionModification | FreeSpace) -> None:
@@ -68,7 +66,6 @@ class DiskSegment:
 		data = part_mod.table_data()
 		data.update({'Status': 'free', 'Type': '', 'FS type': ''})
 		return data
-
 
 class PartitioningList(ListManager[DiskSegment]):
 	def __init__(
@@ -570,7 +567,6 @@ class PartitioningList(ListManager[DiskSegment]):
 		from ..interactions.disk_conf import suggest_single_disk_layout
 
 		return suggest_single_disk_layout(self._device)
-
 
 def manual_partitioning(
 	device_mod: DeviceModification,

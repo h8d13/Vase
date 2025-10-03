@@ -14,7 +14,6 @@ from .general import JSON, UNSAFE_JSON
 from .output import debug, logger, warn
 from .utils.util import get_password, prompt_dir
 
-
 class ConfigurationOutput:
 	def __init__(self, config: ArchConfig):
 		"""
@@ -247,7 +246,6 @@ def save_config(config: ArchConfig) -> None:
 		case 'all':
 			config_output.save(dest_path, creds=True, password=enc_password)
 
-
 def _get_hade_box_path() -> Path | None:
 	"""Find and return the hade_box root directory"""
 	current_path = Path(__file__).resolve()
@@ -258,7 +256,6 @@ def _get_hade_box_path() -> Path | None:
 			return current_path
 		current_path = current_path.parent
 	return None
-
 
 def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
 	"""Auto-save config and credentials to hade_box folder without prompting
@@ -284,7 +281,6 @@ def auto_save_config(config: ArchConfig) -> tuple[bool, list[str]]:
 		print(f'Failed to auto-save config: {e}')
 		return False, []
 
-
 def has_saved_config() -> bool:
 	"""Check if there's a saved config in hade_box folder"""
 	hade_box_path = _get_hade_box_path()
@@ -292,7 +288,6 @@ def has_saved_config() -> bool:
 		return False
 	config_file = hade_box_path / 'user_configuration.json'
 	return config_file.exists()
-
 
 def load_saved_config() -> dict | None:
 	"""Load saved config and credentials from hade_box folder"""

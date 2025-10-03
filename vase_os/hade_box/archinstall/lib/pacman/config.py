@@ -4,7 +4,6 @@ from shutil import copy2
 
 from ..models.packages import Repository
 
-
 class PacmanConfig:
 	def __init__(self, target: Path | None):
 		self._config_path = Path('/etc') / 'pacman.conf'

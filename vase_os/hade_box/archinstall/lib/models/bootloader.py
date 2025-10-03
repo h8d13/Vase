@@ -3,7 +3,6 @@ from __future__ import annotations
 from enum import Enum
 from dataclasses import dataclass
 
-
 class Bootloader(Enum):
 	Grub = 'Grub'
 
@@ -17,7 +16,6 @@ class Bootloader(Enum):
 	@classmethod
 	def from_arg(cls, bootloader: str, skip_boot: bool) -> Bootloader:
 		return Bootloader.Grub
-
 
 @dataclass
 class GrubConfiguration:

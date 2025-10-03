@@ -5,9 +5,7 @@ from pathlib import Path
 from ..exceptions import RequirementError
 from ..general import SysCommand
 from ..output import error, info, warn
-from ..plugins import plugins
 from .config import PacmanConfig
-
 
 class Pacman:
 	def __init__(self, target: Path, silent: bool = False):
@@ -65,11 +63,6 @@ class Pacman:
 		if isinstance(packages, str):
 			packages = [packages]
 
-		for plugin in plugins.values():
-			if hasattr(plugin, 'on_pacstrap'):
-				if result := plugin.on_pacstrap(packages):
-					packages = result
-
 		info(f'Installing packages: {packages}')
 
 		self.ask(
@@ -79,7 +72,6 @@ class Pacman:
 			f'pacstrap -C /etc/pacman.conf -K {self.target} {" ".join(packages)} --needed --noconfirm',
 			peek_output=True,
 		)
-
 
 __all__ = [
 	'Pacman',

@@ -8,7 +8,6 @@ from archinstall.lib.models.users import User
 if TYPE_CHECKING:
 	from archinstall.lib.installer import Installer
 
-
 class ApplicationHandler:
 	def __init__(self) -> None:
 		pass
@@ -25,6 +24,5 @@ class ApplicationHandler:
 			AudioConfiguration(audio=Audio.PIPEWIRE),
 			users,
 		)
-
 
 application_handler = ApplicationHandler()

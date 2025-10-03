@@ -12,7 +12,6 @@ from ..output import error
 
 CONFIG_KEY = '__config__'
 
-
 class AbstractMenu[ValueT]:
 	def __init__(
 		self,
@@ -124,7 +123,6 @@ class AbstractMenu[ValueT]:
 
 		self.sync_all_to_config()
 		return None
-
 
 class AbstractSubMenu[ValueT](AbstractMenu[ValueT]):
 	def __init__(

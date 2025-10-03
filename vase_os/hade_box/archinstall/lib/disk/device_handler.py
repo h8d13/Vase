@@ -40,7 +40,6 @@ from .utils import (
 	umount,
 )
 
-
 class DeviceHandler:
 	_TMP_BTRFS_MOUNT = Path('/mnt/arch_btrfs')
 
@@ -381,8 +380,6 @@ class DeviceHandler:
 
 		return lsblk_info
 
-
-
 	def create_btrfs_volumes(
 		self,
 		part_mod: PartitionModification,
@@ -406,7 +403,6 @@ class DeviceHandler:
 			SysCommand(f'btrfs subvolume create -p {subvol_path}')
 
 		umount(dev_path)
-
 
 	def umount_all_existing(self, device_path: Path) -> None:
 		debug(f'Unmounting all existing partitions: {device_path}')
@@ -494,7 +490,6 @@ class DeviceHandler:
 			SysCommand(command)
 		except SysCallError as err:
 			raise DiskError(f'Could not mount {dev_path}: {command}\n{err.message}')
-
 
 	def partprobe(self, path: Path | None = None) -> None:
 		if path is not None:

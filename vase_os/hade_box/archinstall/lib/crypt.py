@@ -9,15 +9,12 @@ from cryptography.hazmat.primitives.kdf.argon2 import Argon2id
 from .output import debug
 
 libcrypt = ctypes.CDLL('libcrypt.so')
-
 libcrypt.crypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 libcrypt.crypt.restype = ctypes.c_char_p
-
 libcrypt.crypt_gensalt.argtypes = [ctypes.c_char_p, ctypes.c_ulong, ctypes.c_char_p, ctypes.c_int]
 libcrypt.crypt_gensalt.restype = ctypes.c_char_p
 
 LOGIN_DEFS = Path('/etc/login.defs')
-
 
 def _search_login_defs(key: str) -> str | None:
 	defs = LOGIN_DEFS.read_text()
@@ -33,7 +30,6 @@ def _search_login_defs(key: str) -> str | None:
 
 	return None
 
-
 def crypt_gen_salt(prefix: str | bytes, rounds: int) -> bytes:
 	if isinstance(prefix, str):
 		prefix = prefix.encode('utf-8')
@@ -44,7 +40,6 @@ def crypt_gen_salt(prefix: str | bytes, rounds: int) -> bytes:
 		raise ValueError(f'crypt_gensalt() returned NULL for prefix {prefix!r} and rounds {rounds}')
 
 	return setting
-
 
 def crypt_yescrypt(plaintext: str) -> str:
 	"""
@@ -75,7 +70,6 @@ def crypt_yescrypt(plaintext: str) -> str:
 
 	return crypt_hash.decode('utf-8')
 
-
 def _get_fernet(salt: bytes, password: str) -> Fernet:
 	# https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#argon2id
 	kdf = Argon2id(
@@ -96,7 +90,6 @@ def _get_fernet(salt: bytes, password: str) -> Fernet:
 
 	return Fernet(key)
 
-
 def encrypt(password: str, data: str) -> str:
 	salt = os.urandom(16)
 	f = _get_fernet(salt, password)
@@ -106,7 +99,6 @@ def encrypt(password: str, data: str) -> str:
 	encoded_salt = base64.urlsafe_b64encode(salt).decode('utf-8')
 
 	return f'$argon2id${encoded_salt}${encoded_token}'
-
 
 def decrypt(data: str, password: str) -> str:
 	_, algo, encoded_salt, encoded_token = data.split('$')

@@ -8,20 +8,11 @@ import traceback
 
 from archinstall.lib.args import arch_config_handler
 from archinstall.lib.disk.utils import disk_layouts
-# Package upgrade check removed - custom KDE installer
 
 from .lib.hardware import SysInfo
 from .lib.output import FormattedOutput, debug, error, info, log, warn
 from .lib.pacman import Pacman
-from .lib.plugins import load_plugin, plugins
 from .tui.curses_menu import Tui
-
-
-# @archinstall.plugin decorator hook to programmatically add
-# plugins in runtime. Useful in profiles_bck and other things.
-def plugin(f, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
-	plugins[f.__name__] = f
-
 
 def _log_sys_info() -> None:
 	# Log various information about hardware before starting the installation. This might assist in troubleshooting
@@ -34,7 +25,6 @@ def _log_sys_info() -> None:
 
 	# For support reasons, we'll log the disk layout pre installation to match against post-installation layout
 	debug(f'Disk states before installing:\n{disk_layouts()}')
-
 
 def _fetch_arch_db() -> None:
 	try:
@@ -66,9 +56,6 @@ def main() -> int:
 
 	if not arch_config_handler.args.offline:
 		_fetch_arch_db()
-
-		# Version check removed - custom KDE-only installer
-
 	script = arch_config_handler.get_script()
 
 	mod_name = f'archinstall.scripts.{script}'
@@ -76,7 +63,6 @@ def main() -> int:
 	importlib.import_module(mod_name)
 
 	return 0
-
 
 def run_as_a_module() -> None:
 	rc = 0
@@ -103,7 +89,6 @@ def run_as_a_module() -> None:
 
 		exit(rc)
 
-
 __all__ = [
 	'FormattedOutput',
 	'Language',
@@ -115,9 +100,7 @@ __all__ = [
 	'disk_layouts',
 	'error',
 	'info',
-	'load_plugin',
 	'log',
 	'plugin',
-	'translation_handler',
 	'warn',
 ]

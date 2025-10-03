@@ -7,7 +7,6 @@ from archinstall.tui.menu_item import MenuItem, MenuItemGroup
 from archinstall.tui.result import ResultType
 from archinstall.tui.types import Alignment
 
-
 class ListManager[ValueT]:
 	def __init__(
 		self,

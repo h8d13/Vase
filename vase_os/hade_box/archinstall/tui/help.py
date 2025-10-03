@@ -12,7 +12,6 @@ class HelpText:
 	description: str
 	keys: list[str] = field(default_factory=list)
 
-
 @dataclass
 class HelpGroup:
 	group_id: HelpTextGroupId
@@ -23,7 +22,6 @@ class HelpGroup:
 
 	def get_key_width(self) -> int:
 		return max([len(', '.join(e.keys)) for e in self.group_entries])
-
 
 class Help:
 	# the groups needs to be classmethods not static methods

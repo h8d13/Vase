@@ -9,7 +9,6 @@ from archinstall.tui.types import Alignment
 from ..menu.list_manager import ListManager
 from ..utils.util import prompt_dir
 
-
 class SubvolumeMenu(ListManager[SubvolumeModification]):
 	def __init__(
 		self,

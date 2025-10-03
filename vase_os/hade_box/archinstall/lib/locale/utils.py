@@ -2,7 +2,6 @@ from ..exceptions import ServiceException, SysCallError
 from ..general import SysCommand
 from ..output import error
 
-
 def list_keyboard_languages() -> list[str]:
 	return (
 		SysCommand(
@@ -12,7 +11,6 @@ def list_keyboard_languages() -> list[str]:
 		.decode()
 		.splitlines()
 	)
-
 
 def list_locales() -> list[str]:
 	locales = []
@@ -24,7 +22,6 @@ def list_locales() -> list[str]:
 
 	return locales
 
-
 def list_x11_keyboard_languages() -> list[str]:
 	return (
 		SysCommand(
@@ -35,13 +32,11 @@ def list_x11_keyboard_languages() -> list[str]:
 		.splitlines()
 	)
 
-
 def verify_keyboard_layout(layout: str) -> bool:
 	for language in list_keyboard_languages():
 		if layout.lower() == language.lower():
 			return True
 	return False
-
 
 def verify_x11_keyboard_layout(layout: str) -> bool:
 	for language in list_x11_keyboard_languages():
@@ -77,7 +72,6 @@ def get_kb_layout() -> str:
 
 	return layout
 
-
 def set_kb_layout(locale: str) -> bool:
 	if len(locale.strip()):
 		if not verify_keyboard_layout(locale):
@@ -92,7 +86,6 @@ def set_kb_layout(locale: str) -> bool:
 		return True
 
 	return False
-
 
 def list_timezones() -> list[str]:
 	return (

@@ -33,7 +33,6 @@ from .models.profile import ProfileConfiguration
 from .output import FormattedOutput
 from .pacman.config import PacmanConfig
 
-
 class GlobalMenu(AbstractMenu[None]):
 	def __init__(self, arch_config: ArchConfig) -> None:
 		self._arch_config = arch_config
@@ -245,7 +244,6 @@ class GlobalMenu(AbstractMenu[None]):
 		if len(self._missing_configs()) != 0:
 			return False
 		return self._validate_bootloader() is None
-
 
 	def _select_applications(self, preset: ApplicationConfiguration | None) -> ApplicationConfiguration | None:
 		# If no preset, use default values
@@ -466,7 +464,6 @@ class GlobalMenu(AbstractMenu[None]):
 			if efi_partition.fs_type not in [FilesystemType.Fat12, FilesystemType.Fat16, FilesystemType.Fat32]:
 				return 'ESP must be formatted as a FAT filesystem'
 
-
 		return None
 
 	def _prev_install_invalid_config(self, item: MenuItem) -> str | None:
@@ -527,7 +524,6 @@ class GlobalMenu(AbstractMenu[None]):
 			self._config.disk_config = disk_config
 
 		return disk_config
-
 
 	def _select_profile(self, current_profile: ProfileConfiguration | None) -> ProfileConfiguration | None:
 		from .profile.profile_menu import ProfileMenu

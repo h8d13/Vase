@@ -4,7 +4,6 @@ from typing import Any, override
 
 from pydantic import BaseModel
 
-
 class Repository(Enum):
 	Core = 'core'
 	Extra = 'extra'
@@ -25,7 +24,6 @@ class Repository(Enum):
 					'extra-testing',
 					'multilib-testing',
 				]
-
 
 @dataclass
 class PackageSearchResult:
@@ -74,7 +72,6 @@ class PackageSearchResult:
 	def __lt__(self, other: 'PackageSearchResult') -> bool:
 		return self.pkg_version < other.pkg_version
 
-
 @dataclass
 class PackageSearch:
 	version: int
@@ -96,7 +93,6 @@ class PackageSearch:
 			page=data['page'],
 			results=results,
 		)
-
 
 class LocalPackage(BaseModel):
 	name: str

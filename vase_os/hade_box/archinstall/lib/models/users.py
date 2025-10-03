@@ -4,13 +4,12 @@ from typing import NotRequired, TypedDict, override
 
 from ..crypt import crypt_yescrypt
 
-
 class PasswordStrength(Enum):
 	VERY_WEAK = 'very weak'
 	WEAK = 'weak'
 	MODERATE = 'moderate'
 	STRONG = 'strong'
-
+	# this even used ??
 	@property
 	@override
 	def value(self) -> str:  # pylint: disable=invalid-overridden-method
@@ -97,7 +96,6 @@ class PasswordStrength(Enum):
 
 		return PasswordStrength.VERY_WEAK
 
-
 UserSerialization = TypedDict(
 	'UserSerialization',
 	{
@@ -108,7 +106,6 @@ UserSerialization = TypedDict(
 		'enc_password': str | None,
 	},
 )
-
 
 class Password:
 	def __init__(
@@ -149,7 +146,6 @@ class Password:
 			return '*' * len(self._plaintext)
 		else:
 			return '*' * 8
-
 
 @dataclass
 class User:

@@ -7,7 +7,6 @@ from archinstall.tui.types import Alignment
 from ..models.users import Password
 from ..output import FormattedOutput
 
-
 def get_password(
 	text: str,
 	header: str | None = None,
@@ -60,7 +59,6 @@ def get_password(
 
 		failure = ('The confirmation password did not match, please try again')
 
-
 def prompt_dir(
 	text: str,
 	header: str | None = None,
@@ -105,7 +103,6 @@ def prompt_dir(
 
 	return None
 
-
 def is_subpath(first: Path, second: Path) -> bool:
 	"""
 	Check if _first_ a subpath of _second_
@@ -115,7 +112,6 @@ def is_subpath(first: Path, second: Path) -> bool:
 		return True
 	except ValueError:
 		return False
-
 
 def format_cols(items: list[str], header: str | None = None) -> str:
 	if header:

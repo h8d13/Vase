@@ -13,7 +13,6 @@ from .utils.unicode import unicode_ljust, unicode_rjust
 if TYPE_CHECKING:
 	from _typeshed import DataclassInstance
 
-
 class FormattedOutput:
 	@classmethod
 	def _get_values(
@@ -127,7 +126,6 @@ class FormattedOutput:
 
 		return output
 
-
 class Journald:
 	@staticmethod
 	def log(message: str, level: int = logging.DEBUG) -> None:
@@ -144,7 +142,6 @@ class Journald:
 		log_adapter.setLevel(logging.DEBUG)
 
 		log_adapter.log(level, message)
-
 
 class Logger:
 	def __init__(self, path: Path = Path.cwd() / 'vase_os' / 'hade_box' / 'logs') -> None:
@@ -181,9 +178,7 @@ class Logger:
 			level_name = logging.getLevelName(level)
 			f.write(f'[{ts}] - {level_name} - {content}\n')
 
-
 logger = Logger()
-
 
 def _supports_color() -> bool:
 	"""
@@ -201,7 +196,6 @@ def _supports_color() -> bool:
 	is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
 	return supported_platform and is_a_tty
 
-
 class Font(Enum):
 	bold = '1'
 	italic = '3'
@@ -209,7 +203,6 @@ class Font(Enum):
 	blink = '5'
 	reverse = '7'
 	conceal = '8'
-
 
 def _stylize_output(
 	text: str,
@@ -263,7 +256,6 @@ def _stylize_output(
 
 	return f'\033[{ansi}m{text}\033[0m'
 
-
 def info(
 	*msgs: str,
 	level: int = logging.INFO,
@@ -274,11 +266,9 @@ def info(
 ) -> None:
 	log(*msgs, level=level, fg=fg, bg=bg, reset=reset, font=font)
 
-
 def _timestamp() -> str:
 	now = datetime.now(tz=UTC)
 	return now.strftime('%Y-%m-%d %H:%M:%S')
-
 
 def debug(
 	*msgs: str,
@@ -290,7 +280,6 @@ def debug(
 ) -> None:
 	log(*msgs, level=level, fg=fg, bg=bg, reset=reset, font=font)
 
-
 def error(
 	*msgs: str,
 	level: int = logging.ERROR,
@@ -301,7 +290,6 @@ def error(
 ) -> None:
 	log(*msgs, level=level, fg=fg, bg=bg, reset=reset, font=font)
 
-
 def warn(
 	*msgs: str,
 	level: int = logging.WARNING,
@@ -311,7 +299,6 @@ def warn(
 	font: list[Font] = [],
 ) -> None:
 	log(*msgs, level=level, fg=fg, bg=bg, reset=reset, font=font)
-
 
 def log(
 	*msgs: str,

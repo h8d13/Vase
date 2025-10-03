@@ -24,10 +24,8 @@ from archinstall.lib.models.packages import Repository
 from archinstall.lib.models.profile import ProfileConfiguration
 from archinstall.lib.models.users import Password, User, UserSerialization
 from archinstall.lib.output import debug, error, logger, warn
-from archinstall.lib.plugins import load_plugin
 from archinstall.lib.utils.util import get_password
 from archinstall.tui.curses_menu import Tui
-
 
 @p_dataclass
 class Arguments:
@@ -51,13 +49,11 @@ class Arguments:
 	advanced: bool = False
 	verbose: bool = False
 
-
 @dataclass
 class SwapConfiguration:
 	swap_type: str = 'zram'  # 'none', 'zram', 'swapfile'
 	size: str = '4G'  # Size for swapfile
-
-
+	## Currently only 4gb works
 @dataclass
 class ArchConfig:
 	version: str | None = None
@@ -248,7 +244,6 @@ class ArchConfig:
 
 		return arch_config
 
-
 class ArchConfigHandler:
 	def __init__(self) -> None:
 		self._parser: ArgumentParser = self._define_arguments()
@@ -404,10 +399,6 @@ class ArchConfigHandler:
 		if args.debug:
 			warn(f'Warning: --debug mode will write certain credentials to {logger.path}!')
 
-		if args.plugin:
-			plugin_path = Path(args.plugin)
-			load_plugin(plugin_path)
-
 		if args.creds_decryption_key is None:
 			if os.environ.get('ARCHINSTALL_CREDS_DECRYPTION_KEY'):
 				args.creds_decryption_key = os.environ.get('ARCHINSTALL_CREDS_DECRYPTION_KEY')
@@ -514,6 +505,5 @@ class ArchConfigHandler:
 				clean_args[key] = val
 
 		return clean_args
-
 
 arch_config_handler: ArchConfigHandler = ArchConfigHandler()

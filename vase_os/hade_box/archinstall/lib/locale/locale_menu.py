@@ -9,7 +9,6 @@ from ..menu.abstract_menu import AbstractSubMenu
 from ..models.locale import LocaleConfiguration
 from .utils import list_keyboard_languages, list_locales, set_kb_layout
 
-
 class LocaleMenu(AbstractSubMenu[LocaleConfiguration]):
 	def __init__(
 		self,
@@ -100,7 +99,6 @@ class LocaleMenu(AbstractSubMenu[LocaleConfiguration]):
 			set_kb_layout(kb_lang)
 		return kb_lang
 
-
 def select_locale_lang(preset: str | None = None) -> str | None:
 	locales = list_locales()
 	locale_lang = set([locale.split()[0] for locale in locales])
@@ -124,7 +122,6 @@ def select_locale_lang(preset: str | None = None) -> str | None:
 		case _:
 			raise ValueError('Unhandled return type')
 
-
 def select_locale_enc(preset: str | None = None) -> str | None:
 	locales = list_locales()
 	locale_enc = set([locale.split()[1] for locale in locales])
@@ -147,7 +144,6 @@ def select_locale_enc(preset: str | None = None) -> str | None:
 			return preset
 		case _:
 			raise ValueError('Unhandled return type')
-
 
 def select_kb_layout(preset: str | None = None) -> str | None:
 	"""

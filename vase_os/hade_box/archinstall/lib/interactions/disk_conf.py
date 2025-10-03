@@ -29,7 +29,6 @@ from archinstall.tui.types import Alignment, FrameProperties, Orientation, Previ
 
 from ..output import FormattedOutput
 
-
 def select_devices(preset: list[BDevice] | None = []) -> list[BDevice]:
 	def _preview_device_selection(item: MenuItem) -> str | None:
 		device = item.get_value()
@@ -76,7 +75,6 @@ def select_devices(preset: list[BDevice] | None = []) -> list[BDevice]:
 
 			return selected_devices
 
-
 def get_default_partition_layout(
 	devices: list[BDevice],
 	filesystem_type: FilesystemType | None = None,
@@ -96,7 +94,6 @@ def get_default_partition_layout(
 			swap_config=swap_config,
 		)
 
-
 def _manual_partitioning(
 	preset: list[DeviceModification],
 	devices: list[BDevice],
@@ -111,7 +108,6 @@ def _manual_partitioning(
 			modifications.append(device_mod)
 
 	return modifications
-
 
 def select_disk_config(preset: DiskLayoutConfiguration | None = None) -> DiskLayoutConfiguration | None:
 	default_layout = DiskLayoutType.Default.display_msg()
@@ -170,9 +166,6 @@ def select_disk_config(preset: DiskLayoutConfiguration | None = None) -> DiskLay
 
 	return None
 
-
-
-
 def _boot_partition(sector_size: SectorSize, using_gpt: bool) -> PartitionModification:
 	flags = [PartitionFlag.BOOT]
 	size = Size(1, Unit.GiB, sector_size)
@@ -190,7 +183,6 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool) -> PartitionModifi
 		fs_type=FilesystemType.Fat32,
 		flags=flags,
 	)
-
 
 def select_main_filesystem_format() -> FilesystemType:
 	items = [
@@ -216,7 +208,6 @@ def select_main_filesystem_format() -> FilesystemType:
 			return result.get_value()
 		case _:
 			raise ValueError('Unhandled result type')
-
 
 def select_mount_options() -> list[str]:
 	prompt = ('Would you like to use compression or disable CoW?') + '\n'
@@ -246,7 +237,6 @@ def select_mount_options() -> list[str]:
 		case _:
 			raise ValueError('Unhandled result type')
 
-
 def process_root_partition_size(total_size: Size, sector_size: SectorSize) -> Size:
 	# root partition size processing
 	total_device_size = total_size.convert(Unit.GiB)
@@ -261,7 +251,6 @@ def process_root_partition_size(total_size: Size, sector_size: SectorSize) -> Si
 		length = total_device_size.value // 10
 		return Size(value=length, unit=Unit.GiB, sector_size=sector_size)
 
-
 def get_default_btrfs_subvols() -> list[SubvolumeModification]:
 	# https://btrfs.wiki.kernel.org/index.php/FAQ
 	# https://unix.stackexchange.com/questions/246976/btrfs-subvolume-uuid-clash
@@ -272,7 +261,6 @@ def get_default_btrfs_subvols() -> list[SubvolumeModification]:
 		SubvolumeModification(Path('@log'), Path('/var/log')),
 		SubvolumeModification(Path('@pkg'), Path('/var/cache/pacman/pkg')),
 	]
-
 
 def suggest_single_disk_layout(
 	device: BDevice,
@@ -414,7 +402,6 @@ def suggest_single_disk_layout(
 		device_modification.add_partition(home_partition)
 
 	return device_modification
-
 
 def suggest_multi_disk_layout(
 	devices: list[BDevice],
@@ -559,5 +546,3 @@ def suggest_multi_disk_layout(
 	home_device_modification.add_partition(home_partition)
 
 	return [root_device_modification, home_device_modification]
-
-

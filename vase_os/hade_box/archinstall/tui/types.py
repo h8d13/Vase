@@ -4,7 +4,6 @@ from enum import Enum, auto
 
 SCROLL_INTERVAL = 10
 
-
 class STYLE(Enum):
 	NORMAL = 1
 	CURSOR_STYLE = 2
@@ -13,7 +12,6 @@ class STYLE(Enum):
 	ERROR = 5
 	CHECK_MARK = 6
 	DEFAULT_MARK = 7
-
 
 class MenuKeys(Enum):
 	# latin keys
@@ -64,11 +62,9 @@ class MenuKeys(Enum):
 		byte_str = curses.keyname(key)
 		return byte_str.decode('utf-8')
 
-
 class FrameStyle(Enum):
 	MAX = auto()
 	MIN = auto()
-
 
 @dataclass
 class FrameProperties:
@@ -92,18 +88,15 @@ class FrameProperties:
 			FrameStyle.MIN,
 		)
 
-
 class Orientation(Enum):
 	VERTICAL = auto()
 	HORIZONTAL = auto()
-
 
 class PreviewStyle(Enum):
 	NONE = auto()
 	BOTTOM = auto()
 	RIGHT = auto()
 	TOP = auto()
-
 
 # https://www.compart.com/en/unicode/search?q=box+drawings#characters
 # https://en.wikipedia.org/wiki/Box-drawing_characters
@@ -121,7 +114,6 @@ class Chars:
 	Default = 'D'
 	Right_arrow = '←'
 
-
 @dataclass
 class ViewportEntry:
 	text: str
@@ -129,11 +121,9 @@ class ViewportEntry:
 	col: int
 	style: STYLE
 
-
 class Alignment(Enum):
 	LEFT = auto()
 	CENTER = auto()
-
 
 @dataclass
 class FrameDim:

@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if file_ex "$SCRIPT_DIR/../../..."; then
     . "$SCRIPT_DIR/../../..."
 fi
-MISSING=()
+
 # ARCHINSTALL SYSTEM SUBDEPS SCRIPT
 PACKAGES=(
     # Required (core features)
@@ -29,6 +29,7 @@ PACKAGES=(
     "python"
 )
 preop "Cheching system subdeps"
+MISSING=()
 for pkg in "${PACKAGES[@]}"; do
     if to_devnull pacman -Qi "$pkg"; then
         version=$(pacman -Qi "$pkg" | grep "^Version" | awk '{print $3}')

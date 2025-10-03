@@ -12,13 +12,11 @@ import parted
 from parted import Disk, Geometry, Partition
 from pydantic import BaseModel, Field, ValidationInfo, field_serializer, field_validator
 
-from ..hardware import SysInfo
 from ..models.users import Password
 from ..output import debug
 
 ENC_IDENTIFIER = 'ainst'
 DEFAULT_ITER_TIME = 10000
-
 
 class DiskLayoutType(Enum):
 	Default = 'default_layout'
@@ -31,13 +29,11 @@ class DiskLayoutType(Enum):
 			case DiskLayoutType.Manual:
 				return ('Manual Partitioning')
 
-
 class _DiskLayoutConfigurationSerialization(TypedDict):
 	config_type: str
 	device_modifications: NotRequired[list[_DeviceModificationSerialization]]
 	btrfs_options: NotRequired[_BtrfsOptionsSerialization]
 	disk_encryption: NotRequired[_DiskEncryptionSerialization]
-
 
 @dataclass
 class DiskLayoutConfiguration:
@@ -174,7 +170,6 @@ class DiskLayoutConfiguration:
 
 		return False
 
-
 class PartitionTable(Enum):
 	GPT = 'gpt'
 	MBR = 'msdos'
@@ -187,13 +182,12 @@ class PartitionTable(Enum):
 
 	@classmethod
 	def default(cls) -> PartitionTable:
+		from ..hardware import SysInfo
 		return cls.GPT if SysInfo.has_uefi() else cls.MBR
-
 
 class Units(Enum):
 	BINARY = 'binary'
 	DECIMAL = 'decimal'
-
 
 class Unit(Enum):
 	B = 1  # byte
@@ -229,11 +223,9 @@ class Unit(Enum):
 	def get_binary_units() -> list[Unit]:
 		return [u for u in Unit if 'i' in u.name or u.name == 'B']
 
-
 class _SectorSizeSerialization(TypedDict):
 	value: int
 	unit: str
-
 
 @dataclass
 class SectorSize:
@@ -268,12 +260,10 @@ class SectorSize:
 		"""
 		return int(self.value * self.unit.value)
 
-
 class _SizeSerialization(TypedDict):
 	value: int
 	unit: str
 	sector_size: _SectorSizeSerialization
-
 
 @dataclass
 class Size:
@@ -440,17 +430,14 @@ class Size:
 	def __ge__(self, other: Size) -> bool:
 		return self._normalize() >= other._normalize()
 
-
 class BtrfsMountOption(Enum):
 	compress = 'compress=zstd'
 	nodatacow = 'nodatacow'
-
 
 @dataclass
 class _BtrfsSubvolumeInfo:
 	name: Path
 	mountpoint: Path | None
-
 
 @dataclass
 class _PartitionInfo:
@@ -633,7 +620,6 @@ class SubvolumeModification:
 	def table_data(self) -> _SubvolumeModificationSerialization:
 		return self.json()
 
-
 class DeviceGeometry:
 	def __init__(self, geometry: Geometry, sector_size: SectorSize):
 		self._geometry = geometry
@@ -666,7 +652,6 @@ class DeviceGeometry:
 			'Size (sectors/B)': length_str,
 		}
 
-
 @dataclass
 class BDevice:
 	disk: Disk
@@ -676,7 +661,6 @@ class BDevice:
 	@override
 	def __hash__(self) -> int:
 		return hash(self.disk.device.path)
-
 
 class PartitionType(Enum):
 	Boot = 'boot'
@@ -698,12 +682,10 @@ class PartitionType(Enum):
 			return parted.PARTITION_BOOT
 		return None
 
-
 @dataclass(frozen=True)
 class PartitionFlagDataMixin:
 	flag_id: int
 	alias: str | None = None
-
 
 class PartitionFlag(PartitionFlagDataMixin, Enum):
 	BOOT = parted.PARTITION_BOOT
@@ -727,7 +709,6 @@ class PartitionFlag(PartitionFlagDataMixin, Enum):
 		debug(f'Partition flag not supported: {s}')
 		return None
 
-
 class PartitionGUID(Enum):
 	"""
 	A list of Partition type GUIDs (lsblk -o+PARTTYPE) can be found here: https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
@@ -738,7 +719,6 @@ class PartitionGUID(Enum):
 	@property
 	def bytes(self) -> bytes:
 		return uuid.UUID(self.value).bytes
-
 
 class FilesystemType(Enum):
 	Btrfs = 'btrfs'
@@ -810,13 +790,11 @@ class FilesystemType(Enum):
 			case _:
 				return None
 
-
 class ModificationStatus(Enum):
 	Exist = 'existing'
 	Modify = 'modify'
 	Delete = 'delete'
 	Create = 'create'
-
 
 class _PartitionModificationSerialization(TypedDict):
 	obj_id: str
@@ -830,7 +808,6 @@ class _PartitionModificationSerialization(TypedDict):
 	flags: list[str]
 	btrfs: list[_SubvolumeModificationSerialization]
 	dev_path: str | None
-
 
 @dataclass
 class PartitionModification:
