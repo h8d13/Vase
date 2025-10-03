@@ -7,7 +7,7 @@ Written in bash to wrap Archinstall.
 
 ---
 
-## Usage
+## Installation/Usage
 
 ### From USB/ISO
 
