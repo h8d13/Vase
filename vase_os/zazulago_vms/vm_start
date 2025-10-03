@@ -132,7 +132,10 @@ qemu_cmd() {
     # currently std option let's me test GRUB configs
     # see vase_os/hade_box/archinstall/grub2_utils
     # and main isntaller.py file for grub options
-
+    # cache=none is useful for actual disks
+    # file=disk_image,if=virtio,aio=native,cache.direct=on
+    # NEEDED ON GUEST FOR VULKAN FALLBACK vulkan-swrast
+    
     if [ $use_display -eq 1 ]; then
         cmd="$cmd -vga none"
         if [ "$gl" = "on" ]; then

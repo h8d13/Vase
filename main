@@ -237,4 +237,4 @@ fi
 #rcw ls -la /nonexistant
 #&& rcw sleep 1.3 && true testing timing
 
-# 3 FUCKING MINUTES
+# 2m15s best time current (8 cores / 8gb RAM)

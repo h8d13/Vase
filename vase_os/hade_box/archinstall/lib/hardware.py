@@ -47,6 +47,7 @@ class GfxPackage(Enum):
 	NvidiaPrime = 'nvidia-prime'
 	NvidiaUtils = 'nvidia-utils'
 	QemuGuestAgent = 'qemu-guest-agent'
+	VulkanSwast = 'vulkan-swrast'
 	SpiceVdAgent = 'spice-vdagent'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
 	VirglRenderer = 'virglrenderer'
@@ -158,11 +159,13 @@ class GfxDriver(Enum):
 					GfxPackage.Mesa,
 					GfxPackage.VulkanVirtio,
 					GfxPackage.QemuGuestAgent,
+					GfxPackage.VulkanSwast,
 					GfxPackage.LibvaMesaDriver,
 				]
 			case GfxDriver.VirtualBox:
 				packages += [
 					GfxPackage.Mesa,
+					GfxPackage.VulkanSwast,
 					GfxPackage.VirtualboxGuestUtils,
 					GfxPackage.LibvaMesaDriver,
 				]
@@ -176,7 +179,6 @@ class GfxDriver(Enum):
 				#           GfxPackage.Mesa,
 				#       ]
 				# This minimal setup caused Mesa errors because of missing libs. 
-				# Still the same error in mesa libs.
 				# Now split into separate QEMU/KVM and VirtualBox drivers with proper packages.
 
 		return packages

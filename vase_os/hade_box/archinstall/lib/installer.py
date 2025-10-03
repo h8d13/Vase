@@ -903,7 +903,7 @@ class Installer:
 				env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
 				debug('Added open kernel NVIDIA environment variables')
 
-			# Troubleshooting LIBGL_ALWAYS_SOFTWARE=1 which can make old card work on newer drivers. 
+			# Troubleshooting LIBGL_ALWAYS_SOFTWARE=true which can make old card work on newer drivers. 
 			# This can also be useful for a VM if not doing GPU passthrough
 			# Intel/AMD Usually require little to no configuration or just for debug<3
 
