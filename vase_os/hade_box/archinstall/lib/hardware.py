@@ -47,7 +47,7 @@ class GfxPackage(Enum):
 	NvidiaPrime = 'nvidia-prime'
 	NvidiaUtils = 'nvidia-utils'
 	QemuGuestAgent = 'qemu-guest-agent'
-	VulkanSwast = 'vulkan-swrast'
+	VulkanSwrast = 'vulkan-swrast'
 	SpiceVdAgent = 'spice-vdagent'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
 	VirglRenderer = 'virglrenderer'
@@ -159,13 +159,13 @@ class GfxDriver(Enum):
 					GfxPackage.Mesa,
 					GfxPackage.VulkanVirtio,
 					GfxPackage.QemuGuestAgent,
-					GfxPackage.VulkanSwast,
+					GfxPackage.VulkanSwrast,
 					GfxPackage.LibvaMesaDriver,
 				]
 			case GfxDriver.VirtualBox:
 				packages += [
 					GfxPackage.Mesa,
-					GfxPackage.VulkanSwast,
+					GfxPackage.VulkanSwrast,
 					GfxPackage.VirtualboxGuestUtils,
 					GfxPackage.LibvaMesaDriver,
 				]
