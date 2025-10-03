@@ -42,7 +42,7 @@ EOF
 ADD_PROFILE="1"
 
 if [ "$ADD_PROFILE" = "1" ]; then
-    PROFILE_LIST="$SCRIPT_DIR/lib/iso_profiles/plasma_full.conf"
+    PROFILE_LIST="$SCRIPT_DIR/iso_profiles/plasma.conf"
     if file_ex "$PROFILE_LIST"; then
         info "Adding Plasma packages to ISO package list..."
 
