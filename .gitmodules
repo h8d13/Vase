@@ -1,0 +1,3 @@
+[submodule "vase_os/kaes_arch"]
+	path = vase_os/kaes_arch
+	url = https://github.com/h8d13/KAES-ARCH
