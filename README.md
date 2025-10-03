@@ -127,7 +127,7 @@ Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 
 Reduced to 400s using custom ISO overlay (caching plasma packages)
 
-**WEIGHTS:** ~1,42Gb ISO installation image size / ~2,25gb ISO with plasma overlay
+**WEIGHTS:** ~1,42Gb ISO installation image size / ~2,25gb ISO with plasma overlay (extra ~150s to generate ISO)
 
 ~4.5 Gb after initial install (minimal Intel graphics)
 > Btrfs will be much lighter as it uses compression built-in (+CoW optional) + integrated snapshots using snapper/timeshift.
