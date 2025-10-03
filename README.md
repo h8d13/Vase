@@ -23,7 +23,7 @@ Go grab some coffee during installation.
 
 After initial install pick `Reboot` and switch to hard disk.
 
-Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives.
+Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
 
 Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
@@ -48,7 +48,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -u` : Check for updates from GitHub
 
-All available commands: `--tuimenu --reset --isomod --start --quick <cmd> --update`
+All available commands: `--tuimenu --reset --isomod --start --quick <vm command> --update`
 
 ---
 
