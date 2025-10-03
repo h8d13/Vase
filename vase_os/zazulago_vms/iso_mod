@@ -14,6 +14,15 @@ PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
 WORK_DIR="$SCRIPT_DIR/archiso_work"
 OUTPUT_DIR="$SCRIPT_DIR/a"
 
+if dir_ex "$PROFILE_DIR"; then
+    info "Cleaning up previous run..."
+    rm -rf "$PROFILE_DIR"
+fi
+if dir_ex "$WORK_DIR"; then
+    info "Cleaning up previous run..."
+    rm -rf "$WORK_DIR"
+fi
+
 info "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
 mkdir -p "$PROFILE_DIR"
@@ -24,9 +33,15 @@ cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
 sed -i 's/^iso_name=.*/iso_name="VASE"/' "$PROFILE_DIR/profiledef.sh"
 
 info "Adding customizations to airootfs..."
-## Note: We don't copy hade_box overlay - users will git clone instead
+## Note We don't copy hade_box overlay - users will git clone instead
 ## This keeps the ISO smaller and ensures they always get latest code
 mkdir -p "$PROFILE_DIR/airootfs/root"
+
+# Add git to ISO packages (needed for users to clone Vase)
+info "Adding git to ISO package list..."
+echo "" >> "$PROFILE_DIR/packages.x86_64"
+echo "# Git for cloning Vase installer" >> "$PROFILE_DIR/packages.x86_64"
+echo "git" >> "$PROFILE_DIR/packages.x86_64"
 
 # Append custom MOTD
 build_date=$(date '+%Y.%m.%d')
@@ -44,31 +59,104 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 ╚═══════════════════════════════════════╝
 EOF
 
-# Add Plasma packages + Git to ISO (toggle with ADD_PROFILE)
+# Pre-cache Plasma packages in ISO without installing them (toggle with ADD_PROFILE)
 ADD_PROFILE="1"
 
 if [ "$ADD_PROFILE" = "1" ]; then
-    PROFILE_LIST="$SCRIPT_DIR/iso_profiles/plasma.conf"
+    PROFILE_LIST="$SCRIPT_DIR/iso_profiles/fat.conf"
     if file_ex "$PROFILE_LIST"; then
-        info "Adding Plasma packages to ISO package list..."
+        info "Creating local package repository for fat profile packages..."
 
         # Read packages from profile (skip comments and empty lines)
-        packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$')
+        packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$' | tr '\n' ' ')
 
         if [ -n "$packages" ]; then
-            # Append to ISO packages.x86_64
-            echo "" >> "$PROFILE_DIR/packages.x86_64"
-            echo "# Plasma Desktop packages from profile" >> "$PROFILE_DIR/packages.x86_64"
-            echo "$packages" >> "$PROFILE_DIR/packages.x86_64"
+            # Create local repo directory in airootfs
+            REPO_DIR="$PROFILE_DIR/airootfs/root/vase_packages"
+            mkdir -p "$REPO_DIR"
 
-            pkg_count=$(echo "$packages" | wc -l)
-            reop "Added $pkg_count Plasma packages to ISO"
+            info "Downloading packages with dependencies: $packages"
+
+            # Download packages (pacman resolves dependencies automatically)
+            if pacman -Sw --noconfirm $packages; then
+                # Recursively get ALL dependencies (not just first level)
+                info "Resolving complete dependency tree (this may take a minute)..."
+                all_packages="$packages"
+                to_check="$packages"
+                checked=""
+
+                # Iterate through dependencies in batches (max 5 iterations to prevent infinite loops)
+                for iteration in 1 2 3 4 5; do
+                    if [ -z "$to_check" ]; then
+                        break
+                    fi
+
+                    info "Dependency iteration $iteration..."
+                    new_deps=$(pacman -Si $to_check 2>/dev/null | grep "^Depends On" | sed 's/Depends On.*: //' | tr ' ' '\n' | grep -v "^None$" | sed 's/[<>=].*//' | sort -u)
+
+                    # Find only new dependencies we haven't checked yet
+                    to_check=""
+                    for dep in $new_deps; do
+                        if ! echo " $checked " | grep -q " $dep "; then
+                            to_check="$to_check $dep"
+                            all_packages="$all_packages $dep"
+                        fi
+                    done
+
+                    checked="$checked $to_check"
+                done
+
+                # Deduplicate and count
+                all_packages=$(echo "$all_packages" | tr ' ' '\n' | sort -u | grep -v "^$")
+                dep_count=$(echo "$all_packages" | wc -l)
+                info "Copying $dep_count packages to ISO repository..."
+
+                # Copy all packages from cache
+                for pkg_name in $all_packages; do
+                    latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
+                    if [ -n "$latest" ]; then
+                        cp "$latest" "$REPO_DIR/" 2>/dev/null || true
+                    fi
+                done
+
+                # Create local repository database (use explicit file list)
+                info "Creating repository database..."
+                if [ -n "$(ls -A "$REPO_DIR"/*.pkg.tar.zst 2>/dev/null)" ]; then
+                    repo-add "$REPO_DIR/vase_repo.db.tar.gz" "$REPO_DIR"/*.pkg.tar.zst
+                else
+                    warn "No packages found to add to repository"
+                fi
+
+                pkg_count=$(find "$REPO_DIR" -name "*.pkg.tar.zst" | wc -l)
+                cache_size=$(du -sh "$REPO_DIR" | cut -f1)
+
+                # Create pacman.conf in airootfs with custom repo FIRST (for live environment only)
+                info "Configuring pacman to use local repository with priority..."
+                mkdir -p "$PROFILE_DIR/airootfs/etc"
+
+                # Insert vase_repo BEFORE [core] so it has priority
+                awk '
+                    /^\[core\]/ && !inserted {
+                        print "# Vase local repository for pre-cached Plasma packages (checked first)"
+                        print "[vase_repo]"
+                        print "SigLevel = Optional TrustAll"
+                        print "Server = file:///root/vase_packages"
+                        print ""
+                        inserted=1
+                    }
+                    {print}
+                ' "$PROFILE_DIR/pacman.conf" > "$PROFILE_DIR/airootfs/etc/pacman.conf"
+
+                reop "Created local repo with $pkg_count packages ($cache_size) for installation"
+            else
+                warn "Failed to download packages, continuing without cache"
+            fi
         fi
     else
-        warn "No profile found at $PROFILE_LIST, skipping Plasma packages"
+        warn "No profile found at $PROFILE_LIST, skipping package cache"
     fi
 else
-    info "ADD_PROFILE=0, skipping Plasma packages"
+    info "ADD_PROFILE=0, skipping package caching"
 fi
 
 ## xz/squashfs compression keeps ISO size efficient: 2.3GB with Plasma pre-cached (~800MB of packages)
@@ -81,6 +169,7 @@ mkdir -p "$WORK_DIR"
 
 ISO_LABEL="VASE_$(date +%Y%m)"
 mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
+# Super intense on CPU maybe we can wrap it in ionice or something similar idk
 info "Cleaning up..."
 rm -rf "$PROFILE_DIR"
 rm -rf "$WORK_DIR"

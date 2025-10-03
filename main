@@ -214,8 +214,8 @@ if im_groot; then
             exit $?
         fi
         if exec_args "ISO"; then
-            preop "Starting ISO Modifier..."
-            "./${zl_d}/iso_mod" && rcw true && exit
+            preop "Starting ISO Modifier with '$(get_iso_profile)' profile..."
+            "./${zl_d}/iso_mod" "$(get_iso_profile)" && rcw true && exit
         fi
         if dir_own "${rel}${p_lib}" "root"; then
             ## Give back to user
