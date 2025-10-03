@@ -869,7 +869,7 @@ class Installer:
 				entry_conf = entries_dir / name
 				entry_conf.write_text(entry_template.format(kernel=kernel, variant=variant))
 
-	def _configure_hardware_environment(self) -> None:
+	def _configure_hw_environment(self) -> None:
 		"""Configure /etc/environment with hardware-specific variables."""
 		if not self._gfx_driver:
 			return
@@ -877,6 +877,7 @@ class Installer:
 		env_vars = {}
 
 		### CHANGE ME NVIDIA-specific environment variables
+		### https://wiki.archlinux.org/title/NVIDIA
 		if self._gfx_driver.is_nvidia():
 			debug(f'Adding NVIDIA environment variables for {self._gfx_driver.value}')
 
@@ -892,7 +893,6 @@ class Installer:
 				# For hybrid setups - PRIME offloading
 				env_vars['__NV_PRIME_RENDER_OFFLOAD'] = '1'
 				env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
-				env_vars['__VK_LAYER_NV_optimus'] = 'NVIDIA_only'
 				info('Added hybrid Intel/NVIDIA environment variables for PRIME offloading')
 
 			elif self._gfx_driver == GfxDriver.NvidiaOpenKernel:
@@ -901,21 +901,16 @@ class Installer:
 				env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
 				debug('Added open kernel NVIDIA environment variables')
 
-		# AMD-specific environment variables
-		elif self._gfx_driver in [GfxDriver.AmdOpenSource, GfxDriver.AllOpenSource]:
-			from .hardware import SysInfo
-			if SysInfo.has_amd_graphics():
-				debug('Adding AMD environment variables')
-				# Performance optimizations
-				env_vars['RADV_PERFTEST'] = 'aco,cswave32,dccmsaa'
-				env_vars['AMD_VULKAN_ICD'] = 'RADV'
+			# Troubleshooting LIBGL_ALWAYS_SOFTWARE=1 which can make old card work on newer drivers. 
+			# This can also be useful for a VM if not doing GPU passthrough
+			# Intel/AMD Usually require little to no configuration or just for debug<3
 
-		# Intel-specific environment variables
-		elif self._gfx_driver == GfxDriver.IntelOpenSource:
-			debug('Adding Intel environment variables')
-			# Development/performance optimizations
-			env_vars['INTEL_DEBUG'] = 'norbc'
-			env_vars['ANV_ENABLE_PIPELINE_CACHE'] = '1'
+			### INTEL https://wiki.archlinux.org/title/Intel_graphics
+			# ANV_DEBUG=video_decode,video_encode
+			### AMD https://wiki.archlinux.org/title/AMDGPU
+			# RADV_PERFTEST=rt - Enable hardware raytracing (RDNA2+)
+   			# RADV_PERFTEST=video_decode,video_encode - Force video accel on older GPUs
+  			# RADV_PERFTEST=emulate_rt - Emulate raytracing for GFX8-10
 
 		# Write environment variables to /etc/environment
 		if env_vars:
@@ -976,7 +971,10 @@ class Installer:
 		config = grub_default.read_text()
 
 		kernel_parameters = ' '.join(self._get_kernel_params(root, False, False))
+
 		config = re.sub(r'(GRUB_CMDLINE_LINUX=")("\n)', rf'\1{kernel_parameters}\2', config, count=1)
+		# This line usually appends zswap.enabled=0 and rootfstype=
+		# This affects both recovery options AND normal boot.
 
 		# Debug graphics driver state before GRUB configuration
 		debug(f'GRUB configuration - Graphics driver state: {self._gfx_driver}')
@@ -984,17 +982,15 @@ class Installer:
 			debug(f'Graphics driver: {self._gfx_driver.value}, is_nvidia: {self._gfx_driver.is_nvidia()}')
 
 		#### CHANGE ME Add hardware-specific parameters to GRUB_CMDLINE_LINUX_DEFAULT
-
 		if self._gfx_driver and self._gfx_driver.is_nvidia():
 			debug('Adding NVIDIA parameters to GRUB_CMDLINE_LINUX_DEFAULT')
 
 			# Build the hardware-specific parameters string
 			hw_params = []
 
-			# Essential for modern NVIDIA setup
-			hw_params.append('nvidia-drm.modeset=1')
-
+			# These are now included iin nvidia-utils but could help compat by setting explicitly. 
 			if self._gfx_driver == GfxDriver.NvidiaProprietary:
+				hw_params.append('nvidia-drm.modeset=1')
 				hw_params.append('nvidia-drm.fbdev=1')
 				hw_params.append('nvidia.NVreg_PreserveVideoMemoryAllocations=1')
 
@@ -1182,7 +1178,7 @@ class Installer:
 			raise DiskError(f'Could not configure GRUB: {err}')
 
 		# Configure hardware-specific environment variables after GRUB configuration
-		self._configure_hardware_environment()
+		self._configure_hw_environment()
 
 		self._helper_flags['bootloader'] = 'grub'
 

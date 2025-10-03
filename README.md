@@ -144,4 +144,6 @@ fi
 > So I had to have a safe space to test AND change installer code OR create ISOs directly. 
 > This would let me expand on sections I thought were missing out on like grub configs, hardware specific stuff, snapshots, etc... 
 
+Another relevant example is setting latin keymaps for Grub in case of using password/rescue shell/editing launch lines. I've included this in [Grub2_Utils](https://github.com/h8d13/Vase/tree/master/vase_os/hade_box/archinstall/grub2_utils)
+
 Special shout to the devs at archinstall and other open-source contributors for making this project possible. 

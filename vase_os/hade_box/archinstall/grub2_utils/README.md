@@ -19,7 +19,7 @@ KB_VARIANT="azerty"
 
 Make sure to set these and variant can be left empty as `""`. 
 
-Careful that grub (and system critical pieces in general) are often restricted to 1-127 range. So don't use special chars in users/passwords, etc. And are case sensitive! 
+Careful that grub (and system critical pieces in general) are often restricted to 1-127 range. So don't use special chars in users/passwords, etc. And are case sensitive! Also non-latin layouts are generally a very bad idea with bootloader (Arabic, Hebrew, Chinese variants, Jpanese, Korean, Indic, Greek, etc)
 
 > At this point you can verify it works by pressing `c` in the grub menu and checking keys are properly registered.
 
