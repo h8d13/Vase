@@ -49,7 +49,16 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -u` : Check for updates from GitHub
 
-All available commands: `--tuimenu --reset --isomod <iso profile> --start --quick <vm command> --update`
+All long-form commands: 
+
+```
+--reset                 # Resets logs
+--update                # Checks git for updates
+--tuimenu               # Launch modified TUI
+--isomod <profile>      # Create iso default "fat"
+--start                 # Start VM menu
+--quick <command>       # Lanch VM with X
+```
 
 ---
 
