@@ -124,6 +124,7 @@ Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 ### Info for nerds / Benchmarks
 
 **TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror) 
+Reduced to 400s using custom ISO overlay (caching plasma packages)
 
 **WEIGHTS:** ~1,42Gb ISO installation image size 
 
@@ -149,4 +150,4 @@ Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 
 Another relevant example is setting latin keymaps for Grub in case of using password/rescue shell/editing launch lines. I've included this in [Grub2_Utils](https://github.com/h8d13/Vase/tree/master/vase_os/hade_box/archinstall/grub2_utils)
 
-Special shout to the devs at archinstall and other open-source contributors for making this project possible. 
+Special shout to the devs at archlinux and other open-source contributors for making this project possible. 
