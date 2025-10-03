@@ -38,8 +38,8 @@ if [ -d "/run/archiso" ]; then
     for module_pkg in "${PYTHON_MODULES[@]}"; do
         module="${module_pkg%%:*}"
         package="${module_pkg##*:}"
-        if python -c "import $module" 2>/dev/null; then
-            version=$(pacman -Qi "$package" 2>/dev/null | grep "^Version" | awk '{print $3}')
+        if to_devnull python -c "import $module"; then
+            to_devnull version=$(pacman -Qi "$package" | grep "^Version" | awk '{print $3}')
             preop "Found: $package (${version:-unknown})"
         else
             postop "Missing: $package ($module)"
