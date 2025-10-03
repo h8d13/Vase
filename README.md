@@ -39,8 +39,9 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -q brick` : Skip menu pass directly
 
-`$ sudo ./main -i` : Create ISO overlays w RELENG
-> Includes the TUI inside the ISO directly by default
+`$ sudo ./main -i <profile>` : Create ISO overlays w RELENG
+
+> See `vase_os/zazulago_vms/iso_profiles` for available options: "plasma" or "fat"
 
 `$ sudo ./main -t` : Launch TUI forked KDE install
 
