@@ -168,6 +168,9 @@ class Installer:
 		One such service is "reflector.service" which updates /etc/pacman.d/mirrorlist
 		We need to wait for it before we continue since we opted in to use a custom mirror/region.
 		"""
+		# Im wondering if reflector is not already run as soon as an internet connection is found
+		# Hence we might be able to use the medium's already done reflector and skip this
+		# But it would still have to be done if NOT running from USB medium
 
 		if not arch_config_handler.args.skip_ntp:
 			info('Waiting for time sync (timedatectl show) to complete.')
@@ -1123,6 +1126,7 @@ class Installer:
 			'grub-install',
 			'--debug',
 		]
+		# This produces very very verbose info kinda pollutes log too
 
 		if SysInfo.has_uefi():
 			if not efi_partition:

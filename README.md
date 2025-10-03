@@ -43,7 +43,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -i` : Create ISO overlays w RELENG
 
-`$ sudo ./main -t` : Launch TUI forked KDE install
+`$ sudo ./main -t (*args)` : Launch TUI forked KDE install
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 

@@ -284,21 +284,8 @@ class ArchConfigHandler:
 	def print_help(self) -> None:
 		self._parser.print_help()
 
-	def _get_version(self) -> str:
-		try:
-			return version('archinstall')
-		except Exception:
-			return 'Archinstall version not found'
-
 	def _define_arguments(self) -> ArgumentParser:
 		parser = ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-		parser.add_argument(
-			'-v',
-			'--version',
-			action='version',
-			default=False,
-			version='%(prog)s ' + self._get_version(),
-		)
 		parser.add_argument(
 			'--config',
 			type=Path,
@@ -341,13 +328,6 @@ class ArchConfigHandler:
 			help='WARNING: Disables all prompts for input and confirmation. If no configuration is provided, this is ignored',
 		)
 		parser.add_argument(
-			'--dry-run',
-			'--dry_run',
-			action='store_true',
-			default=False,
-			help='Generates a configuration file and then exits instead of performing an installation',
-		)
-		parser.add_argument(
 			'--script',
 			nargs='?',
 			help='Script to run for installation',
@@ -384,6 +364,7 @@ class ArchConfigHandler:
 			default=False,
 			help='Adds debug info into the log',
 		)
+		# I think they enabled by default in full log file idek
 		parser.add_argument(
 			'--offline',
 			action='store_true',
@@ -395,13 +376,6 @@ class ArchConfigHandler:
 			action='store_true',
 			default=False,
 			help='Disabled package validation specifically prior to starting installation.',
-		)
-		parser.add_argument(
-			'--plugin',
-			nargs='?',
-			type=str,
-			default=None,
-			help='File path to a plugin to load',
 		)
 		parser.add_argument(
 			'--advanced',

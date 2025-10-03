@@ -18,7 +18,6 @@ from ..models.device import (
 from ..output import debug, info
 from .device_handler import device_handler
 
-
 class FilesystemHandler:
 	def __init__(self, disk_config: DiskLayoutConfiguration):
 		self._disk_config = disk_config
@@ -103,16 +102,6 @@ class FilesystemHandler:
 			found = next(filter(check, partitions), None)
 			if found is not None:
 				raise exc
-
-
-
-
-
-
-
-
-
-
 
 	def _final_warning(self, device_paths: str) -> bool:
 		# Issue a final warning before we continue with something un-revertable.

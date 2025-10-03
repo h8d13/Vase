@@ -71,21 +71,20 @@ python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 # --silent              WARNING: Disables all prompts for input and
 #                       confirmation. If no configuration is provided, this is
 #                       ignored
-# --dry-run, --dry_run  Generates a configuration file and then exits instead
-#                       of performing an installation
-# --script [SCRIPT]     Script to run for installation
+# --script [SCRIPT]     Script to run for installation ## Last line of installer
+####################### Could be super useful
 # --mountpoint [MOUNTPOINT]
 #                       Define an alternate mount point for installation
 #                       (default: /mnt)
 # --skip-ntp            Disables NTP checks during installation
 # --skip-wkd            Disables checking if archlinux keyring wkd sync is
 #                       complete
-# --skip-boot           Disables installation of a boot loader (note: only use
-#                       this when problems arise with the boot loader step)
-# --offline             Disabled online upstream services such as package
-#                       search and key-ring auto update
+# --skip-boot           Disables installation of a boot loader bad idea lol
 # --no-pkg-lookups      Disabled package validation specifically prior to
 #                       starting installation
+# --offline             Disabled online upstream services such as package
+#                       search and key-ring auto update
+####################### Test fully local if possible see how fast it can be
 # --advanced            Enabled advanced options
 # --verbose             Enabled verbose options
 # --debug               Adds debug info into the log
