@@ -124,9 +124,10 @@ Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 ### Info for nerds / Benchmarks
 
 **TIMINGS:** 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror) 
+
 Reduced to 400s using custom ISO overlay (caching plasma packages)
 
-**WEIGHTS:** ~1,42Gb ISO installation image size 
+**WEIGHTS:** ~1,42Gb ISO installation image size / ~2,25gb ISO with plasma overlay
 
 ~4.5 Gb after initial install (minimal Intel graphics)
 > Btrfs will be much lighter as it uses compression built-in (+CoW optional) + integrated snapshots using snapper/timeshift.
