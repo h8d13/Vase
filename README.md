@@ -46,7 +46,7 @@ Then `sudo vim post` edit to desired values then `sudo ./post`
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
-`$ ./main -u` : Check for updates from GitHub
+`$ sudo ./main -u` : Check for updates from GitHub
 
 All available commands: `--tuimenu --reset --isomod --start --quick <cmd> --update`
 
