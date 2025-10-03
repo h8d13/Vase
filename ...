@@ -20,23 +20,20 @@ vm_name="myvm1" #anyname
 #vm_name="myvm3" #arch
 vm_ext="qcow2" #raw, bin
 ## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
-target_p="sdd3"
+target_p="sda2"
 target_t="/dev/"
 target="${target_t}${target_p}"
-# This can also be a mounted fs
+## This can also be a mounted fs
 # Mount it first. Check lsblk output to find which partition it is. 
-# sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
+# Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 ## QEMU Display Settings
 # Display backend: gtk, sdl, vnc, spice
 # GL acceleration: on, off
 qemu_display="gtk"
 qemu_gl="on"
-################## VM STUFF END
-
 ################## DIRS/LOGS/PERMS
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"
-
 # Dir mods
 hide_d="."
 ext_d=".d"
@@ -46,7 +43,6 @@ ext_d_mod=1 # 1=hidden, 0=visible
 custom_n="vase"
 [ "$hide_d_mod" = "1" ] && custom_n="${hide_d}${custom_n}"
 [ "$ext_d_mod" = "1" ] && custom_n="${custom_n}${ext_d}"
-
 #### Names
 p_lib="$custom_n"
 c_file="logs"
