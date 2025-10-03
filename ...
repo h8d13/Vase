@@ -3,21 +3,15 @@
 # This file is an absolute mess but everything is declared here
 vase_v="0.0.01"
 ################## VM STUFF
-# QEMU Display Settings
-# Display backend: gtk, sdl, vnc, spice
-# GL acceleration: on, off
-qemu_display="gtk"
-qemu_gl="on"
-
 arch="x86_64"
 ram=8096
 cores=8
 # Specs
 size="60G" 
 # Preallocation doesnt take space directly
-vm_d="a" 
+vm_d="d" 
 # "a" for testing build ISOs "d" for regular
-iso_n="VASE-2025.10.03-x86_64"
+iso_n="archlinux-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
@@ -31,6 +25,11 @@ target="${target_t}${target_p}"
 # This can also be a mounted fs
 # Mount it first. Check lsblk output to find which partition it is. 
 # sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
+## QEMU Display Settings
+# Display backend: gtk, sdl, vnc, spice
+# GL acceleration: on, off
+qemu_display="gtk"
+qemu_gl="on"
 ################## VM STUFF END
 
 ################## DIRS/LOGS/PERMS
