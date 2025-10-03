@@ -28,8 +28,8 @@ class ConfigurationOutput:
 
 		self._config = config
 		self._default_save_path = logger.directory
-		self._user_config_file = Path('vase_os/hade_box/user_configuration.json')
-		self._user_creds_file = Path('vase_os/hade_box/user_credentials.json')
+		self._user_config_file = Path('user_configuration.json')
+		self._user_creds_file = Path('user_credentials.json')
 
 	@property
 	def user_configuration_file(self) -> Path:
@@ -52,6 +52,11 @@ class ConfigurationOutput:
 		debug(self.user_config_to_json())
 
 	def confirm_config(self) -> bool:
+		# Auto-save configuration BEFORE showing confirmation (regardless of yes/no)
+		success, saved_files = auto_save_config(self._config)
+		if success:
+			debug(f'Configuration auto-saved: {", ".join(saved_files)}')
+
 		header = f'The specified configuration will be applied. WILL ERASE DATA ON DISK depending on how you set up.\n'
 		header += 'Would you like to continue?'
 

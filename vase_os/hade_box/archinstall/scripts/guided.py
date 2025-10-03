@@ -102,10 +102,7 @@ def perform_installation(mountpoint: Path) -> None:
 	"""
 	info('Starting installation...')
 
-	# Auto-save configuration before starting installation
-	from archinstall.lib.configuration import auto_save_config
 	config = arch_config_handler.config
-	auto_save_config(config)
 
 	if not config.disk_config:
 		error('No disk configuration provided')

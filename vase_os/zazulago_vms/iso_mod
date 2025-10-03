@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 . "$(dirname "$0")/../../util_f"
@@ -11,14 +10,9 @@ if file_ex "${rel}${p_lib}/${rcw_file}"; then
 fi
 
 SCRIPT_DIR="$(dirname "$0")"
-OVERLAY_DIR="$SCRIPT_DIR/../hade_box"
 PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
 WORK_DIR="$SCRIPT_DIR/archiso_work"
 OUTPUT_DIR="$SCRIPT_DIR/a"
-  
-if ! dir_ex "$OVERLAY_DIR"; then
-   die "Did not find overlay dir."
-fi
 
 info "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
@@ -26,20 +20,58 @@ mkdir -p "$PROFILE_DIR"
 # Use standard release engeneering profile (same as ISO)
 cp -r /usr/share/archiso/configs/releng/* "$PROFILE_DIR"
 
-info "Adding $OVERLAY_DIR to airootfs..."
-## Main overlay is defined here we append to root "/" our "hade_box" folder. 
+# Customize ISO name in profiledef.sh
+sed -i 's/^iso_name=.*/iso_name="VASE"/' "$PROFILE_DIR/profiledef.sh"
+
+info "Adding customizations to airootfs..."
+## Note: We don't copy hade_box overlay - users will git clone instead
+## This keeps the ISO smaller and ensures they always get latest code
 mkdir -p "$PROFILE_DIR/airootfs/root"
 
-# We could for example overlay all the plasma files directly into the ISO too
-# That would speedup install time considerably at the cost of a larger ISO
-## We can do this by editing $PROFILE_DIR/packages.x86_64
+# Append custom MOTD
+build_date=$(date '+%Y.%m.%d')
+cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 
-cp -r "$OVERLAY_DIR" "$PROFILE_DIR/airootfs/root/"
+╔═══════════════════════════════════════╗
+      VASE ARCH INSTALLER v${vase_v}      
+      Generated ${build_date} <3            
+╚═══════════════════════════════════════╝
+EOF
+
+# Add Plasma packages + Git to ISO (toggle with ADD_PROFILE)
+ADD_PROFILE="1"
+
+if [ "$ADD_PROFILE" = "1" ]; then
+    PROFILE_LIST="$SCRIPT_DIR/lib/iso_profiles/plasma_full.conf"
+    if file_ex "$PROFILE_LIST"; then
+        info "Adding Plasma packages to ISO package list..."
+
+        # Read packages from profile (skip comments and empty lines)
+        packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$')
+
+        if [ -n "$packages" ]; then
+            # Append to ISO packages.x86_64
+            echo "" >> "$PROFILE_DIR/packages.x86_64"
+            echo "# Plasma Desktop packages from profile" >> "$PROFILE_DIR/packages.x86_64"
+            echo "$packages" >> "$PROFILE_DIR/packages.x86_64"
+
+            pkg_count=$(echo "$packages" | wc -l)
+            reop "Added $pkg_count Plasma packages to ISO"
+        fi
+    else
+        warn "No profile found at $PROFILE_LIST, skipping Plasma packages"
+    fi
+else
+    info "ADD_PROFILE=0, skipping Plasma packages"
+fi
+## Intresting to note that xz compression manages to keep the ISO quite small (2,3gb with plasma packages)
 
 info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
 mkdir -p "$WORK_DIR"
-mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" "$PROFILE_DIR"
+
+ISO_LABEL="VASE_$(date +%Y%m)"
+mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
 info "Cleaning up..."
 rm -rf "$PROFILE_DIR"
 rm -rf "$WORK_DIR"
