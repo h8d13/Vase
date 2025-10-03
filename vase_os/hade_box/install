@@ -34,7 +34,6 @@ if [ -d "/run/archiso" ]; then
         "parted:python-pyparted"
         "pydantic:python-pydantic"
     )
-
     for module_pkg in "${PYTHON_MODULES[@]}"; do
         module="${module_pkg%%:*}"
         package="${module_pkg##*:}"
@@ -48,7 +47,8 @@ if [ -d "/run/archiso" ]; then
     done
     preop "Checked only python deps. Skipping full check..."
 else # Always check full deps when not running with ISO
-   	chmod +x "$SCRIPT_DIR/altodeps"
+   	preop "Running from live system. Checking deps..."
+    chmod +x "$SCRIPT_DIR/altodeps"
    	"$SCRIPT_DIR/altodeps"
     preop "Dependency check complete. Continuing..."
 fi
