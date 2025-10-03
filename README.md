@@ -23,9 +23,9 @@ Go grab some coffee during installation.
 
 After initial install pick `Reboot` and switch to hard disk.
 
-Open `Konsole` and type `cd KAES-ARCH`
+Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives.
 
-Then `sudo vim post` edit to desired values then `sudo ./post`
+Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 ---
 
@@ -127,7 +127,7 @@ Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall.
 
 **WEIGHTS:** ~1,42Gb ISO installation image size 
 
-~5,7 Gb after initial install (minimal Intel graphics)
+~4.5 Gb after initial install (minimal Intel graphics)
 > Btrfs will be much lighter as it uses compression built-in (+CoW optional) + integrated snapshots using snapper/timeshift.
 > Note: Best is usually to use what you already have on other disks for compatibility (stick to your choices).
 
