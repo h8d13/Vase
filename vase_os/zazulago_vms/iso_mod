@@ -34,8 +34,11 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 
 ╔═══════════════════════════════════════╗
       VASE ARCH INSTALLER v${vase_v}      
-      Generated ${build_date} <3            
+      Generated ${build_date} <3          
 ╚═══════════════════════════════════════╝
+To install: 
+git clone https://github.com/h8d13/Vase
+cd Vase && ./main -t
 EOF
 
 # Add Plasma packages + Git to ISO (toggle with ADD_PROFILE)
