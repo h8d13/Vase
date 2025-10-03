@@ -1,7 +1,9 @@
 # Vase
 
-A testing suite to run VMs and perform archlinux system installations.
+A testing suite to run VMs and perform Archlinux system installations.
+
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
+> Or test other distros from Arch without learning all the QEMU docs.
 
 Written in bash to wrap Archinstall.
 
