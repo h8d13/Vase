@@ -1,5 +1,4 @@
 #!/bin/bash
-# Fix dupk commands for it to properly wait for file to be created before launching 
 
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
@@ -20,7 +19,7 @@ key_file="${script_dir}/.vmkey.local"
 
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
-use_uefi="${qemu_uefi:-true}"  # Set to "false" for legacy BIOS mode
+use_uefi="${qemu_uefi:-false}"  # Set to "false" for legacy BIOS mode
 
 run_vm() {
     local cmd="$1"
