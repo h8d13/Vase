@@ -1,0 +1,159 @@
+[Desktop Entry]
+Icon=folder-log
+
+/home/hadeaneon/Desktop/Pyla
+├── vase_os
+│   ├── hade_box
+│   │   ├── archinstall
+│   │   │   ├── applications
+│   │   │   │   ├── audio.py
+│   │   │   │   └── bluetooth.py
+│   │   │   ├── default_profiles
+│   │   │   │   ├── desktops
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── plasma.py
+│   │   │   │   ├── desktop.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── profile.py
+│   │   │   ├── grub2_utils
+│   │   │   │   ├── lib
+│   │   │   │   │   ├── ckbcomp
+│   │   │   │   │   ├── ex_symbols.py
+│   │   │   │   │   └── symap_main.py
+│   │   │   │   ├── testfiles
+│   │   │   │   │   └── grub
+│   │   │   │   ├── grub_keymaps
+│   │   │   │   ├── grub_passw
+│   │   │   │   ├── grub_rescue
+│   │   │   │   └── README.md
+│   │   │   ├── lib
+│   │   │   │   ├── applications
+│   │   │   │   │   ├── application_handler.py
+│   │   │   │   │   ├── application_menu.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── authentication
+│   │   │   │   │   ├── authentication_handler.py
+│   │   │   │   │   ├── authentication_menu.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── disk
+│   │   │   │   │   ├── device_handler.py
+│   │   │   │   │   ├── disk_menu.py
+│   │   │   │   │   ├── filesystem.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── partitioning_menu.py
+│   │   │   │   │   ├── subvolume_menu.py
+│   │   │   │   │   └── utils.py
+│   │   │   │   ├── interactions
+│   │   │   │   │   ├── disk_conf.py
+│   │   │   │   │   ├── general_conf.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── manage_users_conf.py
+│   │   │   │   │   ├── network_menu.py
+│   │   │   │   │   └── system_conf.py
+│   │   │   │   ├── locale
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── locale_menu.py
+│   │   │   │   │   └── utils.py
+│   │   │   │   ├── menu
+│   │   │   │   │   ├── abstract_menu.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── list_manager.py
+│   │   │   │   │   └── menu_helper.py
+│   │   │   │   ├── models
+│   │   │   │   │   ├── application.py
+│   │   │   │   │   ├── authentication.py
+│   │   │   │   │   ├── bootloader.py
+│   │   │   │   │   ├── device.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── locale.py
+│   │   │   │   │   ├── mirrors.py
+│   │   │   │   │   ├── network.py
+│   │   │   │   │   ├── packages.py
+│   │   │   │   │   ├── profile.py
+│   │   │   │   │   └── users.py
+│   │   │   │   ├── packages
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── packages.py
+│   │   │   │   ├── pacman
+│   │   │   │   │   ├── config.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── profile
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── profile_menu.py
+│   │   │   │   │   └── profiles_handler.py
+│   │   │   │   ├── utils
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── unicode.py
+│   │   │   │   │   └── util.py
+│   │   │   │   ├── args.py
+│   │   │   │   ├── boot.py
+│   │   │   │   ├── configuration.py
+│   │   │   │   ├── crypt.py
+│   │   │   │   ├── exceptions.py
+│   │   │   │   ├── general.py
+│   │   │   │   ├── global_menu.py
+│   │   │   │   ├── hardware.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── installer.py
+│   │   │   │   ├── mirrors.py
+│   │   │   │   ├── networking.py
+│   │   │   │   ├── output.py
+│   │   │   │   └── storage.py
+│   │   │   ├── scripts
+│   │   │   │   ├── guided.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── tui
+│   │   │   │   ├── curses_menu.py
+│   │   │   │   ├── help.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── menu_item.py
+│   │   │   │   ├── result.py
+│   │   │   │   └── types.py
+│   │   │   ├── __init__.py
+│   │   │   └── __main__.py
+│   │   ├── logs
+│   │   ├── altodeps
+│   │   ├── clean_all
+│   │   ├── clean_cache
+│   │   ├── .directory
+│   │   ├── .gitignore
+│   │   ├── install
+│   │   ├── LICENSE
+│   │   └── README.md
+│   ├── kaes_arch
+│   │   ├── assets
+│   │   │   ├── guides
+│   │   │   │   ├── avoid_bricks.sh
+│   │   │   │   ├── profile_code.sh
+│   │   │   │   ├── profile_git.sh
+│   │   │   │   └── very_nerds.sh
+│   │   │   ├── easy.kksrc
+│   │   │   └── kaes-logo.png
+│   │   ├── cli_art
+│   │   ├── CONTRIBUTING.md
+│   │   ├── .directory
+│   │   ├── .gitignore
+│   │   ├── LICENSE
+│   │   ├── post
+│   │   └── README.md
+│   ├── zazulago_vms
+│   │   ├── iso_profiles
+│   │   │   └── fat.conf
+│   │   ├── lib
+│   │   │   └── hedgen2c
+│   │   ├── .directory
+│   │   ├── iso_mod
+│   │   ├── setup_arch
+│   │   └── vm_start
+│   └── env
+├── ...
+├── cli_art
+├── .directory
+├── .gitignore
+├── .gitmodules
+├── LICENSE
+├── main
+├── README.md
+└── util_f
+
+31 directories, 123 files
