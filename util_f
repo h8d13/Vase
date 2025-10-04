@@ -93,6 +93,12 @@ cleanup() {
     postop "Cleaning up..."
     # Add cleanup stuff here
 }
+to_devnull(){
+    "$@" >/dev/null 2>&1
+}
+silent_err(){
+    "$@" 2>/dev/null
+}
 file_ex() {
     [ -f "$1" ]
 }
@@ -123,6 +129,15 @@ am_iuser() {
 im_sudo() {
     [ -n "$SUDO_USER" ]
 }
+gui_what() {
+    if [ -n "$SUDO_USER" ]; then
+        local user_pid
+        user_pid=$(pgrep -u "$SUDO_USER" -n)
+        silent_err grep -z "^XDG_SESSION_TYPE=" /proc/"$user_pid"/environ | cut -d= -f2 | tr -d '\0'
+    else
+        echo "${XDG_SESSION_TYPE}"
+    fi
+}
 gui_som() {
     local runtime_dir
     runtime_dir="/run/user/$(id -u "$1")"
@@ -149,9 +164,6 @@ cmd_check() {
         warn "Missing: $cmd"
         return 1
     fi
-}
-to_devnull(){
-    "$@" >/dev/null 2>&1
 }
 obanner() {
     echo "=== [$1] ==="

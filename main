@@ -189,6 +189,7 @@ if im_groot; then
     # Use reop for regular operation green output
     if im_sudo; then
         info "Running as elevated user..."
+        info "Session type: $(gui_what)"
         gui_som "$SUDO_USER" #export XDG for sudo user
 
         cbanner "PERMS CHECK"
