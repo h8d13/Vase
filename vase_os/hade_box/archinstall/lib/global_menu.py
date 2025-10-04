@@ -393,7 +393,7 @@ class GlobalMenu(AbstractMenu[None]):
 
 	def _prev_parallel_dw(self, item: MenuItem) -> str | None:
 		if item.value is not None:
-			return f'("Parallel Downloads"): {item.value}'
+			return f'Parallel Downloads: {item.value}'
 		return None
 
 	def _prev_kernel(self, item: MenuItem) -> str | None:
