@@ -85,6 +85,8 @@ CATART=1 # 0 Disables cli art sadface
 
 ### Main VM Menu
 
+> Assumes KVM availability Intel/AMD.
+
 Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
