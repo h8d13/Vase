@@ -689,8 +689,29 @@ class Installer:
 			# We could use the default example below, but maybe not the best idea: https://github.com/archlinux/archinstall/pull/678#issuecomment-962124813
 			# zram_example_location = '/usr/share/doc/zram-generator/zram-generator.conf.example'
 			# shutil.copy2(f"{self.target}{zram_example_location}", f"{self.target}/usr/lib/systemd/zram-generator.conf")
+			# Parse size to MB for zram-size (e.g., "4G" -> 4096)
+			size_mb = 4096  # default
+			try:
+				import re
+				match = re.match(r'(\d+)([KMGT]?)', size.upper())
+				if match:
+					value, unit = match.groups()
+					value = int(value)
+					# Convert to MB
+					if unit == 'G':
+						size_mb = value * 1024
+					elif unit == 'M':
+						size_mb = value
+					elif unit == 'K':
+						size_mb = max(1, value // 1024)
+					elif unit == 'T':
+						size_mb = value * 1024 * 1024
+			except Exception:
+				pass
+
 			with open(f'{self.target}/etc/systemd/zram-generator.conf', 'w') as zram_conf:
 				zram_conf.write('[zram0]\n')
+				zram_conf.write(f'zram-size = {size_mb}\n')
 
 			self.enable_service('systemd-zram-setup@zram0.service')
 			self._zram_enabled = True
