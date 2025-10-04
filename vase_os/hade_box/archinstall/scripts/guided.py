@@ -100,6 +100,7 @@ def perform_installation(mountpoint: Path) -> None:
 	formatted and setup prior to entering this function.
 	"""
 	start_time = time.time()
+	checkpoint_time = start_time
 	info('Starting installation...')
 
 	config = arch_config_handler.config
@@ -121,6 +122,8 @@ def perform_installation(mountpoint: Path) -> None:
 	) as installation:
 		# Mount all the drives to the desired mountpoint
 		installation.mount_ordered_layout()
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Mount & sanity check completed: {checkpoint_time - start_time:.2f}s')
 
 		installation.sanity_check()
 
@@ -137,6 +140,9 @@ def perform_installation(mountpoint: Path) -> None:
 			hostname=arch_config_handler.config.hostname,
 			locale_config=locale_config,
 		)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Minimal installation completed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		if mirror_config := config.mirror_config:
 			installation.set_mirrors(mirror_config, on_target=True)
@@ -147,16 +153,25 @@ def perform_installation(mountpoint: Path) -> None:
 		# Install audio drivers before profile to avoid package conflicts
 		if app_config := config.app_config:
 			application_handler.install_applications(installation, app_config)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Applications installed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		# Install profile after audio so graphics driver is set before bootloader
 		if profile_config := config.profile_config:
 			profile_handler.install_profile_config(installation, profile_config)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Profile installed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		if config.bootloader:
 			if config.bootloader == Bootloader.Grub and SysInfo.has_uefi():
 				installation.add_additional_packages('grub')
 
 			installation.add_bootloader(config.bootloader, config.grub_config)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Bootloader installed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		# If user selected to copy the current ISO network configuration
 		# Perform a copy of the config
@@ -172,6 +187,9 @@ def perform_installation(mountpoint: Path) -> None:
 			if config.auth_config.users:
 				installation.create_users(config.auth_config.users)
 				auth_handler.setup_auth(installation, config.auth_config, config.hostname)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Users created: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		mandatory_package = ['git']
 		installation.add_additional_packages(mandatory_package)
@@ -191,6 +209,9 @@ def perform_installation(mountpoint: Path) -> None:
 
 		if (profile_config := config.profile_config) and profile_config.profile:
 			profile_config.profile.post_install(installation)
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Post-install completed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		# If the user provided a list of services to be enabled, pass the list to the enable_service function.
 		# Note that while it's called enable_service, it can actually take a list of services and iterate it.
@@ -209,6 +230,9 @@ def perform_installation(mountpoint: Path) -> None:
 			run_custom_user_commands(cc, installation)
 
 		installation.genfstab()
+		prev_checkpoint = checkpoint_time
+		checkpoint_time = time.time()
+		info(f'[CHECKPOINT] Final configuration completed: {checkpoint_time - prev_checkpoint:.2f}s (Total: {checkpoint_time - start_time:.2f}s)')
 
 		debug(f'Disk states after installing:\n{disk_layouts()}')
 
