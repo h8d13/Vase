@@ -24,15 +24,16 @@ target_p="sda2"
 target_t="/dev/"
 target="${target_t}${target_p}"
 ## This can also be a mounted fs
-# Mount it first. Check lsblk output to find which partition it is. 
+# Mount it first. 
+# Check lsblk output to find which partition it is. 
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 ## QEMU Display Settings
 # Display backend: gtk, sdl, vnc, spice
 # GL acceleration: on, off
+# Copy EFI vars to QEMU: 1 or 0
 qemu_display="gtk"
 qemu_gl="on"
-# This will attempt to copy local EFI vars to QEMU
-qemu_uefi=true
+qemu_uefi=1
 ################## DIRS/LOGS/PERMS
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"

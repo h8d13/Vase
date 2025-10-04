@@ -19,7 +19,7 @@ key_file="${script_dir}/.vmkey.local"
 
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
-use_uefi="${qemu_uefi:-false}"  # Set to "false" for legacy BIOS mode
+use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
 
 run_vm() {
     local cmd="$1"
@@ -121,7 +121,7 @@ qemu_cmd() {
     local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores}"
 
     # Add UEFI firmware if enabled
-    if [ "$use_uefi" = "true" ]; then
+    if [ "$use_uefi" = "1" ]; then
         cmd="$cmd -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.4m.fd"
     fi
 
