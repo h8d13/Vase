@@ -236,7 +236,5 @@ else
         die "Running as regular user." # Or warn and do smthn else
     fi
 fi
-#rcw ls -la /nonexistant
-#&& rcw sleep 1.3 && true testing timing
 
 # 2m15s best time current (8 cores / 8gb RAM)
