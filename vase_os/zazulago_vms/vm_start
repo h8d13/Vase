@@ -1,4 +1,5 @@
 #!/bin/bash
+# Fix dupk commands for it to properly wait for file to be created before launching 
 
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
@@ -344,6 +345,7 @@ main() {
 
         dupk)
             temp_name=$(copy_disk "$image_name")
+            sleep 5
             cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             preop "Permanent copy: $temp_name"

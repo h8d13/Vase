@@ -1126,14 +1126,13 @@ class Installer:
 			#'--debug',
 		]
 		# This produces very very verbose info kinda pollutes log too
-
 		if SysInfo.has_uefi():
 			if not efi_partition:
 				raise ValueError('Could not detect efi partition')
 
 			info(f'GRUB EFI partition: {efi_partition.dev_path}')
 
-			#self.pacman.strap('efibootmgr')  # Only needed for systemd boot
+			self.pacman.strap('efibootmgr')
 
 			boot_dir_arg = []
 			if boot_partition.mountpoint and boot_partition.mountpoint != boot_dir:
