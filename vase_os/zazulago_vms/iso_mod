@@ -159,15 +159,16 @@ else
     info "ADD_PROFILE=0, skipping package caching"
 fi
 
-## xz/squashfs compression keeps ISO size efficient: 2.3GB with Plasma pre-cached (~800MB of packages)
-## This saves ~800MB download during install (1.5GB → 700MB) while only adding ~500MB to ISO (compressed)
+## xz/squashfs compression keeps ISO size efficient: 2.6GB with Plasma pre-cached
+## Using new fat.conf which has ~800 pkgs cached
+## Might be totally tripping on how to actually get dep trees properly for iteration in 1 2 3 4 5 
 
 info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
 mkdir -p "$WORK_DIR"
 
 # Set mksquashfs to use all available processors for faster compression
-export MKSQUASHFS_OPTIONS="-processors $(nproc)" ## Can be change to 6 for example.
+export MKSQUASHFS_OPTIONS="-processors 6" ## Can be change to 6 for example.
 
 ISO_LABEL="VASE_$(date +%Y%m)"
 mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
