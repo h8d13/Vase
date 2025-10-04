@@ -179,7 +179,8 @@ if ! exec_args "TUI"; then
 fi
 # TUI with args 
 if exec_args "TUI"; then
-    "./${hb_d}/install" "$(get_tui_cmd)" && rcw true && exit
+    # unquoted so that we can pass several args
+    "./${hb_d}/install" $(get_tui_cmd) && rcw true && exit
 fi
 ### Start actual usage of helpers sourced from local since we check existence
 obanner "PERMS CHECK"

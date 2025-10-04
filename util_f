@@ -18,14 +18,10 @@ parse_args() {
                 ;;
             -t |--tuimenu)
                 TUI=1
-                # Check if next arg exists and is not another flag
-                if [ -n "$2" ] && [[ ! "$2" =~ ^- ]]; then
-                    TUI_CMD="$2"
-                    shift 2
-                else
-                    TUI_CMD=""
-                    shift
-                fi
+                shift
+                # Capture all remaining arguments as TUI_CMD
+                TUI_CMD="$*"
+                break
                 ;;
             -q|--quick)
                 QUICK=1
