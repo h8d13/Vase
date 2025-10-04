@@ -221,8 +221,6 @@ check_updates() {
     echo "Changes:"
     git log --oneline --decorate --color=always HEAD..FETCH_HEAD | head -10
     echo ""
-    echo "To update run: git pull in project root"
-    echo "View all: git log HEAD..FETCH_HEAD"
-
+    echo "To update run: git pull in project root or view diff git log"
     return 0
 }

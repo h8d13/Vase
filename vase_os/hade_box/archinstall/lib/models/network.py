@@ -17,7 +17,7 @@ class NicType(Enum):
 	def display_msg(self) -> str:
 		match self:
 			case NicType.NM:
-				return ('Use NetworkManager (needed for GUI network setup in KDE Plasma)')
+				return ('Use NetworkManager')
 
 class _NicSerialization(TypedDict):
 	iface: str | None
