@@ -224,3 +224,8 @@ check_updates() {
     echo "To update run: git pull in project root or view diff git log"
     return 0
 }
+tree_dir() {
+    if dir_ex "$1"; then
+        tree -a -I '.git' --gitfile "$1/.gitignore" "$1" > "$1/.directory"
+    fi
+}
