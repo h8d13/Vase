@@ -19,7 +19,7 @@ parse_args() {
             -t |--tuimenu)
                 TUI=1
                 shift
-                # Capture all remaining arguments as TUI_CMD
+                # Capture all remaining
                 TUI_CMD="$*"
                 break
                 ;;
