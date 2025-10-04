@@ -271,7 +271,7 @@ def suggest_single_disk_layout(
 	sector_size = device.device_info.sector_size
 	total_size = device.device_info.total_size
 	available_space = total_size
-	min_size_to_allow_home_part = Size(64, Unit.GiB, sector_size)
+	min_size_to_allow_home_part = Size(40, Unit.GiB, sector_size)
 
 	if filesystem_type == FilesystemType.Btrfs:
 		# Always use default btrfs subvolume structure for proper snapshot integration
