@@ -31,6 +31,8 @@ target="${target_t}${target_p}"
 # GL acceleration: on, off
 qemu_display="gtk"
 qemu_gl="on"
+# This will attempt to copy local EFI vars to QEMU
+qemu_uefi=true
 ################## DIRS/LOGS/PERMS
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"
