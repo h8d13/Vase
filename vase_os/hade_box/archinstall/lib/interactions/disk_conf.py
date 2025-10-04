@@ -192,9 +192,6 @@ def select_main_filesystem_format() -> FilesystemType:
 		MenuItem('f2fs', value=FilesystemType.F2fs),
 	]
 
-	if arch_config_handler.args.advanced:
-		items.append(MenuItem('ntfs', value=FilesystemType.Ntfs))
-
 	group = MenuItemGroup(items, sort_items=False)
 	result = SelectMenu[FilesystemType](
 		group,

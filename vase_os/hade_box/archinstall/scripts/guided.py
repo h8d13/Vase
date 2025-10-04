@@ -88,8 +88,7 @@ def ask_user_questions() -> None:
 
 		global_menu = GlobalMenu(arch_config_handler.config)
 
-		if not arch_config_handler.args.advanced:
-			global_menu.set_enabled('parallel_downloads', False)
+		global_menu.set_enabled('parallel_downloads', True)
 
 		global_menu.run(additional_title=title_text)
 

@@ -46,7 +46,6 @@ class Arguments:
 	no_pkg_lookups: bool = False
 	plugin: str | None = None
 	skip_version_check: bool = False
-	advanced: bool = False
 	verbose: bool = False
 
 @dataclass
@@ -371,12 +370,6 @@ class ArchConfigHandler:
 			action='store_true',
 			default=False,
 			help='Disabled package validation specifically prior to starting installation.',
-		)
-		parser.add_argument(
-			'--advanced',
-			action='store_true',
-			default=False,
-			help='Enabled advanced options',
 		)
 		parser.add_argument(
 			'--verbose',
