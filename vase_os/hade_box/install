@@ -85,6 +85,5 @@ python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 # --offline             Disabled online upstream services such as package
 #                       search and key-ring auto update
 ####################### Test fully local if possible see how fast it can be
-# --advanced            Enabled advanced options
 # --verbose             Enabled verbose options
 # --debug               Adds debug info into the log
