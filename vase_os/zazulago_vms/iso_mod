@@ -166,6 +166,10 @@ info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
 mkdir -p "$WORK_DIR"
 
+# Set mksquashfs to use all available processors for faster compression
+export MKSQUASHFS_OPTIONS="-processors $(nproc)" ## Can be change to 6 for example.
+info "Using $(nproc) processors for SquashFS compression"
+
 ISO_LABEL="VASE_$(date +%Y%m)"
 mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
 # Super intense on CPU maybe we can wrap it in ionice or something similar idk
