@@ -1,7 +1,7 @@
 #!/bin/bash
 #... strucs
 # This file is an absolute mess but everything is declared here
-vase_v="0.0.01"
+vase_v="0.0.02"
 ################## VM STUFF
 arch="x86_64"
 ram="8096"
