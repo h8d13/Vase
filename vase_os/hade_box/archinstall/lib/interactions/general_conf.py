@@ -102,7 +102,7 @@ def select_language(preset: str | None = None) -> str | None:
 	return select_kb_layout(preset)
 
 def add_number_of_parallel_downloads(preset: int | None = None) -> int | None:
-	max_recommended = 5
+	max_recommended = 10
 	
 	header = ('This option enables the number of parallel downloads that can occur during package downloads') + '\n'
 	header += ('Enter the number of parallel downloads to be enabled.\n\nNote:\n')

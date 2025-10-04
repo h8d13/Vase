@@ -164,7 +164,7 @@ class GlobalMenu(AbstractMenu[None]):
 			MenuItem(
 				text=('Parallel Downloads'),
 				action=add_number_of_parallel_downloads,
-				value=0,
+				value=10,
 				preview_action=self._prev_parallel_dw,
 				key='parallel_downloads',
 			),
