@@ -106,7 +106,7 @@ Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 
 Original: 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror).
 
-New: Reduced to <200s (+ configuration in TUI) using custom ISO overlay (caching plasma packages + stuff that is always required).
+New: Reduced to <200s (+ configuration in TUI) using custom ISO overlay (caching plasma packages + stuff that is always required). Current best: 2m15s
 
 I'm aiming for the installer to be the fastest way to install KDE + a good base system and lightest compared to same env on diffrent distros thanks to Archlinux tools/compression.
 
