@@ -237,7 +237,7 @@ tree_dir() {
                 echo "[Desktop Entry]"
                 echo "Icon=folder-log"
                 echo ""
-                tree -a --dirsfirst --gitignore -I '.git|.md5' "$1"
+                tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" | tail -n +2
             } > "$1/.directory"
         fi
     fi
