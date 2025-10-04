@@ -224,8 +224,21 @@ check_updates() {
     echo "To update run: git pull in project root or view diff git log"
     return 0
 }
+nbr_files() {
+    grep -E '^[0-9]+ director' "$1/.directory" 2>/dev/null | tail -1
+}
 tree_dir() {
     if dir_ex "$1"; then
-        tree -a -I '.git' --gitfile "$1/.gitignore" "$1" > "$1/.directory"
+        local current_count=$(tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" 2>/dev/null | tail -1)
+        local stored_count=$(nbr_files "$1")
+
+        if [ "$current_count" != "$stored_count" ]; then
+            {
+                echo "[Desktop Entry]"
+                echo "Icon=folder-log"
+                echo ""
+                tree -a --dirsfirst --gitignore -I '.git|.md5' "$1"
+            } > "$1/.directory"
+        fi
     fi
 }

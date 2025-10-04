@@ -7,3 +7,9 @@ vase_os/zazulago_vms/archiso_work/
 vase_os/zazulago_vms/archiso_profile
 .zed/
 .vscode/
+
+logs/*
+user_*.json
+__pycache__/*
+*.pyc
+__pycache__
