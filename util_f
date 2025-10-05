@@ -233,21 +233,26 @@ check_updates() {
     echo "To update run: git pull in project root or view diff git log"
     return 0
 }
-nbr_files() {
-    grep -E '^[0-9]+ director' "$1/.directory" 2>/dev/null | tail -1
-}
 tree_dir() {
-    if dir_ex "$1"; then
-        local current_count=$(tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" 2>/dev/null | tail -1)
-        local stored_count=$(nbr_files "$1")
+    if ! dir_ex "$1"; then
+        return 1
+    fi
 
-        if [ "$current_count" != "$stored_count" ]; then
-            {
-                echo "[Desktop Entry]"
-                echo "Icon=folder-log"
-                echo ""
-                tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" | tail -n +2
-            } > "$1/.directory"
-        fi
+    local current_tree=$(tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" 2>/dev/null)
+    local current_hash=$(echo "$current_tree" | md5sum | awk '{print $1}')
+    local stored_hash=""
+
+    if file_ex "$1/.directory"; then
+        stored_hash=$(grep "^# th: " "$1/.directory" 2>/dev/null | awk '{print $3}')
+    fi
+
+    if [ "$current_hash" != "$stored_hash" ]; then
+        {
+            echo "[Desktop Entry]"
+            echo "Icon=folder-log"
+            echo "# th: $current_hash"
+            echo ""
+            echo "$current_tree" | tail -n +2
+        } > "$1/.directory"
     fi
 }
