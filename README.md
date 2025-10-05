@@ -49,7 +49,9 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -u` : Check for updates from GitHub
 
-All long-form commands: 
+`$ sudo ./main -b <type>` : Run benchmarks (io/cpu/gpu)
+
+All long-form commands:
 
 ```
 --reset                 # Resets logs
@@ -58,6 +60,7 @@ All long-form commands:
 --isomod                # Create iso default `iso_profiles/fat.conf`
 --start                 # Start VM menu
 --quick <command>       # Lanch VM "help" to see options
+--bench <type>          # Run benchmarks: io, cpu, gpu
 ```
 
 ---
@@ -99,6 +102,8 @@ Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 - Inside `vase_os/zazulago_vms/setup_arch` for needed packages for QEMU/KVM.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
+
+- Inside `vase_os/bench_io`, `vase_os/bench_cpu`, `vase_os/bench_gpu` for system benchmarks (outputs to `bench.log`).
 
 ---
 
