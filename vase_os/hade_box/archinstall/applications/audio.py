@@ -59,8 +59,9 @@ class AudioApp:
 			debug('No audio server selected, skipping installation.')
 			return
 
-		if SysInfo.requires_sof_fw():
-			install_session.add_additional_packages('sof-firmware')
+		# sof-firmware moved to base install in installer.py
+		# if SysInfo.requires_sof_fw():
+		# 	install_session.add_additional_packages('sof-firmware')
 
 		if SysInfo.requires_alsa_fw():
 			install_session.add_additional_packages('alsa-firmware')
