@@ -101,24 +101,24 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 		#group = MenuItemGroup(hide_menu_options, sort_items=False)
 		#group.set_focus_by_value(preset.hide_menu)
 
-		result = SelectMenu[bool](
-			group,
-			header='Hide GRUB menu at boot? (ESC key still opens it.)\n',
-			allow_skip=True,
-			alignment=Alignment.CENTER,
-			orientation=Orientation.HORIZONTAL,
-			columns=2,
-			frame=FrameProperties.min('Grub Menu'),
-			preview_size='auto',
-			preview_style=PreviewStyle.BOTTOM,
-			preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
-		).run()
+		#result = SelectMenu[bool](
+			#group,
+			#header='Hide GRUB menu at boot? (ESC key still opens it.)\n',
+			#allow_skip=True,
+			#alignment=Alignment.CENTER,
+			#orientation=Orientation.HORIZONTAL,
+			#columns=2,
+			#frame=FrameProperties.min('Grub Menu'),
+			#preview_size='auto',
+			#preview_style=PreviewStyle.BOTTOM,
+			#preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
+		#).run()
 
-		match result.type_:
-			case ResultType.Skip:
-				config.hide_menu = preset.hide_menu
-			case ResultType.Selection:
-				config.hide_menu = result.get_value()
+		#match result.type_:
+			#case ResultType.Skip:
+				#config.hide_menu = preset.hide_menu
+			#case ResultType.Selection:
+				#config.hide_menu = result.get_value()
 	#else:
 		# If OS prober is enabled, never hide menu
 		#config.hide_menu = False
