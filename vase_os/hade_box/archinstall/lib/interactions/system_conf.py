@@ -119,23 +119,23 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 				config.hide_menu = preset.hide_menu
 			case ResultType.Selection:
 				config.hide_menu = result.get_value()
-	else:
+	#else:
 		# If OS prober is enabled, never hide menu
-		config.hide_menu = False
+		#config.hide_menu = False
 
 		# Ask about remembering last selection (only useful with OS prober)
-		remember_options = [
-			MenuItem(
-				text='Enabled',
-				value=True,
-				preview_action=lambda x: 'GRUB will remember your last boot choice.\nNext boot will default to the same OS you selected.\nUseful for dual-boot systems with a preferred OS.'
-			),
-			MenuItem(
-				text='Disabled',
-				value=False,
-				preview_action=lambda x: 'GRUB will always boot the first entry by default.\nConsistent behavior regardless of previous selection.\nRecommended for single-user systems.'
-			)
-		]
+		#remember_options = [
+			#MenuItem(
+				#text='Enabled',
+				#value=True,
+				#preview_action=lambda x: 'GRUB will remember your last boot choice.\nNext boot will default to the same OS you selected.\nUseful for dual-boot systems with a preferred OS.'
+			#),
+			#MenuItem(
+				#text='Disabled',
+				#value=False,
+				#preview_action=lambda x: 'GRUB will always boot the first entry by default.\nConsistent behavior regardless of previous selection.\nRecommended for single-user systems.'
+			#)
+		#]
 
 		group = MenuItemGroup(remember_options, sort_items=False)
 		group.set_focus_by_value(preset.remember_last_selection)
