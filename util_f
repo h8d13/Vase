@@ -32,6 +32,11 @@ parse_args() {
                 UPDATE=1
                 shift
                 ;;
+            -b|--bench)
+                BENCH=1
+                BENCH_CMD="$2"
+                shift 2
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -47,6 +52,7 @@ exec_args() {
         TUI)  [ "${TUI}" = "1" ] ;;
         QUICK) [ "${QUICK}" = "1" ] ;;
         UPDATE) [ "${UPDATE}" = "1" ] ;;
+        BENCH) [ "${BENCH}" = "1" ] ;;
         *) return 1 ;;
     esac
 }
@@ -55,6 +61,9 @@ get_quick_cmd() {
 }
 get_tui_cmd() {
     echo "${TUI_CMD}"
+}
+get_bench_cmd() {
+    echo "${BENCH_CMD}"
 }
 get_iso_profile() {
     echo "${ISO_PROFILE:-fat}"

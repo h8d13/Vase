@@ -173,6 +173,26 @@ fi
 if exec_args "UPDATE"; then
     check_updates && rcw true && exit
 fi
+if exec_args "BENCH"; then
+    bench_type="$(get_bench_cmd)"
+    case "$bench_type" in
+        io)
+            preop "Starting I/O benchmark..."
+            "./${vase_d}/bench_io" && rcw true && exit
+            ;;
+        cpu)
+            preop "Starting CPU benchmark..."
+            "./${vase_d}/bench_cpu" && rcw true && exit
+            ;;
+        gpu)
+            preop "Starting GPU benchmark..."
+            "./${vase_d}/bench_gpu" && rcw true && exit
+            ;;
+        *)
+            die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
+            ;;
+    esac
+fi
 # Skip logging for TUI mode (breaks curses)
 if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
