@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Detect filesystem type
+FSTYPE=$(df -T . | tail -1 | awk '{print $2}')
+echo "Filesystem type: $FSTYPE" | tee bench.log
+
+echo "Starting disk I/O benchmark..."
+
+# Write test: Create 1GB file
+echo "Write test: Creating 1GB file..."
+dd if=/dev/zero of=testfile bs=1M count=1024 conv=fdatasync 2>&1 | tee -a bench.log
+
+# Read test: Read the file
+echo "Read test: Reading 1GB file..."
+dd if=testfile of=/dev/null bs=1M 2>&1 | tee -a bench.log
+
+# Clean up
+echo "Cleaning up test file..."
+rm -f testfile
+
+echo "Disk I/O benchmark complete."
