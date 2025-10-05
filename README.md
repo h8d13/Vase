@@ -121,7 +121,7 @@ Storage is inexpensive while **time on the other hand is the only real currency.
 
 ### Weight
 
-Original: ~1,42Gb ISO installation image size / New: ~2,31Gb ISO with plasma overlay (extra ~150s to generate ISO)
+Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma overlay (extra ~150s to generate ISO)
 
 ~4-5 Gb after initial install (minimal Intel graphics)
 
