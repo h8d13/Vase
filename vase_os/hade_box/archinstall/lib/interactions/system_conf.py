@@ -55,73 +55,44 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 
 	config = GrubConfiguration()
 
-	# Ask about OS prober
-	#os_prober_options = [
-		#MenuItem(text='Enabled', value=True, preview_action=lambda x: 'Installs os-prober package and enables detection.\nAfter first boot, run: sudo grub-mkconfig -o /boot/grub/grub.cfg'),
-		#MenuItem(text='Disabled', value=False, preview_action=lambda x: 'OS Prober will remain disabled (default).\nOnly your Arch Linux installation will appear in GRUB menu.')
-	#]
+	# Disable OS prober by default (removed from menu)
+	config.enable_os_prober = False
 
-	#group = MenuItemGroup(os_prober_options, sort_items=False)
-	#group.set_focus_by_value(preset.enable_os_prober)
+	# Ask about hiding menu
+	hide_menu_options = [
+		MenuItem(
+			text='Enabled',
+			value=False,
+			preview_action=lambda x: 'GRUB menu will be visible during boot.\nUser can select boot options (and snapshots) and see timeout countdown.\nENTER key can skip the timeout and boot immediately.'
+		),
+		MenuItem(
+			text='Disabled',
+			value=True,
+			preview_action=lambda x: 'GRUB menu will be hidden during boot.\nSystem boots directly to default entry.\nESC key during boot will reveal the menu if needed (snapshots + boot options.)'
+		)
+	]
 
-	#result = SelectMenu[bool](
-		#group,
-		#header='Enable OS Prober to detect other operating systems?\n',
-		#allow_skip=True,
-		#alignment=Alignment.CENTER,
-		#orientation=Orientation.HORIZONTAL,
-		#columns=2,
-		#frame=FrameProperties.min('Grub os-prober'),
-		#preview_size='auto',
-		#preview_style=PreviewStyle.BOTTOM,
-		#preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
-	#).run()
+	group = MenuItemGroup(hide_menu_options, sort_items=False)
+	group.set_focus_by_value(preset.hide_menu)
+
+	result = SelectMenu[bool](
+		group,
+		header='Hide GRUB menu at boot? (ESC key still opens it.)\n',
+		allow_skip=True,
+		alignment=Alignment.CENTER,
+		orientation=Orientation.HORIZONTAL,
+		columns=2,
+		frame=FrameProperties.min('Grub Menu'),
+		preview_size='auto',
+		preview_style=PreviewStyle.BOTTOM,
+		preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
+	).run()
 
 	match result.type_:
 		case ResultType.Skip:
-			config.enable_os_prober = preset.enable_os_prober
+			config.hide_menu = preset.hide_menu
 		case ResultType.Selection:
-			config.enable_os_prober = result.get_value()
-
-	# Only ask about hiding menu if OS prober is disabled
-	#if not config.enable_os_prober:
-		#hide_menu_options = [
-			#MenuItem(
-				#text='Enabled',
-				#value=False,
-				#preview_action=lambda x: 'GRUB menu will be visible during boot.\nUser can select boot options (and snapshots) and see timeout countdown.\nENTER key can skip the timeout and boot immediately.'
-			#),
-			#MenuItem(
-				#text='Disabled',
-				#value=True,
-				#preview_action=lambda x: 'GRUB menu will be hidden during boot.\nSystem boots directly to default entry.\nESC key during boot will reveal the menu if needed (snapshots + boot options.)'
-			#)
-		#]
-
-		#group = MenuItemGroup(hide_menu_options, sort_items=False)
-		#group.set_focus_by_value(preset.hide_menu)
-
-		#result = SelectMenu[bool](
-			#group,
-			#header='Hide GRUB menu at boot? (ESC key still opens it.)\n',
-			#allow_skip=True,
-			#alignment=Alignment.CENTER,
-			#orientation=Orientation.HORIZONTAL,
-			#columns=2,
-			#frame=FrameProperties.min('Grub Menu'),
-			#preview_size='auto',
-			#preview_style=PreviewStyle.BOTTOM,
-			#preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
-		#).run()
-
-		#match result.type_:
-			#case ResultType.Skip:
-				#config.hide_menu = preset.hide_menu
-			#case ResultType.Selection:
-				#config.hide_menu = result.get_value()
-	#else:
-		# If OS prober is enabled, never hide menu
-		#config.hide_menu = False
+			config.hide_menu = result.get_value()
 
 		# Ask about remembering last selection (only useful with OS prober)
 		#remember_options = [
