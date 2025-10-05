@@ -98,8 +98,8 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 			#)
 		#]
 
-		group = MenuItemGroup(hide_menu_options, sort_items=False)
-		group.set_focus_by_value(preset.hide_menu)
+		#group = MenuItemGroup(hide_menu_options, sort_items=False)
+		#group.set_focus_by_value(preset.hide_menu)
 
 		result = SelectMenu[bool](
 			group,
