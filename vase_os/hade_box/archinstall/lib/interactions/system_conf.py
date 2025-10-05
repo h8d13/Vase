@@ -84,19 +84,19 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 			config.enable_os_prober = result.get_value()
 
 	# Only ask about hiding menu if OS prober is disabled
-	if not config.enable_os_prober:
-		hide_menu_options = [
-			MenuItem(
-				text='Enabled',
-				value=False,
-				preview_action=lambda x: 'GRUB menu will be visible during boot.\nUser can select boot options (and snapshots) and see timeout countdown.\nENTER key can skip the timeout and boot immediately.'
-			),
-			MenuItem(
-				text='Disabled',
-				value=True,
-				preview_action=lambda x: 'GRUB menu will be hidden during boot.\nSystem boots directly to default entry.\nESC key during boot will reveal the menu if needed (snapshots + boot options.)'
-			)
-		]
+	#if not config.enable_os_prober:
+		#hide_menu_options = [
+			#MenuItem(
+				#text='Enabled',
+				#value=False,
+				#preview_action=lambda x: 'GRUB menu will be visible during boot.\nUser can select boot options (and snapshots) and see timeout countdown.\nENTER key can skip the timeout and boot immediately.'
+			#),
+			#MenuItem(
+				#text='Disabled',
+				#value=True,
+				#preview_action=lambda x: 'GRUB menu will be hidden during boot.\nSystem boots directly to default entry.\nESC key during boot will reveal the menu if needed (snapshots + boot options.)'
+			#)
+		#]
 
 		group = MenuItemGroup(hide_menu_options, sort_items=False)
 		group.set_focus_by_value(preset.hide_menu)
