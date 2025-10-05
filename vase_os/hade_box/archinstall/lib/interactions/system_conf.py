@@ -56,26 +56,26 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 	config = GrubConfiguration()
 
 	# Ask about OS prober
-	os_prober_options = [
-		MenuItem(text='Enabled', value=True, preview_action=lambda x: 'Installs os-prober package and enables detection.\nAfter first boot, run: sudo grub-mkconfig -o /boot/grub/grub.cfg'),
-		MenuItem(text='Disabled', value=False, preview_action=lambda x: 'OS Prober will remain disabled (default).\nOnly your Arch Linux installation will appear in GRUB menu.')
-	]
+	#os_prober_options = [
+		#MenuItem(text='Enabled', value=True, preview_action=lambda x: 'Installs os-prober package and enables detection.\nAfter first boot, run: sudo grub-mkconfig -o /boot/grub/grub.cfg'),
+		#MenuItem(text='Disabled', value=False, preview_action=lambda x: 'OS Prober will remain disabled (default).\nOnly your Arch Linux installation will appear in GRUB menu.')
+	#]
 
 	group = MenuItemGroup(os_prober_options, sort_items=False)
 	group.set_focus_by_value(preset.enable_os_prober)
 
-	result = SelectMenu[bool](
-		group,
-		header='Enable OS Prober to detect other operating systems?\n',
-		allow_skip=True,
-		alignment=Alignment.CENTER,
-		orientation=Orientation.HORIZONTAL,
-		columns=2,
-		frame=FrameProperties.min('Grub os-prober'),
-		preview_size='auto',
-		preview_style=PreviewStyle.BOTTOM,
-		preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
-	).run()
+	#result = SelectMenu[bool](
+		#group,
+		#header='Enable OS Prober to detect other operating systems?\n',
+		#allow_skip=True,
+		#alignment=Alignment.CENTER,
+		#orientation=Orientation.HORIZONTAL,
+		#columns=2,
+		#frame=FrameProperties.min('Grub os-prober'),
+		#preview_size='auto',
+		#preview_style=PreviewStyle.BOTTOM,
+		#preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
+	#).run()
 
 	match result.type_:
 		case ResultType.Skip:
