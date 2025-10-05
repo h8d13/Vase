@@ -61,8 +61,8 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 		#MenuItem(text='Disabled', value=False, preview_action=lambda x: 'OS Prober will remain disabled (default).\nOnly your Arch Linux installation will appear in GRUB menu.')
 	#]
 
-	group = MenuItemGroup(os_prober_options, sort_items=False)
-	group.set_focus_by_value(preset.enable_os_prober)
+	#group = MenuItemGroup(os_prober_options, sort_items=False)
+	#group.set_focus_by_value(preset.enable_os_prober)
 
 	#result = SelectMenu[bool](
 		#group,
