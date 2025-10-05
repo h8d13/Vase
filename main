@@ -183,8 +183,9 @@ if exec_args "TUI"; then
     "./${hb_d}/install" $(get_tui_cmd) && rcw true && exit
 fi
 ### Start actual usage of helpers sourced from local since we check existence
-tree_dir "$s_dir" # Outputs tree to .dir file conditional
-
+if cmd_exists "tree --help"
+    tree_dir "$s_dir" # Outputs tree to .dir file conditional
+fi 
 obanner "PERMS CHECK"
 if im_groot; then
     info "Running with root privileges"
