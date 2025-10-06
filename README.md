@@ -99,3 +99,7 @@ CATART=1 # 0 Disables cli art sadface
 ```
 
 Special shout to the devs at archlinux and other open-source contributors for making this project possible. 
+
+---
+
+[![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
