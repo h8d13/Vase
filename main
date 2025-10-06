@@ -202,13 +202,15 @@ if exec_args "TUI"; then
     # unquoted so that we can pass several args
     "./${hb_d}/install" $(get_tui_cmd) && rcw true && exit
 fi
-# Tree output
-if cmd_exists "tree"; then
-    tree_dir "$s_dir" # Outputs tree to .dir file conditional
-fi 
+
 obanner "PERMS CHECK"
 if im_groot; then
     info "Running with root privileges"
+    # Tree output
+    if cmd_exists "tree"; then
+        info "Output dir strucs to .directory file..."
+        tree_dir "$s_dir" # Outputs tree to .dir file conditional
+    fi 
     # Use reop for regular operation green output
     if im_sudo; then
         info "Running as elevated user..."
@@ -239,8 +241,55 @@ if im_groot; then
             exit $?
         fi
         if exec_args "ISO"; then
+            preop "Checking host is Up to Date..."
+            "./${zl_d}/host_uptodate" && rcw true
             preop "Starting ISO Builder..."
             "./${zl_d}/iso_mod" && rcw true && exit
+        fi
+        if exec_args "FLASH"; then
+            flash_device="$(get_flash_device)"
+            if [ -z "$flash_device" ]; then
+                die "No device specified. Use: -f /dev/sdX"
+            fi
+            iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
+            if ! file_ex "$iso_file"; then
+                die "ISO not found: $iso_file"
+            fi
+            preop "Flashing ISO to device..."
+            "./${zl_d}/flash_iso" "$iso_file" "$flash_device" && rcw true && exit
+        fi
+        if exec_args "ALL"; then
+            all_device="$(get_all_device)"
+            if [ -z "$all_device" ]; then
+                die "No device specified. Use: -a /dev/sdX"
+            fi
+
+            preop "Starting complete ISO workflow..."
+
+            # Build ISO
+            preop "Checking host is Up to Date..."
+            "./${zl_d}/host_uptodate" && rcw true
+            preop "Building ISO..."
+            "./${zl_d}/iso_mod" && rcw true
+
+            # Sign ISO
+            preop "Signing ISO..."
+            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig" && rcw true
+
+            # Flash ISO
+            iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
+            preop "Flashing ISO to $all_device..."
+            "./${zl_d}/flash_iso" "$iso_file" "$all_device" && rcw true
+
+            # Log to test.status
+            test_date=$(date '+%Y-%m-%d %H:%M:%S')
+            iso_size=$(du -h "$iso_file" 2>/dev/null | cut -f1)
+            echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | Status: " >> tests.status
+
+            chown "$SUDO_USER:$SUDO_USER" tests.status || true
+
+            reop "Complete workflow finished! Update tests.status after physical test."
+            exit
         fi
         if dir_own "${rel}${p_lib}" "root"; then
             ## Give back to user

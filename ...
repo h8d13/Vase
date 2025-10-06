@@ -1,7 +1,6 @@
-#!/bin/bash
 #... strucs
 # This file is an absolute mess but everything is declared here
-vase_v="0.0.02"
+vase_v="0.0.03"
 ################## VM STUFF
 arch="x86_64"
 ram="8096"
@@ -12,9 +11,9 @@ size="60G"
 # Preallocation doesnt take space directly
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
-iso_n="VASE-2025.10.04-x86_64"
-#iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 iso_ext="iso" #raw, bin
+iso_n="VASE-2025.10.06-x86_64"
+#iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
@@ -28,12 +27,12 @@ target="${target_t}${target_p}"
 # Check lsblk output to find which partition it is. 
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 ## QEMU Display Settings
-# Display backend: gtk, sdl, vnc, spice
-# GL acceleration: on, off
-# Copy EFI vars to QEMU: 1 or 0
 qemu_display="gtk"
 qemu_gl="on"
 qemu_uefi=1
+# Display backend: gtk, sdl, vnc, spice
+# GL acceleration: on, off
+# Copy EFI vars to QEMU: 1 or 0
 ################## DIRS/LOGS/PERMS
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"

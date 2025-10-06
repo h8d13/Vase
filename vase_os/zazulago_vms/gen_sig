@@ -1,6 +1,6 @@
 #!/bin/bash
-if [ -z "$1" ]; then
-    echo "Usage: gen_sig <iso_file>"
-    exit 1
-fi
-gpg --detach-sign --armor ./a/"$1"
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+# Run me as user and configure gpg key before.
+gpg --detach-sign --armor "${zl_d}/${vm_d}/${iso_n}.${iso_ext}"

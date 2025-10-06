@@ -1,0 +1,29 @@
+#!/bin/bash
+
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    # Source wrapper
+    . "${rel}${p_lib}/${rcw_file}"
+fi
+check_updates_safe() {
+    tmpdir=$(mktemp -d)
+    trap "rm -rf \$tmpdir" EXIT
+
+    # Copy the local package database
+    cp -r /var/lib/pacman/local "$tmpdir/" 2>/dev/null
+
+    # Sync the repository databases to temp location
+    if fakeroot pacman -Sy --dbpath "$tmpdir" --logfile /dev/null --disable-sandbox >/dev/null 2>&1; then
+        pacman -Qu --dbpath "$tmpdir" --disable-sandbox 2>/dev/null
+    fi
+}
+updates=$(check_updates_safe)
+if [ -n "$updates" ]; then
+    count=$(echo "$updates" | wc -l)
+    warn "Pkgs: $count available. Please update system first."
+    exit 1
+else
+    info "System up to date"
+fi

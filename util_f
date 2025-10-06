@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #utilities
 parse_args() {
     while [ $# -gt 0 ]; do
@@ -37,6 +36,20 @@ parse_args() {
                 BENCH_CMD="$2"
                 shift 2
                 ;;
+            -f|--flash)
+                FLASH=1
+                FLASH_DEVICE="$2"
+                shift 2
+                ;;
+            -a|--all)
+                ALL=1
+                if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                    echo "Error: -a requires a device argument (e.g., /dev/sdd)"
+                    exit 1
+                fi
+                ALL_DEVICE="$2"
+                shift 2
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -53,6 +66,8 @@ exec_args() {
         QUICK) [ "${QUICK}" = "1" ] ;;
         UPDATE) [ "${UPDATE}" = "1" ] ;;
         BENCH) [ "${BENCH}" = "1" ] ;;
+        FLASH) [ "${FLASH}" = "1" ] ;;
+        ALL) [ "${ALL}" = "1" ] ;;
         *) return 1 ;;
     esac
 }
@@ -64,6 +79,12 @@ get_tui_cmd() {
 }
 get_bench_cmd() {
     echo "${BENCH_CMD}"
+}
+get_flash_device() {
+    echo "${FLASH_DEVICE}"
+}
+get_all_device() {
+    echo "${ALL_DEVICE}"
 }
 get_iso_profile() {
     echo "${ISO_PROFILE:-fat}"

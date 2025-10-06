@@ -51,6 +51,10 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -b <type>` : Run benchmarks (io/cpu/gpu)
 
+`$ sudo ./main -f /dev/sdX` : Flash ISO to USB device
+
+`$ sudo ./main -a /dev/sdX` : Complete workflow (build, sign, flash, log)
+
 All long-form commands:
 
 ```
@@ -61,6 +65,8 @@ All long-form commands:
 --start                 # Start VM menu
 --quick <command>       # Lanch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
+--flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
+--all <device>          # Complete workflow: build ISO, sign, flash, log to tests.status
 ```
 
 ---

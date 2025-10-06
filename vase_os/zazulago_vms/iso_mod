@@ -116,17 +116,19 @@ if [ "$ADD_PROFILE" = "1" ]; then
                 info "Copying $dep_count packages to ISO repository..."
 
                 # Copy all packages from cache
-                for pkg_name in $all_packages; do
-                    latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
-                    if [ -n "$latest" ]; then
-                        cp "$latest" "$REPO_DIR/" 2>/dev/null || true
-                    fi
-                done
+                {
+                    for pkg_name in $all_packages; do
+                        latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
+                        if [ -n "$latest" ]; then
+                            cp "$latest" "$REPO_DIR/" 2>/dev/null || true
+                        fi
+                    done
+                } >/dev/null 2>&1
 
-                # Create local repository database (use explicit file list)
+                # Create local repository database (using explicit file list)
                 info "Creating repository database..."
                 if [ -n "$(ls -A "$REPO_DIR"/*.pkg.tar.zst 2>/dev/null)" ]; then
-                    repo-add "$REPO_DIR/vase_repo.db.tar.gz" "$REPO_DIR"/*.pkg.tar.zst
+                    repo-add "$REPO_DIR/vase_repo.db.tar.gz" "$REPO_DIR"/*.pkg.tar.zst >/dev/null 2>&1
                 else
                     warn "No packages found to add to repository"
                 fi
