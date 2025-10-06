@@ -9,7 +9,7 @@ cores="6"
 # vCPUS so actually threads but named it cores
 size="60G" 
 # Preallocation doesnt take space directly
-vm_d="a" 
+vm_d="d" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
 iso_n="VASE-2025.10.06-x86_64"
