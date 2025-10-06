@@ -491,8 +491,8 @@ class GlobalMenu(AbstractMenu[None]):
 			if profile_config.gfx_driver:
 				output += ('Graphics drivers') + ': ' + profile_config.gfx_driver.value + '\n'
 
-			if profile_config.plasma_x11_session:
-				output += ('Graphics servers') + ': Yes (plasma-x11-session)\n'
+			if profile_config.x11_packages:
+				output += ('X11 packages') + ': ' + ', '.join(profile_config.x11_packages) + '\n'
 
 			if profile_config.greeter:
 				output += ('Greeter') + ': ' + profile_config.greeter.value + '\n'

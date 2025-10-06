@@ -68,12 +68,12 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				key='gfx_driver',
 			),
 			MenuItem(
-				text=('Graphics servers'),
-				action=self._select_plasma_x11,
-				value=getattr(self._profile_config, 'plasma_x11_session', False),
-				preview_action=lambda item: 'Yes' if item.value else 'No',
+				text=('X11 packages'),
+				action=self._select_x11_packages,
+				value=getattr(self._profile_config, 'x11_packages', None),
+				preview_action=lambda item: ', '.join(item.value) if item.value else 'None',
 				enabled=True,
-				key='plasma_x11_session',
+				key='x11_packages',
 			),
 			MenuItem(
 				text=('Greeter'),
@@ -223,34 +223,46 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 
 		return None
 
-	def _select_plasma_x11(self, preset: bool | None) -> bool:
-		header = 'Include plasma-x11-session package?\n'
-		header += 'Ususally useful for older hardware, alongside Wayland.\n'
+	def _select_x11_packages(self, preset: list[str] | None) -> list[str] | None:
+		header = 'Select X11 packages to install:\n'
+		header += 'Usually useful for older hardware, alongside Wayland.\n'
 
-		group = MenuItemGroup.yes_no()
-		if preset is not None:
-			group.focus_item = MenuItem.yes() if preset else MenuItem.no()
-			group.default_item = MenuItem.yes() if preset else MenuItem.no()
-		else:
-			group.focus_item = MenuItem.no()
-			group.default_item = MenuItem.no()
+		available_packages = [
+			'plasma-x11-session',
+			'xorg-xinit',
+			'xorg-xrandr'
+		]
 
-		result = SelectMenu[bool](
+		items = [
+			MenuItem(
+				text=pkg,
+				value=pkg
+			)
+			for pkg in available_packages
+		]
+
+		group = MenuItemGroup(items)
+
+		if preset:
+			group.set_selected_by_value(preset)
+
+		result = SelectMenu[str](
 			group,
+			multi=True,
 			header=header,
 			allow_skip=True,
-			columns=2,
-			orientation=Orientation.HORIZONTAL,
-			alignment=Alignment.CENTER,
-			frame=FrameProperties.min('x11 packages'),
+			allow_reset=True,
+			frame=FrameProperties.min('X11 packages'),
 		).run()
 
 		if result.type_ == ResultType.Skip:
-			return preset if preset is not None else False
+			return preset
 		elif result.type_ == ResultType.Selection:
-			return result.item() == MenuItem.yes()
+			return result.get_values()
+		elif result.type_ == ResultType.Reset:
+			return None
 
-		return False
+		return None
 
 def select_greeter(
 	profile: Profile | None = None,
