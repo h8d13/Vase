@@ -64,7 +64,7 @@ class Installer:
 		`Installer()` is the wrapper for most basic installation steps.
 		It also wraps :py:func:`~archinstall.Installer.pacstrap` among other things.
 		"""
-		self._base_packages = base_packages or __packages__[:3]
+		self._base_packages = base_packages or __packages__[:4] # Added sof-firmare :4 to default
 		self.kernels = kernels or ['linux']
 		self._disk_config = disk_config
 
