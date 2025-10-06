@@ -1,0 +1,38 @@
+#!/bin/bash
+. ./util_f
+. ./...
+
+# Get the last OK test from tests.status
+latest_ok=$(grep "Status: OK" tests.status 2>/dev/null | tail -n 1)
+
+if [ -z "$latest_ok" ]; then
+    echo "No OK tests found in tests.status"
+    exit 1
+fi
+
+# Extract date from the latest OK test
+test_date=$(echo "$latest_ok" | cut -d'|' -f1 | xargs)
+version=$(echo "$latest_ok" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
+iso_name=$(echo "$latest_ok" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
+iso_size=$(echo "$latest_ok" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
+
+# Create/update the release badge in README
+if grep -q "^## Latest Release" README.md; then
+    # Remove all existing "Latest Release" sections first
+    sed -i '/^## Latest Release/,/^---/d' README.md
+    # Remove extra blank lines after removal
+    sed -i '/^# Vase$/,/^$/{/^$/d;}' README.md
+fi
+
+# Insert new release section after title
+sed -i "0,/^# Vase/a\\
+\\
+## Latest Release\\
+\\
+**Version:** ${version} | **Tested:** ${test_date} | **ISO:** ${iso_name} | **Size:** ${iso_size}\\
+\\
+[Releases](https://github.com/h8d13/Vase/releases/tag/ISOs)\\
+\\
+---" README.md
+
+echo "README updated with latest release: ${version}"

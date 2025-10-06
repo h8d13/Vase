@@ -34,6 +34,7 @@ qemu_uefi=1
 # GL acceleration: on, off
 # Copy EFI vars to QEMU: 1 or 0
 ################## DIRS/LOGS/PERMS
+iso_sig="asc"
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"
 # Dir mods

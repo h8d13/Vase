@@ -23,11 +23,11 @@ if [ ! -b "$DEVICE" ]; then
 fi
 
 echo "WARNING: This will erase all data on $DEVICE"
+lsblk 
 echo "ISO: $ISO"
-echo "Device: $DEVICE"
-read -p "Continue? (yes/no): " confirm
+read -p "Continue? (y/N): " confirm
 
-if [ "$confirm" != "yes" ]; then
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     echo "Aborted"
     exit 0
 fi

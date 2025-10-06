@@ -1,5 +1,13 @@
 # Vase
 
+## Latest Release
+
+**Version:** 0.0.03 | **Tested:** 2025-10-06 14:25:22 | **ISO:** VASE-2025.10.06-x86_64.iso | **Size:** 2.7G
+
+[Releases](https://github.com/h8d13/Vase/releases/tag/ISOs)
+
+---
+
 A testing suite to run VMs and perform Archlinux system installations.
 
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
@@ -53,7 +61,9 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -f /dev/sdX` : Flash ISO to USB device
 
-`$ sudo ./main -a /dev/sdX` : Complete workflow (build, sign, flash, log)
+`$ sudo ./main -a /dev/sdX` : Complete workflow (build, sign, flash, log) 
+
+> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts. `gpg --list-secret-keys`
 
 All long-form commands:
 

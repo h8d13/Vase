@@ -276,6 +276,11 @@ if im_groot; then
             preop "Signing ISO..."
             sudo -u "$SUDO_USER" "./${zl_d}/gen_sig" && rcw true
 
+            # Verify signature
+            preop "Verifying signature..."
+            gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
+            rcw true
+
             # Flash ISO
             iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
             preop "Flashing ISO to $all_device..."
@@ -284,11 +289,15 @@ if im_groot; then
             # Log to test.status
             test_date=$(date '+%Y-%m-%d %H:%M:%S')
             iso_size=$(du -h "$iso_file" 2>/dev/null | cut -f1)
-            echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | Status: " >> tests.status
+            echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
 
-            chown "$SUDO_USER:$SUDO_USER" tests.status || true
+            # Update README with latest OK release
+            preop "Updating README with latest release..."
+            ./upd_readme && rcw true
 
-            reop "Complete workflow finished! Update tests.status after physical test."
+            chown "$SUDO_USER:$SUDO_USER" tests.status README.md || true
+
+            reop "All workflow finished! Change Status to FAIL in tests.status if physical test fails."
             exit
         fi
         if dir_own "${rel}${p_lib}" "root"; then
