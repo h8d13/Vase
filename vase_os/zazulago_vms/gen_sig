@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    echo "Usage: gen_sig <iso_file>"
+    exit 1
+fi
+gpg --detach-sign --armor ./a/"$1"
