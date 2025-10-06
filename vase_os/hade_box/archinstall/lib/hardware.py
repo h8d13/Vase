@@ -48,7 +48,6 @@ class GfxPackage(Enum):
 	NvidiaUtils = 'nvidia-utils'
 	QemuGuestAgent = 'qemu-guest-agent'
 	VulkanSwrast = 'vulkan-swrast'
-	SpiceVdAgent = 'spice-vdagent'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
 	VirglRenderer = 'virglrenderer'
 	VulkanIntel = 'vulkan-intel'

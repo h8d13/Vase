@@ -59,20 +59,20 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 ### Modifications
 
 - Hybrid setup detection (common case of Nvidia-Intel) in `hardware.py` > VM Setups additional packages for QEMU/KVM
-- Fixed mesa errors running adwaita apps under VMs
+- Fixed mesa errors running adwaita apps under VMs using `vulkan-swarst`
+- Fixed a case where it would pick up on host fstab zram causing boot hangs. `genfstab {flags} -f {self.target} {self.target}` note the `-f` for filter.
+- Change `f'pacstrap -C /etc/pacman.conf -K {self.target} {" ".join(packages)} --needed --noconfirm'` note the `--needed` flag to prevent re-installs.
+- Change `arch-chroot {self.target} mkinitcpio {" ".join(flags)}')` to remove `peek_output=True` causing broken pipe errors. Comestic but important.
+- Added `sof-firmware` to base to avoid another mkinitcpio hook
 - Swap config inside disks to make possible swap on partition
 - Removed all BOOTLOADERS/HSM/LVM/FIDO2/LUKS2 logic >  Replaced by default: Grub > To be able to expand on snapper/timeshift features + Grub config and people can do what they want after.
 - Stripped a lot of code for defaults to be simpler. And for display (translations, certain menus, etc)
 - Removed plugins for maintanability of installer code (scripts still available).
 - Logging inside dir > Auto-save/Load configs also inside dir. Utility `./clean_all` script.
-- Fixed a case where it would pick up on host fstab zram causing boot hangs. `genfstab {flags} -f {self.target} {self.target}` note the `-f` for filter.
-- Change `f'pacstrap -C /etc/pacman.conf -K {self.target} {" ".join(packages)} --needed --noconfirm'` note the `--needed` flag to prevent re-installs.
-- Change `arch-chroot {self.target} mkinitcpio {" ".join(flags)}')` to remove `peek_output=True` causing broken pipe errors. Comestic but important.
-- Added legacy swap types + Legacy x11 server options
+- Legacy x11 server options
 - Change certain OOO flow:
     - mount > format filesystem > create new paritions (swap) > set mirrors and base settings > base install > audio > video > KDE plasma > bootloader
     - /etc/environment variables > network manager > users > final tz, ntp, services, fstab
-- Added sof-firmware to base
 
 - The idea was to create a declerative flow that can be easy to reproduce/modify but also to benchmark from scratch each time and having hardware specific bootloader entries (and env vars) without having to think.
 
