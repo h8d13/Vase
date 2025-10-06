@@ -15,5 +15,4 @@ __pycache__/*
 *.pyc
 __pycache__
 /.directory
-bench.log
 /archinstall

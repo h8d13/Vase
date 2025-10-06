@@ -6,66 +6,66 @@ DEVICE=$(df . | tail -1 | awk '{print $1}')
 # Get the base device (strip partition number)
 BASE_DEV=$(echo "$DEVICE" | sed 's/[0-9]*$//' | sed 's|/dev/||')
 
-echo "=== Disk Information ===" | tee bench.log
-echo "Filesystem type: $FSTYPE" | tee -a bench.log
+echo "=== Disk Information ===" 
+echo "Filesystem type: $FSTYPE" 
 
 # Check if NVMe or SATA
 if [[ "$BASE_DEV" == nvme* ]]; then
-    echo "Drive type: NVMe SSD" | tee -a bench.log
+    echo "Drive type: NVMe SSD" 
     # Get NVMe model
     if [ -e "/sys/block/$BASE_DEV/device/model" ]; then
         MODEL=$(cat /sys/block/$BASE_DEV/device/model 2>/dev/null)
-        [ -n "$MODEL" ] && echo "Model: $MODEL" | tee -a bench.log
+        [ -n "$MODEL" ] && echo "Model: $MODEL" 
     fi
 elif [[ "$BASE_DEV" == sd* ]]; then
     # Check if it's SSD or HDD via rotational flag
     if [ -e "/sys/block/$BASE_DEV/queue/rotational" ]; then
         ROT=$(cat /sys/block/$BASE_DEV/queue/rotational)
         if [ "$ROT" = "0" ]; then
-            echo "Drive type: SATA SSD" | tee -a bench.log
+            echo "Drive type: SATA SSD" 
         else
-            echo "Drive type: HDD (rotating disk)" | tee -a bench.log
+            echo "Drive type: HDD (rotating disk)" 
         fi
     fi
     # Get model
     if [ -e "/sys/block/$BASE_DEV/device/model" ]; then
         MODEL=$(cat /sys/block/$BASE_DEV/device/model 2>/dev/null | xargs)
-        [ -n "$MODEL" ] && echo "Model: $MODEL" | tee -a bench.log
+        [ -n "$MODEL" ] && echo "Model: $MODEL" 
     fi
 fi
-echo "" | tee -a bench.log
+echo "" 
 
-echo "Starting disk I/O benchmark (bypassing cache for real speeds)..." | tee -a bench.log
+echo "Starting disk I/O benchmark (bypassing cache for real speeds)..." 
 echo ""
 
 # Write test with direct I/O (bypass cache)
-echo "Write test: Creating 1GB file with direct I/O..." | tee -a bench.log
-dd if=/dev/zero of=testfile bs=1M count=1024 oflag=direct conv=fdatasync 2>&1 | tee -a bench.log
-echo "" | tee -a bench.log
+echo "Write test: Creating 1GB file with direct I/O..." 
+dd if=/dev/zero of=testfile bs=1M count=1024 oflag=direct conv=fdatasync 2>&1 
+echo "" 
 
 # Sync to ensure all writes are flushed
 sync
 
 # Clear cache before read test (requires root)
 if [ "$EUID" -eq 0 ]; then
-    echo "Clearing cache for accurate read test..." | tee -a bench.log
+    echo "Clearing cache for accurate read test..." 
     echo 3 > /proc/sys/vm/drop_caches
 else
-    echo "Warning: Not running as root - cache not cleared, read speeds may be inflated" | tee -a bench.log
+    echo "Warning: Not running as root - cache not cleared, read speeds may be inflated" 
 fi
 
 # Read test with direct I/O
-echo "Read test: Reading 1GB file with direct I/O..." | tee -a bench.log
-dd if=testfile of=/dev/null bs=1M iflag=direct 2>&1 | tee -a bench.log
-echo "" | tee -a bench.log
+echo "Read test: Reading 1GB file with direct I/O..." 
+dd if=testfile of=/dev/null bs=1M iflag=direct 2>&1 
+echo "" 
 
 # Random read/write IOPS test
-echo "Random 4K write IOPS test (10000 operations)..." | tee -a bench.log
-dd if=/dev/urandom of=testfile bs=4K count=10000 oflag=direct conv=notrunc 2>&1 | tee -a bench.log
-echo "" | tee -a bench.log
+echo "Random 4K write IOPS test (100000 operations)..." 
+dd if=/dev/urandom of=testfile bs=4K count=100000 oflag=direct conv=notrunc 2>&1 
+echo "" 
 
 # Clean up
-echo "Cleaning up test file..." | tee -a bench.log
+echo "Cleaning up test file..." 
 rm -f testfile
 
-echo "Disk I/O benchmark complete." | tee -a bench.log
+echo "Disk I/O benchmark complete."

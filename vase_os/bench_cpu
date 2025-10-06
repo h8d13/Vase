@@ -8,6 +8,6 @@ fi
 
 # CPU benchmark
 echo "Starting CPU benchmark..."
-sysbench cpu --threads=$(nproc) --time=60 run 2>&1 | tee -a bench.log
+sysbench cpu --threads=$(nproc) --time=60 run 2>&1 
 
 echo "CPU benchmark complete."

@@ -8,4 +8,4 @@ fi
 
 # Run glmark2 and output to bench.log
 echo "Starting GPU benchmark..."
-glmark2 2>&1 | tee -a bench.log
+glmark2 2>&1 
