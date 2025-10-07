@@ -8,13 +8,11 @@
 
 ---
 <div>
-    <img src="./vase.svg" alt="VaseLogo" width="60">
     <a href="https://github.com/h8d13/Vase/releases">
+        <img src="./vase.svg" alt="VaseLogo" width="60">
         <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-blue" alt="Arch">
     </a>
 </div>
-
----
 
 A testing suite to run VMs and perform Archlinux system installations.
 
