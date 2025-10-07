@@ -30,7 +30,7 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "    <br><br>"
     print "    <strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>ISO:</strong> " iso_name " | <strong>Size:</strong> " iso_size
     print "    <br><br>"
-    print "    <a href=\"https://github.com/h8d13/Vase/releases/tag/ISOs\">Releases</a>"
+    print "    <a href=\"https://github.com/h8d13/Vase/releases\">Releases</a>"
     print "</div>"
     getline
     if ($0 != "") print
