@@ -29,8 +29,6 @@ Written in bash and python.
     <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
 </a>
 
----
-
 ## Installation/Usage
 
 ### From USB/ISO
