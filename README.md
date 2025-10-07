@@ -1,5 +1,7 @@
 # Vase
 
+![VaseLogo](./vase.svg)
+
 ## Latest Release
 
 **Version:** 0.0.03 | **Tested:** 2025-10-06 14:25:22 | **ISO:** VASE-2025.10.06-x86_64.iso | **Size:** 2.7G

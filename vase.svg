@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 512 512" xml:space="preserve">
+<g>
+    <!-- Vase body outline -->
+    <path d="M373.041,210.167c-29.952-29.952-70.935-39.621-70.935-106.226C302.105,57.744,315,15,315,15H197
+        c0,0,13,42.744,13,88.942c0,66.605-40.982,76.273-70.934,106.226c-29.953,29.953-48.475,71.344-48.475,117.049
+        c0,29.006,7.461,56.267,20.568,79.973c13.122,23.699,31.891,43.836,54.474,58.621H256h90.473
+        c22.599-14.784,41.367-34.922,54.474-58.621c13.122-23.706,20.584-50.967,20.584-79.973
+        C421.531,281.511,403.009,240.12,373.041,210.167z"
+        fill="none"
+        stroke="#33aa33"
+        stroke-width="4"/>
+
+    <!-- Top opening ellipse -->
+    <ellipse cx="256" cy="15" rx="59" ry="6"
+        fill="#33aa33"
+        stroke="#33aa33"
+        stroke-width="4"/>
+
+    <!-- Water fill (2/3 full - filling from bottom) -->
+    <clipPath id="vaseClip">
+        <path d="M373.041,210.167c-29.952-29.952-70.935-39.621-70.935-106.226C302.105,57.744,325.289,0,325.289,0H186.696
+            c0,0,23.183,57.744,23.183,103.942c0,66.605-40.982,76.273-70.934,106.226c-29.953,29.953-48.475,71.344-48.475,117.049
+            c0,29.006,7.461,56.267,20.568,79.973c13.122,23.699,31.891,43.836,54.474,58.621H256h90.473
+            c22.599-14.784,41.367-34.922,54.474-58.621c13.122-23.706,20.584-50.967,20.584-79.973
+            C421.531,281.511,403.009,240.12,373.041,210.167z"/>
+    </clipPath>
+
+    <rect x="0" y="155" width="512" height="310"
+        fill="#2d7a2d"
+        opacity="0.4"
+        clip-path="url(#vaseClip)"/>
+
+    <!-- Water surface -->
+    <ellipse cx="256" cy="155" rx="60" ry="6"
+        fill="#2d7a2d"
+        opacity="0.5"/>
+
+    <!-- 3D highlight line on left side of round body -->
+    <path d="M 110,280
+        c0,25,6,48,17,68
+        c11,20,26,38,45,51"
+        fill="none"
+        stroke="#33aa33"
+        stroke-width="2"
+        opacity="0.4"/>
+
+    <!-- Clock inside vase (2/3 circle) -->
+    <g clip-path="url(#vaseClip)">
+        <!-- Clock arc (240 degrees, center at 256,315) -->
+        <path d="M 256,265
+                 A 50,50 0 1,1 206,315"
+            fill="none"
+            stroke="#000000"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+        <!-- Hour hand -->
+        <line x1="256" y1="315" x2="256" y2="290"
+            stroke="#000000"
+            stroke-width="2"
+            stroke-linecap="round"/>
+
+        <!-- Minute hand -->
+        <line x1="256" y1="315" x2="280" y2="305"
+            stroke="#000000"
+            stroke-width="2"
+            stroke-linecap="round"/>
+    </g>
+
+    <!-- Base platform -->
+    <rect x="163.604" y="481.201" width="184.776" height="30.799" fill="#33aa33" stroke="#33aa33" stroke-width="4"/>
+</g>
+</svg>
