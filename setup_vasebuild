@@ -13,7 +13,6 @@ if ! im_groot; then
 fi
 
 USERNAME="vasebuild"
-
 # GPG key configuration (customize these)
 GPG_NAME="${GPG_NAME:-Vase Build}"
 GPG_EMAIL="${GPG_EMAIL:-vasebuild@localhost}"
