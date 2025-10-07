@@ -22,8 +22,7 @@ check_updates_safe() {
 updates=$(check_updates_safe)
 if [ -n "$updates" ]; then
     count=$(echo "$updates" | wc -l)
-    warn "Pkgs: $count available. Please update system first."
-    exit 1
+    die "Pkgs: $count available. Please update system first."
 else
     info "System up to date"
 fi

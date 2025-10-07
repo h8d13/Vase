@@ -242,7 +242,7 @@ if im_groot; then
         fi
         if exec_args "ISO"; then
             preop "Checking host is Up to Date..."
-            "./${zl_d}/host_uptodate" && rcw true
+            "./${zl_d}/host_uptodate" && rcw true || exit 1
             preop "Starting ISO Builder..."
             "./${zl_d}/iso_mod" && rcw true && exit
         fi
@@ -264,36 +264,31 @@ if im_groot; then
                 die "No device specified. Use: -a /dev/sdX"
             fi
 
-            preop "Starting complete ISO workflow..."
+            preop "Starting ISO workflow..."
 
             # Build ISO
             preop "Checking host is Up to Date..."
-            "./${zl_d}/host_uptodate" && rcw true
+            "./${zl_d}/host_uptodate" || exit 1
             preop "Building ISO..."
-            "./${zl_d}/iso_mod" && rcw true
+            "./${zl_d}/iso_mod" || exit 1
 
             # Sign ISO
             preop "Signing ISO..."
-            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig" && rcw true
+            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
 
             # Verify signature
             preop "Verifying signature..."
             gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
-            rcw true
 
             # Flash ISO
             iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
             preop "Flashing ISO to $all_device..."
-            "./${zl_d}/flash_iso" "$iso_file" "$all_device" && rcw true
+            "./${zl_d}/flash_iso" "$iso_file" "$all_device" 
 
             # Log to test.status
             test_date=$(date '+%Y-%m-%d %H:%M:%S')
             iso_size=$(du -h "$iso_file" 2>/dev/null | cut -f1)
             echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
-
-            # Update README with latest OK release
-            preop "Updating README with latest release..."
-            ./upd_readme && rcw true
 
             chown "$SUDO_USER:$SUDO_USER" tests.status README.md || true
 
