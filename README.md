@@ -1,7 +1,9 @@
 # Vase
 
-<img src="./vase.svg" alt="VaseLogo" width="100">
-![Arch](https://img.shields.io/badge/Arch_Linux-v6.16.10-blue)
+ <div>
+    <img src="./vase.svg" alt="VaseLogo" width="100">
+    <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-blue" alt="Arch">
+  </div>
 
 ## Latest Release
 
