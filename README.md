@@ -20,6 +20,12 @@ A testing suite to run VMs and perform Archlinux system installations.
 
 Written in bash and python. 
 
+<div>
+<a href="https://github.com/h8d13/Vase/releases">
+    <img src="https://img.shields.io/badge/Install_Time-02:35-blue" alt="InstallTime">
+</a>
+</div>
+
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed into the ISO. 
 > At the cost of having to do more frequent builds.
 
