@@ -1,18 +1,21 @@
 # Vase
 
-<div>
+<div style="display: flex; align-items: center; gap: 20px;">
     <img src="./vase.svg" alt="VaseLogo" width="72">
-    <a href="https://github.com/h8d13/Vase/releases">
-        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
-    </a>
-    <a href="https://github.com/h8d13/Vase/releases">
-        <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-    </a>
+    <div style="display: flex; flex-direction: column; gap: 5px;">
+        <a href="https://github.com/h8d13/Vase/releases">
+            <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
+        </a>
+        <a href="https://github.com/h8d13/Vase/releases">
+            <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
+        </a>
+    </div>
     <br><br>
     <strong>Version:</strong> 0.0.04 | <strong>Tested:</strong> 2025-10-07 14:39:19 | <strong>Size:</strong> 2.7G
     <br><br>
     <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 </div>
+
 ---
 
 A testing suite to run VMs and perform Archlinux system installations. 
