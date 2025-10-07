@@ -56,7 +56,7 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 ---
 
-### From an existing arch installation
+### From an existing arch installation (For devs)
 
 `$ git clone https://github.com/h8d13/Vase`
 
