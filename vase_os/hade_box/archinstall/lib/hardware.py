@@ -45,7 +45,6 @@ class GfxPackage(Enum):
 	NvidiaDkms = 'nvidia-dkms'
 	NvidiaOpenDkms = 'nvidia-open-dkms'
 	NvidiaPrime = 'nvidia-prime'
-	NvidiaUtils = 'nvidia-utils'
 	QemuGuestAgent = 'qemu-guest-agent'
 	VulkanSwrast = 'vulkan-swrast'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
