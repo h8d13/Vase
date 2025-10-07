@@ -69,7 +69,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ sudo ./main -a /dev/sdX` : Complete workflow (build, sign, flash, log) 
 
-> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts. `gpg --list-secret-keys`
+> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts. `gpg --list-secret-keys` for building and KVM compatible hardware for VM options.
 
 All long-form commands:
 
