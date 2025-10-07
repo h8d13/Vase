@@ -237,7 +237,12 @@ if im_groot; then
             "./${zl_d}/vm_start" && rcw true && exit
         fi
         if exec_args "QUICK"; then
-            "./${zl_d}/vm_start" "$(get_quick_cmd)"
+            quick_arg="$(get_quick_cmd)"
+            if [ -z "$quick_arg" ]; then
+                "./${zl_d}/vm_start" "__default__"
+            else
+                "./${zl_d}/vm_start" "$quick_arg"
+            fi
             exit $?
         fi
         if exec_args "ISO"; then

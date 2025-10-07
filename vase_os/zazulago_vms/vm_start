@@ -266,8 +266,13 @@ main() {
 
     # Check for quick command from argument (bypass menu)
     if [ -n "$quick_cmd" ]; then
-        choice="$quick_cmd"
-        preop "Quick command: $choice"
+        if [ "$quick_cmd" = "__default__" ]; then
+            choice=""  # Empty = default action
+            preop "Quick mode: running default VM"
+        else
+            choice="$quick_cmd"
+            preop "Quick command: $choice"
+        fi
     else
         # Show menu
         show_menu

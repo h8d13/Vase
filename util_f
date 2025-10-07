@@ -24,8 +24,13 @@ parse_args() {
                 ;;
             -q|--quick)
                 QUICK=1
-                QUICK_CMD="$2"
-                shift 2
+                if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
+                    QUICK_CMD="$2"
+                    shift 2
+                else
+                    QUICK_CMD=""
+                    shift
+                fi
                 ;;
             -u|--update)
                 UPDATE=1
