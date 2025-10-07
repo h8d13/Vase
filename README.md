@@ -86,7 +86,9 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 To change the post install code aswell:
 
-Run in project root: `git submodule init && git submodule update` find files in `/vase_os/kaes_arch/` 
+Run in project root: `git submodule init && git submodule update` 
+
+Find files in `/vase_os/kaes_arch/` or better yet fork all the repos and send me patches.
 
 All long-form commands:
 
