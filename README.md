@@ -1,15 +1,10 @@
 # Vase
 
-<div style="display: flex; align-items: center; gap: 20px;">
+<div>
     <img src="./vase.svg" alt="VaseLogo" width="72">
-    <div style="display: flex; flex-direction: column; gap: 5px;">
-        <a href="https://github.com/h8d13/Vase/releases">
-            <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
-        </a>
-        <a href="https://github.com/h8d13/Vase/releases">
-            <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-        </a>
-    </div>
+    <a href="https://github.com/h8d13/Vase/releases">
+        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
+    </a>
     <br><br>
     <strong>Version:</strong> 0.0.04 | <strong>Tested:</strong> 2025-10-07 14:39:19 | <strong>Size:</strong> 2.7G
     <br><br>
@@ -27,6 +22,12 @@ Written in bash and python.
 
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed into the ISO. 
 > At the cost of having to do more frequent builds.
+
+---
+
+<a href="https://github.com/h8d13/Vase/releases">
+    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
+</a>
 
 ---
 
