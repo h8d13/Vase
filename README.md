@@ -10,6 +10,7 @@
     <br><br>
     <a href="https://github.com/h8d13/Vase/releases/tag/ISOs">Releases</a>
 </div>
+
 ---
 
 A testing suite to run VMs and perform Archlinux system installations.

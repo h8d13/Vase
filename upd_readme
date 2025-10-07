@@ -2,7 +2,6 @@
 . ./util_f
 . ./...
 
-# Get the last OK test from tests.status
 latest_ok=$(grep "Status: OK" tests.status 2>/dev/null | tail -n 1)
 
 if [ -z "$latest_ok" ]; then
@@ -10,36 +9,34 @@ if [ -z "$latest_ok" ]; then
     exit 1
 fi
 
-# Extract date from the latest OK test
 test_date=$(echo "$latest_ok" | cut -d'|' -f1 | xargs)
 version=$(echo "$latest_ok" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
 iso_name=$(echo "$latest_ok" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
 iso_size=$(echo "$latest_ok" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
-# Get kernel version from uname
 kernel_version=$(uname -r | cut -d'-' -f1)
 
-# Remove old div section if it exists
 sed -i '/<div>/,/<\/div>/d' README.md
 
-# Insert new release section after title
-sed -i "/^# Vase$/a\\
-\\
-<div>\\
-    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"60\">\\
-    <a href=\"https://github.com/h8d13/Vase/releases\">\\
-        <img src=\"https://img.shields.io/badge/Arch_Linux-v${kernel_version}-darkgreen\" alt=\"Arch\">\\
-    </a>\\
-    <br><br>\\
-    <strong>Version:</strong> ${version} | <strong>Tested:</strong> ${test_date} | <strong>ISO:</strong> ${iso_name} | <strong>Size:</strong> ${iso_size}\\
-    <br><br>\\
-    <a href=\"https://github.com/h8d13/Vase/releases/tag/ISOs\">Releases</a>\\
-</div>\\
-" README.md
-
-# Remove extra blank lines after </div>
-sed -i '/<\/div>/,/^---$/ {
-    /^$/d
-}' README.md
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" '
+/^# Vase$/ {
+    print
+    print ""
+    print "<div>"
+    print "    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"60\">"
+    print "    <a href=\"https://github.com/h8d13/Vase/releases\">"
+    print "        <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-darkgreen\" alt=\"Arch\">"
+    print "    </a>"
+    print "    <br><br>"
+    print "    <strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>ISO:</strong> " iso_name " | <strong>Size:</strong> " iso_size
+    print "    <br><br>"
+    print "    <a href=\"https://github.com/h8d13/Vase/releases/tag/ISOs\">Releases</a>"
+    print "</div>"
+    getline
+    if ($0 != "") print
+    next
+}
+{ print }
+' README.md > README.md.tmp && mv README.md.tmp README.md
 
 echo "README updated with latest release: ${version} (Kernel: ${kernel_version})"
