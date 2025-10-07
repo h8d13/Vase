@@ -34,7 +34,7 @@ Written in bash and python.
 ### From USB/ISO
 
 > By default you are already root in the ISO env. 
-> This should work from official arch ISO or the one built here.
+> This should work from official arch ISO (using mirrors) or the one built here (using cached).
 
 `$ pacman-key --init && pacman -Sy git`
 
