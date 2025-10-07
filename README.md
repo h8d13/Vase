@@ -1,4 +1,4 @@
-# Vase
+# Vase Archlinux
 
 <div>
     <img src="./vase.svg" alt="VaseLogo" width="72">
@@ -48,6 +48,9 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 `$ git clone https://github.com/h8d13/Vase`
 
+`$ sudo ./main -t (*args)` : Launch TUI forked KDE install
+> This will check system subdeps for Arch to Arch installs.
+
 `$ sudo ./main`    : Check envir deps for QEMU/KVM
 
 `$ sudo ./main -s` : Start VMs testing suite menu
@@ -55,8 +58,6 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 `$ sudo ./main -q brick` : Skip menu pass directly
 
 `$ sudo ./main -i` : Create ISO overlays w RELENG
-
-`$ sudo ./main -t (*args)` : Launch TUI forked KDE install
 
 `$ sudo ./main -r` : Reset logs, log settings and rcw
 
