@@ -28,10 +28,10 @@ target="${target_t}${target_p}"
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 ## QEMU Display Settings
 qemu_display="gtk"
-qemu_gl="on"
-qemu_uefi=1
 # Display backend: gtk, sdl, vnc, spice
+qemu_gl="on"
 # GL acceleration: on, off
+qemu_uefi=1
 # Copy EFI vars to QEMU: 1 or 0
 ################## DIRS/LOGS/PERMS
 iso_sig="asc"
