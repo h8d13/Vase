@@ -20,7 +20,7 @@ A testing suite to run VMs and perform Archlinux system installations.
 
 Written in bash and python. 
 
-> Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed into the ISO. 
+> Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed onto the ISO. 
 > And also due to tools made by the release engineering teams at Arch. At the cost of having to do more frequent builds.
 
 ---
