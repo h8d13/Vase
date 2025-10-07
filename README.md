@@ -1,6 +1,6 @@
 # Vase
 
-![VaseLogo](./vase.svg)
+<img src="./vase.svg" alt="VaseLogo" width="100">
 
 ## Latest Release
 
