@@ -18,7 +18,10 @@ A testing suite to run VMs and perform Archlinux system installations.
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
 > Or test other distros from Arch without learning all the QEMU docs.
 
-Written in bash and python. Installs **6-13x faster** than any other distro with KDE.
+Written in bash and python. 
+
+> Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed into the ISO. 
+> At the cost of having to do more frequent builds.
 
 ---
 
