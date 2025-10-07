@@ -11,7 +11,7 @@
 <div>
     <img src="./vase.svg" alt="VaseLogo" width="60">
     <a href="https://github.com/h8d13/Vase/releases">
-        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-green" alt="Arch">
+        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
     </a>
 </div>
 
