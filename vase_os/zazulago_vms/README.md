@@ -8,6 +8,6 @@ This is handy to test both Grub2 configurations without going into BIOS. Or stra
 
 ---
 
-A good example is running Adwaita apps (used frequently by GNOME). Other relevant examples like mission-center, gnome-disk-utility, etc
+A good example is running Adwaita apps (used frequently by GNOME). Other relevant examples like mission-center, gnome-disk-utility, etc. Natively without flatpak or similar.
 
 This was fixed using `vulkan-swrast` in version 0.0.03. The way it was fixed was by making a snapshot of my VM, then install one package, test and repeat... 
