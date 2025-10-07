@@ -110,4 +110,4 @@ Special shout to the devs at archlinux and other open-source contributors for ma
 
 [![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
 
-See the video on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
+See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
