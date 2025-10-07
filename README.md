@@ -26,6 +26,7 @@ Written in bash and python.
 </a>
 </div>
 
+
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed into the ISO. 
 > At the cost of having to do more frequent builds.
 
