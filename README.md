@@ -50,6 +50,10 @@ Open `Konsole` and type `cd KAES-ARCH` this is where the post install script liv
 
 Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
+[![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
+
+See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
+
 ---
 
 ### From an existing arch installation
@@ -78,6 +82,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 `$ sudo ./main -a /dev/sdX` : Complete workflow (build, sign, flash, log) 
 
 > Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts. `gpg --list-secret-keys` for building and KVM compatible hardware for VM options.
+> Mostly tooling for devs... More readmes included. 
 
 All long-form commands:
 
@@ -115,7 +120,3 @@ CATART=1 # 0 Disables cli art sadface
 Special shout to the devs at archlinux and other open-source contributors for making this project possible. 
 
 ---
-
-[![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
-
-See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
