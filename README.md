@@ -6,7 +6,7 @@
         <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
     </a>
     <br><br>
-    <strong>Version:</strong> 0.0.03 | <strong>Tested:</strong> 2025-10-07 14:26:24 | <strong>ISO:</strong> VASE-2025.10.06-x86_64.iso | <strong>Size:</strong> 
+    <strong>Version:</strong> 0.0.04 | <strong>Tested:</strong> 2025-10-07 14:39:19 | <strong>ISO:</strong> VASE-2025.10.07-x86_64.iso | <strong>Size:</strong> 2.7G
     <br><br>
     <a href="https://github.com/h8d13/Vase/releases/tag/ISOs">Releases</a>
 </div>
