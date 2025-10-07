@@ -23,7 +23,7 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print
     print ""
     print "<div>"
-    print "    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"60\">"
+    print "    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\">"
     print "    <a href=\"https://github.com/h8d13/Vase/releases\">"
     print "        <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-darkgreen\" alt=\"Arch\">"
     print "    </a>"
