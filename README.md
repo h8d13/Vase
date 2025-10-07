@@ -1,20 +1,15 @@
 # Vase
 
-## Latest Release
-
-**Version:** 0.0.03 | **Tested:** 2025-10-06 14:25:22 | **ISO:** VASE-2025.10.06-x86_64.iso | **Size:** 2.7G
-
-[Releases](https://github.com/h8d13/Vase/releases/tag/ISOs)
-
----
-
 <div>
     <img src="./vase.svg" alt="VaseLogo" width="60">
     <a href="https://github.com/h8d13/Vase/releases">
         <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
     </a>
+    <br><br>
+    <strong>Version:</strong> 0.0.03 | <strong>Tested:</strong> 2025-10-06 14:25:22 | <strong>ISO:</strong> VASE-2025.10.06-x86_64.iso | <strong>Size:</strong> 2.7G
+    <br><br>
+    <a href="https://github.com/h8d13/Vase/releases/tag/ISOs">Releases</a>
 </div>
-
 ---
 
 A testing suite to run VMs and perform Archlinux system installations.
