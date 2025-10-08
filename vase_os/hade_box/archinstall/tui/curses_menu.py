@@ -628,9 +628,6 @@ class EditMenu(AbstractCurses[str]):
 			special_key = key_handles[0]
 
 			match special_key:
-				case MenuKeys.QUIT:
-					# CTRL+Q - Full exit like CTRL+C
-					raise KeyboardInterrupt()
 				case MenuKeys.HELP:
 					assert self._input_vp
 					self._current_text = self._input_vp.textbox_value()
@@ -1227,9 +1224,6 @@ class SelectMenu[ValueT](AbstractCurses[ValueT]):
 		handle = key_handles[0]
 
 		match handle:
-			case MenuKeys.QUIT:
-				# CTRL+Q - Full exit like CTRL+C
-				raise KeyboardInterrupt()
 			case MenuKeys.HELP:
 				self._help_active = True
 				self._clear_all()
