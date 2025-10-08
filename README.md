@@ -12,7 +12,7 @@
     <tr>
         <td>
             <a href="https://status.archlinux.org/">
-                <img src="https://img.shields.io/badge/Mirror_Status-Offline-darkred" alt="MirrorStatus">
+                <img src="https://img.shields.io/badge/Mirror_Status-Online_%284407ms%29-darkgreen" alt="MirrorStatus">
             </a>
         </td>
     </tr>
