@@ -28,11 +28,11 @@ if curl -s -m 5 --head "$mirror_url" >/dev/null 2>&1; then
     ping_end=$(date +%s%3N)
     ping_ms=$((ping_end - ping_start))
     mirror_status="online"
-    mirror_badge="online_%28${ping_ms}ms%29"
+    mirror_badge="Online_%28${ping_ms}ms%29"
     mirror_color="darkgreen"
 else
     mirror_status="offline"
-    mirror_badge="offline"
+    mirror_badge="Offline"
     mirror_color="darkred"
 fi
 

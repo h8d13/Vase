@@ -14,7 +14,7 @@
     <tr>
         <td>
             <a href="https://archlinux.org/mirrors/status/">
-                <img src="https://img.shields.io/badge/Mirror_Status-offline-darkred" alt="MirrorStatus">
+                <img src="https://img.shields.io/badge/Mirror_Status-Offline-darkred" alt="MirrorStatus">
             </a>
         </td>
     </tr>
@@ -23,6 +23,7 @@
 <strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 09:42:04 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
+
 
 ---
 
