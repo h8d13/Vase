@@ -3,7 +3,7 @@
 <div>
     <img src="./vase.svg" alt="VaseLogo" width="72">
     <a href="https://github.com/h8d13/Vase/releases">
-        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.11-darkgreen" alt="Arch">
+        <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
     </a>
     <br>
     <a href="https://archlinux.org/mirrors/status/">
