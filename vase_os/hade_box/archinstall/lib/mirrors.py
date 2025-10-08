@@ -380,7 +380,7 @@ def edit_mirrorlist_for_regions(regions: list[MirrorRegion]) -> None:
 		Tui.print('No mirrors found in selected regions')
 		return
 
-	_edit_mirrors(mirrors)
+	_edit_mirrors(mirrors, regions)
 
 def edit_mirrorlist() -> None:
 	"""Interactive mirrorlist editor to reorder and filter mirrors"""
@@ -402,9 +402,9 @@ def edit_mirrorlist() -> None:
 		Tui.print('No mirrors found in mirrorlist')
 		return
 
-	_edit_mirrors(mirrors)
+	_edit_mirrors(mirrors, None)
 
-def _edit_mirrors(mirrors: list[str]) -> None:
+def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None) -> None:
 	"""Core mirror editing logic - filters and reorders given list of mirrors"""
 	mirrorlist_path = mirror_list_handler._local_mirrorlist
 
@@ -455,11 +455,22 @@ def _edit_mirrors(mirrors: list[str]) -> None:
 						mirrors = selected_mirrors
 
 			elif choice == 'done':
-				# Write final mirrorlist
+				# Write final mirrorlist with region structure preserved
 				with mirrorlist_path.open('w') as f:
-					f.write('# Custom mirrorlist\n')
-					for mirror in mirrors:
-						f.write(f'Server = {mirror}\n')
+					if regions:
+						# Write mirrors grouped by region
+						for region in regions:
+							region_mirrors = [m for m in mirrors if m in region.urls]
+							if region_mirrors:
+								f.write(f'## {region.name}\n')
+								for mirror in region_mirrors:
+									f.write(f'Server = {mirror}\n')
+								f.write('\n')
+					else:
+						# No region structure, write flat list
+						f.write('# Custom mirrorlist\n')
+						for mirror in mirrors:
+							f.write(f'Server = {mirror}\n')
 				break
 
 def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
