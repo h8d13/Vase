@@ -183,14 +183,21 @@ class Installer:
 
 				time_val = SysCommand('timedatectl show --property=NTPSynchronized --value').decode()
 				if time_val and time_val.strip() == 'yes':
+					info('Time sync completed.')
 					break
 				time.sleep(1)
 		else:
 			info('Skipping waiting for automatic time sync (this can cause issues if time is out of sync during installation)')
 
 		info('Waiting for automatic mirror selection (reflector) to complete.')
+		reflector_timeout = 30  # 30 second timeout
+		reflector_waited = 0
 		while self._service_state('reflector') not in ('dead', 'failed', 'exited'):
+			if reflector_waited >= reflector_timeout:
+				warn(f'Reflector timeout after {reflector_timeout}s, continuing with existing mirrors')
+				break
 			time.sleep(1)
+			reflector_waited += 1
 
 		# info('Waiting for pacman-init.service to complete.')
 		# while self._service_state('pacman-init') not in ('dead', 'failed', 'exited'):
