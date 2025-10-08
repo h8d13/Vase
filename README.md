@@ -12,7 +12,7 @@
     <tr>
         <td>
             <a href="https://archlinux.org/mirrors/status/">
-                <img src="https://img.shields.io/badge/Mirror_Status-Offline-darkred" alt="MirrorStatus">
+                <img src="https://img.shields.io/badge/Mirror_Status-Online_%282111ms%29-darkgreen" alt="MirrorStatus">
             </a>
         </td>
     </tr>
@@ -24,11 +24,9 @@
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 13:17:57 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 13:34:04 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
-
-
 
 ---
 
