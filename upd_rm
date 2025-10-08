@@ -42,29 +42,35 @@ iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
 kernel_version=$(uname -r | cut -d'-' -f1)
 
-sed -i '/<div>/,/<\/div>/d' README.md
+sed -i '/<table>/,/<\/table>/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d' README.md
 
 awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_status="$mirror_status" -v mirror_color="$mirror_color" -v ping_ms="$ping_ms" '
 /^# Vase$/ {
     print
     print ""
-    print "<div>"
-    print "    <div style=\"display: flex; align-items: center; gap: 15px;\">"
-    print "        <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\" style=\"flex-shrink: 0;\">"
-    print "        <div style=\"display: flex; flex-direction: column; gap: 8px;\">"
+    print "<table>"
+    print "    <tr>"
+    print "        <td rowspan=\"2\" style=\"vertical-align: middle;\">"
+    print "            <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\">"
+    print "        </td>"
+    print "        <td>"
     print "            <a href=\"https://github.com/h8d13/Vase/releases\">"
     print "                <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
     print "            </a>"
+    print "        </td>"
+    print "    </tr>"
+    print "    <tr>"
+    print "        <td>"
     print "            <a href=\"https://archlinux.org/mirrors/status/\">"
     print "                <img src=\"https://img.shields.io/badge/Mirror_Status-" mirror_status "_%28" ping_ms "ms%29-" mirror_color "\" alt=\"MirrorStatus\">"
     print "            </a>"
-    print "        </div>"
-    print "    </div>"
-    print "    <br><br>"
-    print "    <strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
-    print "    <br><br>"
-    print "    <a href=\"https://github.com/h8d13/Vase/releases\">Releases</a>"
-    print "</div>"
+    print "        </td>"
+    print "    </tr>"
+    print "</table>"
+    print ""
+    print "<strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
+    print "<br><br>"
+    print "<a href=\"https://github.com/h8d13/Vase/releases\">Releases</a>"
     getline
     if ($0 != "") print
     next

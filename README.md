@@ -1,22 +1,24 @@
 # Vase
 
-<div>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <img src="./vase.svg" alt="VaseLogo" width="72" style="flex-shrink: 0;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
+<table>
+    <tr>
+        <td rowspan="2" style="vertical-align: middle;">
+            <img src="./vase.svg" alt="VaseLogo" width="72">
+        </td>
+        <td>
             <a href="https://github.com/h8d13/Vase/releases">
                 <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkred" alt="Arch">
             </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
             <a href="https://archlinux.org/mirrors/status/">
                 <img src="https://img.shields.io/badge/Mirror_Status-offline_%28N/Ams%29-darkred" alt="MirrorStatus">
             </a>
-        </div>
-    </div>
-    <br><br>
-    <strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 09:42:04 | <strong>Size:</strong> 2.7G
-    <br><br>
-    <a href="https://github.com/h8d13/Vase/releases">Releases</a>
-</div>
+        </td>
+    </tr>
+</table>
 
 ---
 
