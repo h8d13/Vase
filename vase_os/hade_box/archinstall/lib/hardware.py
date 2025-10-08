@@ -148,7 +148,6 @@ class GfxDriver(Enum):
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
 					GfxPackage.NvidiaPrime,
-					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.VMOpenSource:
 				packages += [
