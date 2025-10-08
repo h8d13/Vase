@@ -383,56 +383,59 @@ def edit_mirrorlist() -> None:
 		Tui.print('No mirrors found in mirrorlist')
 		return
 
-	# Filter options menu
-	items = [
-		MenuItem('Keep only HTTPS mirrors', value='https_only'),
-		MenuItem('Reorder mirrors interactively', value='reorder'),
-		MenuItem('Keep current mirrorlist as-is', value='keep'),
-	]
+	# Loop to allow multiple operations
+	while True:
+		items = [
+			MenuItem('Keep only HTTPS mirrors', value='https_only'),
+			MenuItem('Reorder mirrors interactively', value='reorder'),
+			MenuItem('Done - save and continue', value='done'),
+		]
 
-	result = SelectMenu(
-		MenuItemGroup(items, sort_items=False),
-		header='Mirror filtering options',
-		alignment=Alignment.CENTER,
-		allow_skip=False,
-	).run()
+		result = SelectMenu(
+			MenuItemGroup(items, sort_items=False),
+			header=f'Mirror editing ({len(mirrors)} mirrors)',
+			alignment=Alignment.CENTER,
+			allow_skip=False,
+		).run()
 
-	if result.type_ == ResultType.Selection:
-		choice = result.get_value()
+		if result.type_ == ResultType.Selection:
+			choice = result.get_value()
 
-		if choice == 'https_only':
-			# Filter to HTTPS only
-			https_mirrors = [m for m in mirrors if m.startswith('https://')]
-			if https_mirrors:
-				mirrors = https_mirrors
-				# Write back to file
+			if choice == 'https_only':
+				# Filter to HTTPS only
+				https_mirrors = [m for m in mirrors if m.startswith('https://')]
+				if https_mirrors:
+					mirrors = https_mirrors
+					Tui.print(f'Filtered to {len(mirrors)} HTTPS mirrors')
+				else:
+					Tui.print('No HTTPS mirrors found, keeping all')
+
+			elif choice == 'reorder':
+				# Interactive mirror reordering
+				mirror_items = [MenuItem(url, value=url) for url in mirrors]
+				group = MenuItemGroup(mirror_items, sort_items=False)
+
+				result = SelectMenu(
+					group,
+					header='Select mirrors (SPACEBAR). First selected = highest priority!',
+					alignment=Alignment.CENTER,
+					allow_reset=False,
+					allow_skip=False,
+					multi=True,
+				).run()
+
+				if result.type_ == ResultType.Selection:
+					selected_mirrors = result.get_values()
+					if selected_mirrors:
+						mirrors = selected_mirrors
+
+			elif choice == 'done':
+				# Write final mirrorlist
 				with mirrorlist_path.open('w') as f:
-					f.write('# Filtered mirrorlist (HTTPS only)\n')
+					f.write('# Custom mirrorlist\n')
 					for mirror in mirrors:
 						f.write(f'Server = {mirror}\n')
-
-		elif choice == 'reorder':
-			# Interactive mirror reordering
-			mirror_items = [MenuItem(url, value=url) for url in mirrors]
-			group = MenuItemGroup(mirror_items, sort_items=False)
-
-			result = SelectMenu(
-				group,
-				header='Select mirrors (SPACEBAR). First selected = highest priority!',
-				alignment=Alignment.CENTER,
-				allow_reset=False,
-				allow_skip=False,
-				multi=True,
-			).run()
-
-			if result.type_ == ResultType.Selection:
-				selected_mirrors = result.get_values()
-				if selected_mirrors:
-					# Write selected mirrors in selection order (first selected = top)
-					with mirrorlist_path.open('w') as f:
-						f.write('# Custom ordered mirrorlist\n')
-						for mirror in selected_mirrors:
-							f.write(f'Server = {mirror}\n')
+				break
 
 def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
 	"""
