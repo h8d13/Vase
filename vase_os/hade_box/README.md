@@ -64,6 +64,13 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 - Change `f'pacstrap -C /etc/pacman.conf -K {self.target} {" ".join(packages)} --needed --noconfirm'` note the `--needed` flag to prevent re-installs.
 - Change `arch-chroot {self.target} mkinitcpio {" ".join(flags)}')` to remove `peek_output=True` causing broken pipe errors. Comestic but important.
 - Added `sof-firmware` to base to avoid another mkinitcpio hook
+- Expanded on brtfs-snapper/timeshift integration
+- Fixed fallbacks in case endpoints are down: Real important is https://archlinux.org/mirrors/status/json/ and for manual https://archlinux.org/mirrorlist/
+> I think this is too critical to only have at only one location. And yes it's down for everyone 
+
+Made a re-order menu for this case if mirrors endpoints are down.
+ 
+- Added CTRL + Q to actually close TUI properly
 - Swap config inside disks to make possible swap on partition
 - Removed all BOOTLOADERS/HSM/LVM/FIDO2/LUKS2 logic >  Replaced by default: Grub > To be able to expand on snapper/timeshift features + Grub config and people can do what they want after.
 - Stripped a lot of code for defaults to be simpler. And for display (translations, certain menus, etc)

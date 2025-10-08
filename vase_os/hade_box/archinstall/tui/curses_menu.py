@@ -1267,6 +1267,9 @@ class SelectMenu[ValueT](AbstractCurses[ValueT]):
 				if self._search_enabled and not self._active_search:
 					self._active_search = True
 					self._item_group.set_filter_pattern('')
+			case MenuKeys.QUIT:
+				# CTRL+Q - Full exit like CTRL+C
+				raise KeyboardInterrupt()
 			case MenuKeys.ESC:
 				if self._active_search:
 					self._active_search = False
