@@ -297,7 +297,12 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 		return self._mirror_config
 
 def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
-	Tui.print('Loading mirror regions...', clear_screen=True)
+	from .args import arch_config_handler
+
+	if arch_config_handler.args.offline:
+		Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+	else:
+		Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
 
 	mirror_list_handler.load_mirrors()
 	available_regions = mirror_list_handler.get_mirror_regions()

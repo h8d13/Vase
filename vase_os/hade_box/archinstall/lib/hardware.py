@@ -125,7 +125,6 @@ class GfxDriver(Enum):
 					GfxPackage.NvidiaOpenDkms,
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
-					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.NvidiaOpenSource:
 				packages += [
@@ -139,7 +138,6 @@ class GfxDriver(Enum):
 					GfxPackage.NvidiaDkms,
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
-					GfxPackage.NvidiaUtils,
 				]
 			case GfxDriver.IntelNvidiaHybrid:
 				packages += [
