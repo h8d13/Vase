@@ -28,8 +28,9 @@ fi
 # Check archlinux mirror status endpoint (just verify we get some JSON data)
 mirror_url="https://archlinux.org/mirrors/status/json/"
 ping_start=$(date +%s%3N)
-# Use --range to only fetch first 200 bytes, avoiding timeout/hang issues
-if curl -s --max-time 3 --range 0-199 "$mirror_url" 2>&1 | grep -q "cutoff\|urls\|last_check"; then
+# Fetch first bit of data, head will terminate curl early
+response=$(timeout 5 curl -s "$mirror_url" 2>/dev/null | head -c 500)
+if echo "$response" | grep -q "cutoff\|urls\|last_check"; then
     ping_end=$(date +%s%3N)
     ping_ms=$((ping_end - ping_start))
     mirror_status="online"
