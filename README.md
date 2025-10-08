@@ -1,18 +1,11 @@
 # Vase
 
-<img src="./vase.svg" alt="VaseLogo" width="117" align="left">
+<img src="./vase.svg" alt="VaseLogo" width="78" align="left">
 <table>
     <tr>
         <td>
             <a href="https://github.com/h8d13/Vase/releases">
                 <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://status.archlinux.org/">
-                <img src="https://img.shields.io/badge/Mirror_Status-Online_%282709ms%29-darkgreen" alt="MirrorStatus">
             </a>
         </td>
     </tr>
@@ -27,7 +20,6 @@
 <strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 13:34:04 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
-
 
 ---
 

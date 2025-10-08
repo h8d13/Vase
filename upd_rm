@@ -25,23 +25,6 @@ else
     exit 1
 fi
 
-# Check archlinux mirror status endpoint (just verify we get some JSON data)
-mirror_url="https://archlinux.org/mirrors/status/json/"
-ping_start=$(date +%s%3N)
-# Fetch first bit of data, head will terminate curl early
-response=$(timeout 15 curl -s "$mirror_url" 2>/dev/null | head -c 300)
-if echo "$response" | grep -q "cutoff\|urls\|last_check"; then
-    ping_end=$(date +%s%3N)
-    ping_ms=$((ping_end - ping_start))
-    mirror_status="online"
-    mirror_badge="Online_%28${ping_ms}ms%29"
-    mirror_color="darkgreen"
-else
-    mirror_status="offline"
-    mirror_badge="Offline"
-    mirror_color="darkred"
-fi
-
 test_date=$(echo "$latest_entry" | cut -d'|' -f1 | xargs)
 version=$(echo "$latest_entry" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
 iso_name=$(echo "$latest_entry" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
@@ -55,19 +38,12 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
 /^# Vase$/ {
     print
     print ""
-    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"117\" align=\"left\">"
+    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"78\" align=\"left\">"
     print "<table>"
     print "    <tr>"
     print "        <td>"
     print "            <a href=\"https://github.com/h8d13/Vase/releases\">"
     print "                <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
-    print "            </a>"
-    print "        </td>"
-    print "    </tr>"
-    print "    <tr>"
-    print "        <td>"
-    print "            <a href=\"https://status.archlinux.org/\">"
-    print "                <img src=\"https://img.shields.io/badge/Mirror_Status-" mirror_badge "-" mirror_color "\" alt=\"MirrorStatus\">"
     print "            </a>"
     print "        </td>"
     print "    </tr>"
