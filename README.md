@@ -11,8 +11,8 @@
     </tr>
     <tr>
         <td>
-            <a href="https://archlinux.org/mirrors/status/">
-                <img src="https://img.shields.io/badge/Mirror_Status-Online_%282111ms%29-darkgreen" alt="MirrorStatus">
+            <a href="https://status.archlinux.org/">
+                <img src="https://img.shields.io/badge/Mirror_Status-Offline-darkred" alt="MirrorStatus">
             </a>
         </td>
     </tr>
