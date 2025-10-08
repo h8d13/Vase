@@ -43,17 +43,15 @@ iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
 kernel_version=$(uname -r | cut -d'-' -f1)
 
-sed -i '/<table>/,/<\/table>/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d' README.md
+sed -i '/<img src="\.\/vase\.svg"/d; /<table>/,/<\/table>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d' README.md
 
 awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" '
 /^# Vase$/ {
     print
     print ""
+    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\" align=\"left\">"
     print "<table>"
     print "    <tr>"
-    print "        <td rowspan=\"2\" style=\"vertical-align: middle;\">"
-    print "            <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\">"
-    print "        </td>"
     print "        <td>"
     print "            <a href=\"https://github.com/h8d13/Vase/releases\">"
     print "                <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
@@ -68,6 +66,7 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "        </td>"
     print "    </tr>"
     print "</table>"
+    print "<br clear=\"left\">"
     print ""
     print "<strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
     print "<br><br>"

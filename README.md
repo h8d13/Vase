@@ -1,10 +1,8 @@
 # Vase
 
+<img src="./vase.svg" alt="VaseLogo" width="72" align="left">
 <table>
     <tr>
-        <td rowspan="2" style="vertical-align: middle;">
-            <img src="./vase.svg" alt="VaseLogo" width="72">
-        </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases">
                 <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkred" alt="Arch">
@@ -19,10 +17,12 @@
         </td>
     </tr>
 </table>
+<br clear="left">
 
 <strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 09:42:04 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
+
 
 
 ---
