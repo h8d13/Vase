@@ -1,6 +1,6 @@
 # Vase
 
-<img src="./vase.svg" alt="VaseLogo" width="78" align="left">
+<img src="./vase.svg" alt="VaseLogo" width="117" align="left">
 <table>
     <tr>
         <td>
@@ -126,4 +126,3 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
-
