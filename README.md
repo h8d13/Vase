@@ -1,11 +1,11 @@
 # Vase
 
-<img src="./vase.svg" alt="VaseLogo" width="72" align="left">
+<img src="./vase.svg" alt="VaseLogo" width="128" align="left">
 <table>
     <tr>
         <td>
             <a href="https://github.com/h8d13/Vase/releases">
-                <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkred" alt="Arch">
+                <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
             </a>
         </td>
     </tr>
@@ -16,12 +16,19 @@
             </a>
         </td>
     </tr>
+    <tr>
+        <td>
+            <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
+        </td>
+    </tr>
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 09:42:04 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 13:17:57 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
+
+
 
 ---
 

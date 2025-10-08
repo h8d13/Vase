@@ -13,9 +13,13 @@ fi
 if echo "$latest_entry" | grep -q "Status: OK"; then
     test_status="OK"
     kernel_color="darkgreen"
+    tui_badge="Passing"
+    tui_color="darkgreen"
 elif echo "$latest_entry" | grep -q "Status: FAIL"; then
     test_status="FAIL"
     kernel_color="darkred"
+    tui_badge="Failing"
+    tui_color="darkred"
 else
     echo "Unknown status in tests.status"
     exit 1
@@ -45,11 +49,11 @@ kernel_version=$(uname -r | cut -d'-' -f1)
 
 sed -i '/<img src="\.\/vase\.svg"/d; /<table>/,/<\/table>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d' README.md
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" '
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" '
 /^# Vase$/ {
     print
     print ""
-    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\" align=\"left\">"
+    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"128\" align=\"left\">"
     print "<table>"
     print "    <tr>"
     print "        <td>"
@@ -63,6 +67,11 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "            <a href=\"https://archlinux.org/mirrors/status/\">"
     print "                <img src=\"https://img.shields.io/badge/Mirror_Status-" mirror_badge "-" mirror_color "\" alt=\"MirrorStatus\">"
     print "            </a>"
+    print "        </td>"
+    print "    </tr>"
+    print "    <tr>"
+    print "        <td>"
+    print "            <img src=\"https://img.shields.io/badge/TUI_Status-" tui_badge "-" tui_color "\" alt=\"TUIStatus\">"
     print "        </td>"
     print "    </tr>"
     print "</table>"
