@@ -300,12 +300,14 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
 	from .output import info
 
-	if arch_config_handler.args.offline:
-		Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
-	else:
-		Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
+	# Only load mirrors if not already loaded
+	if mirror_list_handler._status_mappings is None:
+		if arch_config_handler.args.offline:
+			Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+		else:
+			Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
+		mirror_list_handler.load_mirrors()
 
-	mirror_list_handler.load_mirrors()
 	available_regions = mirror_list_handler.get_mirror_regions()
 
 	if not available_regions:
