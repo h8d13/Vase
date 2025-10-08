@@ -2,10 +2,22 @@
 . ./util_f
 . ./...
 
-latest_ok=$(grep "Status: OK" tests.status 2>/dev/null | tail -n 1)
+latest_entry=$(tail -n 1 tests.status 2>/dev/null)
 
-if [ -z "$latest_ok" ]; then
-    echo "No OK tests found in tests.status"
+if [ -z "$latest_entry" ]; then
+    echo "No entries found in tests.status"
+    exit 1
+fi
+
+# Check if latest test passed or failed
+if echo "$latest_entry" | grep -q "Status: OK"; then
+    test_status="OK"
+    kernel_color="darkgreen"
+elif echo "$latest_entry" | grep -q "Status: FAIL"; then
+    test_status="FAIL"
+    kernel_color="darkred"
+else
+    echo "Unknown status in tests.status"
     exit 1
 fi
 
@@ -23,23 +35,23 @@ else
     mirror_color="darkred"
 fi
 
-test_date=$(echo "$latest_ok" | cut -d'|' -f1 | xargs)
-version=$(echo "$latest_ok" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
-iso_name=$(echo "$latest_ok" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
-iso_size=$(echo "$latest_ok" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
+test_date=$(echo "$latest_entry" | cut -d'|' -f1 | xargs)
+version=$(echo "$latest_entry" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
+iso_name=$(echo "$latest_entry" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
+iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
 kernel_version=$(uname -r | cut -d'-' -f1)
 
 sed -i '/<div>/,/<\/div>/d' README.md
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v mirror_status="$mirror_status" -v mirror_color="$mirror_color" -v ping_ms="$ping_ms" '
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_status="$mirror_status" -v mirror_color="$mirror_color" -v ping_ms="$ping_ms" '
 /^# Vase$/ {
     print
     print ""
     print "<div>"
     print "    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\">"
     print "    <a href=\"https://github.com/h8d13/Vase/releases\">"
-    print "        <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-darkgreen\" alt=\"Arch\">"
+    print "        <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
     print "    </a>"
     print "    <br>"
     print "    <a href=\"https://archlinux.org/mirrors/status/\">"
