@@ -11,7 +11,9 @@
     </tr>
     <tr>
         <td>
-            <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
+            <a href="https://github.com/h8d13/Vase/releases">
+                <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
+            </a>
         </td>
     </tr>
 </table>
