@@ -65,7 +65,7 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "    </tr>"
     print "    <tr>"
     print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Clones-" clones "-blue\" alt=\"Clones\">"
+    print "            <img src=\"https://img.shields.io/badge/Git_Clones-" clones "-blue\" alt=\"Clones\">"
     print "        </td>"
     print "    </tr>"
     print "</table>"

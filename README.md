@@ -18,7 +18,7 @@
     </tr>
     <tr>
         <td>
-            <img src="https://img.shields.io/badge/Clones-600-blue" alt="Clones">
+            <img src="https://img.shields.io/badge/Git_Clones-600-blue" alt="Clones">
         </td>
     </tr>
 </table>
