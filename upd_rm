@@ -9,6 +9,20 @@ if [ -z "$latest_ok" ]; then
     exit 1
 fi
 
+# Ping archlinux mirror status endpoint
+mirror_url="https://archlinux.org/mirrors/status/json/"
+ping_start=$(date +%s%3N)
+if curl -s -m 5 --head "$mirror_url" >/dev/null 2>&1; then
+    ping_end=$(date +%s%3N)
+    ping_ms=$((ping_end - ping_start))
+    mirror_status="online"
+    mirror_color="brightgreen"
+else
+    ping_ms="N/A"
+    mirror_status="offline"
+    mirror_color="red"
+fi
+
 test_date=$(echo "$latest_ok" | cut -d'|' -f1 | xargs)
 version=$(echo "$latest_ok" | cut -d'|' -f2 | cut -d':' -f2 | xargs)
 iso_name=$(echo "$latest_ok" | cut -d'|' -f3 | cut -d':' -f2 | xargs)
@@ -18,7 +32,7 @@ kernel_version=$(uname -r | cut -d'-' -f1)
 
 sed -i '/<div>/,/<\/div>/d' README.md
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" '
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v mirror_status="$mirror_status" -v mirror_color="$mirror_color" -v ping_ms="$ping_ms" '
 /^# Vase$/ {
     print
     print ""
@@ -26,6 +40,10 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "    <img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"72\">"
     print "    <a href=\"https://github.com/h8d13/Vase/releases\">"
     print "        <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-darkgreen\" alt=\"Arch\">"
+    print "    </a>"
+    print "    <br>"
+    print "    <a href=\"https://archlinux.org/mirrors/status/\">"
+    print "        <img src=\"https://img.shields.io/badge/Mirror_Status-" mirror_status "_%28" ping_ms "ms%29-" mirror_color "\" alt=\"MirrorStatus\">"
     print "    </a>"
     print "    <br><br>"
     print "    <strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size

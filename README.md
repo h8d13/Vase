@@ -3,10 +3,14 @@
 <div>
     <img src="./vase.svg" alt="VaseLogo" width="72">
     <a href="https://github.com/h8d13/Vase/releases">
-        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.10-darkgreen" alt="Arch">
+        <img src="https://img.shields.io/badge/Arch_Linux-v6.16.11-darkgreen" alt="Arch">
+    </a>
+    <br>
+    <a href="https://archlinux.org/mirrors/status/">
+        <img src="https://img.shields.io/badge/Mirror_Status-offline_%28N/Ams%29-red" alt="MirrorStatus">
     </a>
     <br><br>
-    <strong>Version:</strong> 0.0.04 | <strong>Tested:</strong> 2025-10-07 14:39:19 | <strong>Size:</strong> 2.7G
+    <strong>Version:</strong> 0.0.05 | <strong>Tested:</strong> 2025-10-08 09:09:13 | <strong>Size:</strong> 2.7G
     <br><br>
     <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 </div>
