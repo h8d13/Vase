@@ -316,30 +316,6 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	# Check if we fell back to local mirrors (couldn't fetch remote)
 	fell_back_to_local = not mirror_list_handler._fetched_remote
 
-	if fell_back_to_local and not arch_config_handler.args.silent:
-		# Offer to edit mirrorlist before region selection
-		result = SelectMenu(
-			MenuItemGroup([
-				MenuItem('Select mirror regions (from local mirrorlist)', value='regions'),
-				MenuItem('Edit mirrorlist first (filter/reorder)', value='edit'),
-				MenuItem('Continue with all mirrors', value='continue'),
-			], sort_items=False),
-			alignment=Alignment.CENTER,
-			allow_skip=False,
-		).run()
-
-		if result.type_ == ResultType.Selection:
-			choice = result.get_value()
-
-			if choice == 'edit':
-				edit_mirrorlist()
-				# Reload after editing
-				mirror_list_handler.load_local_mirrors()
-				available_regions = mirror_list_handler.get_mirror_regions()
-			elif choice == 'continue':
-				# Skip region selection, use all mirrors
-				return []
-
 	preset_regions = [region for region in available_regions if region in preset]
 
 	items = [MenuItem(region.name, value=region) for region in available_regions]
@@ -356,14 +332,34 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 		multi=True,
 	).run()
 
+	selected_regions: list[MirrorRegion] = []
+
 	match result.type_:
 		case ResultType.Skip:
-			return preset_regions
+			selected_regions = preset_regions
 		case ResultType.Reset:
-			return []
+			selected_regions = []
 		case ResultType.Selection:
-			selected_mirrors = result.get_values()
-			return selected_mirrors
+			selected_regions = result.get_values()
+
+	# After region selection, offer to edit/filter mirrors for selected regions
+	if fell_back_to_local and selected_regions and not arch_config_handler.args.silent:
+		result = SelectMenu(
+			MenuItemGroup([
+				MenuItem('Use selected regions as-is', value='continue'),
+				MenuItem('Filter/reorder mirrors for selected regions', value='edit'),
+			], sort_items=False),
+			alignment=Alignment.CENTER,
+			allow_skip=False,
+		).run()
+
+		if result.type_ == ResultType.Selection and result.get_value() == 'edit':
+			# Edit only mirrors from selected regions
+			edit_mirrorlist_for_regions(selected_regions)
+			# Reload after editing
+			mirror_list_handler.load_local_mirrors()
+
+	return selected_regions
 
 def add_custom_mirror_servers(preset: list[CustomServer] = []) -> list[CustomServer]:
 	custom_mirrors = CustomMirrorServersList(preset).run()
@@ -427,10 +423,10 @@ def edit_mirrorlist() -> None:
 
 				result = SelectMenu(
 					group,
-					header='Select mirrors (SPACEBAR). First selected = highest priority!',
+					header='Select mirrors (SPACEBAR). First selected = highest priority! ESC to cancel.',
 					alignment=Alignment.CENTER,
 					allow_reset=False,
-					allow_skip=False,
+					allow_skip=True,
 					multi=True,
 				).run()
 

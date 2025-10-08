@@ -66,10 +66,9 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 - Added `sof-firmware` to base to avoid another mkinitcpio hook
 - Expanded on brtfs-snapper/timeshift integration
 - Fixed fallbacks in case endpoints are down: Real important is https://archlinux.org/mirrors/status/json/ and for manual https://archlinux.org/mirrorlist/
-> I think this is too critical to only have at only one location. And yes it's down for everyone 
-
-Made a re-order menu for this case if mirrors endpoints are down.
- 
+> I think this is too critical to only have at only one location.
+> Made a re-order menu for this case if mirrors endpoints are down you can still find your preferred servers as fallback.
+> Also filter HTTPS only if desired.
 - Added CTRL + Q to actually close TUI properly
 - Swap config inside disks to make possible swap on partition
 - Removed all BOOTLOADERS/HSM/LVM/FIDO2/LUKS2 logic >  Replaced by default: Grub > To be able to expand on snapper/timeshift features + Grub config and people can do what they want after.
@@ -83,7 +82,7 @@ Made a re-order menu for this case if mirrors endpoints are down.
 
 - The idea was to create a declerative flow that can be easy to reproduce/modify but also to benchmark from scratch each time and having hardware specific bootloader entries (and env vars) without having to think.
 
-- These are widely *debated/changing*and can result in performance enhancements/or correcting non-functional hardware.
+- These are widely *debated/changing* and can result in performance enhancements/or correcting non-functional hardware.
 
 Here is the exact code block in question: [Here](https://github.com/h8d13/Vase/blob/2247002707d68fb5b92542aae27d1fbfd18ed978/vase_os/hade_box/archinstall/lib/installer.py#L871C1-L875C10) This could be expanded upon to build hardware-aware and optimized presets considering hardware detection modules.
 
