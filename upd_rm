@@ -55,7 +55,7 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
 /^# Vase$/ {
     print
     print ""
-    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"128\" align=\"left\">"
+    print "<img src=\"./vase.svg\" alt=\"VaseLogo\" width=\"112\" align=\"left\">"
     print "<table>"
     print "    <tr>"
     print "        <td>"
