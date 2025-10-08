@@ -9,18 +9,18 @@ if [ -z "$latest_ok" ]; then
     exit 1
 fi
 
-# Ping archlinux mirror status endpoint
+# Ping archlinux mirror status endpoint (5 sec timeout like in installer)
 mirror_url="https://archlinux.org/mirrors/status/json/"
 ping_start=$(date +%s%3N)
 if curl -s -m 5 --head "$mirror_url" >/dev/null 2>&1; then
     ping_end=$(date +%s%3N)
     ping_ms=$((ping_end - ping_start))
     mirror_status="online"
-    mirror_color="brightgreen"
+    mirror_color="darkgreen"
 else
     ping_ms="N/A"
     mirror_status="offline"
-    mirror_color="red"
+    mirror_color="darkred"
 fi
 
 test_date=$(echo "$latest_ok" | cut -d'|' -f1 | xargs)
