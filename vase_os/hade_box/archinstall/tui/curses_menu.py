@@ -628,6 +628,9 @@ class EditMenu(AbstractCurses[str]):
 			special_key = key_handles[0]
 
 			match special_key:
+				case MenuKeys.QUIT:
+					# CTRL+Q - Full exit like CTRL+C
+					raise KeyboardInterrupt()
 				case MenuKeys.HELP:
 					assert self._input_vp
 					self._current_text = self._input_vp.textbox_value()
@@ -1224,6 +1227,9 @@ class SelectMenu[ValueT](AbstractCurses[ValueT]):
 		handle = key_handles[0]
 
 		match handle:
+			case MenuKeys.QUIT:
+				# CTRL+Q - Full exit like CTRL+C
+				raise KeyboardInterrupt()
 			case MenuKeys.HELP:
 				self._help_active = True
 				self._clear_all()
@@ -1267,9 +1273,6 @@ class SelectMenu[ValueT](AbstractCurses[ValueT]):
 				if self._search_enabled and not self._active_search:
 					self._active_search = True
 					self._item_group.set_filter_pattern('')
-			case MenuKeys.QUIT:
-				# CTRL+Q - Full exit like CTRL+C
-				raise KeyboardInterrupt()
 			case MenuKeys.ESC:
 				if self._active_search:
 					self._active_search = False

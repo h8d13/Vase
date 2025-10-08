@@ -65,16 +65,28 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 - Change `arch-chroot {self.target} mkinitcpio {" ".join(flags)}')` to remove `peek_output=True` causing broken pipe errors. Comestic but important.
 - Added `sof-firmware` to base to avoid another mkinitcpio hook
 - Expanded on brtfs-snapper/timeshift integration
-- Fixed fallbacks in case endpoints are down: Real important is https://archlinux.org/mirrors/status/json/ and for manual https://archlinux.org/mirrorlist/
-> I think this is too critical to only have at only one location.
-> Made a re-order menu for this case if mirrors endpoints are down you can still find your preferred servers as fallback.
-> Also filter HTTPS only if desired.
-- Added CTRL + Q to actually close TUI properly
+
+- **Fixed fallbacks in case endpoints are down:** Critical endpoints like https://archlinux.org/mirrors/status/json/ fail or manual one: https://archlinux.org/mirrorlist/
+
+  - Added 5-second timeout to `fetch_data_from_url()` to prevent hanging (shoudl be plenty)
+  - Added 30-second timeout for reflector service (falls back to existing mirrors)
+  - Added 30-second timeout for keyring WKD sync service (continues with existing keyring)
+  - Mirror region loading falls back to local `/etc/pacman.d/mirrorlist` with proper region parsing
+  - **Interactive mirror editor** when falling back to local mirrors:
+    - Select regions first (Germany, USA, etc. from local mirrorlist)
+    - Then optionally filter/reorder those region's mirrors
+    - Filter to HTTPS-only mirrors
+    - Reorder mirrors interactively (first selected = highest priority)
+    - Preserves region structure (`## Germany`) when writing edited mirrorlist
+  - **Host-compatible:** Uses temp copy `/tmp/archinstall_mirrorlist` when installing from host (doesn't modify host's mirrorlist)
+  - There are probably more aspects that need correction for host compat: Perhaps even setting keymaps should never be permanent change on host if that makes sense.
+
+- Auto-restores backup pacman.conf from `/etc/pacman.conf.backup` if pacstrap fails (created by iso_mod for CUSTOM ISOs)
 - Swap config inside disks to make possible swap on partition
 - Removed all BOOTLOADERS/HSM/LVM/FIDO2/LUKS2 logic >  Replaced by default: Grub > To be able to expand on snapper/timeshift features + Grub config and people can do what they want after.
 - Stripped a lot of code for defaults to be simpler. And for display (translations, certain menus, etc)
 - Removed plugins for maintanability of installer code (scripts still available).
-- Logging inside dir > Auto-save/Load configs also inside dir. Utility `./clean_all` script.
+- Logging inside dir > Auto-save/Load configs also inside dir.
 - Legacy x11 server options
 - Change certain OOO flow:
     - mount > format filesystem > create new paritions (swap) > set mirrors and base settings > base install > audio > video > KDE plasma > bootloader

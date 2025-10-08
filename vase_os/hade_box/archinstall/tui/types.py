@@ -38,8 +38,6 @@ class MenuKeys(Enum):
 	ENABLE_SEARCH = frozenset({47})
 	# ESC
 	ESC = frozenset({27})
-	# QUIT: CTRL+Q
-	QUIT = frozenset({17})
 	# BACKSPACE (search)
 	BACKSPACE = frozenset({127, 263})
 	# Help view: ctrl+h
