@@ -315,20 +315,28 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	fell_back_to_local = not mirror_list_handler._fetched_remote
 
 	if fell_back_to_local and not arch_config_handler.args.silent:
+		# Offer to edit mirrorlist before region selection
 		result = SelectMenu(
 			MenuItemGroup([
-				MenuItem('Edit mirrorlist (reorder/remove mirrors)', value='edit'),
-				MenuItem('Continue with current mirrorlist', value='continue'),
+				MenuItem('Select mirror regions (from local mirrorlist)', value='regions'),
+				MenuItem('Edit mirrorlist first (filter/reorder)', value='edit'),
+				MenuItem('Continue with all mirrors', value='continue'),
 			], sort_items=False),
 			alignment=Alignment.CENTER,
 			allow_skip=False,
 		).run()
 
-		if result.type_ == ResultType.Selection and result.get_value() == 'edit':
-			edit_mirrorlist()
-			# Reload after editing
-			mirror_list_handler.load_local_mirrors()
-			available_regions = mirror_list_handler.get_mirror_regions()
+		if result.type_ == ResultType.Selection:
+			choice = result.get_value()
+
+			if choice == 'edit':
+				edit_mirrorlist()
+				# Reload after editing
+				mirror_list_handler.load_local_mirrors()
+				available_regions = mirror_list_handler.get_mirror_regions()
+			elif choice == 'continue':
+				# Skip region selection, use all mirrors
+				return []
 
 	preset_regions = [region for region in available_regions if region in preset]
 
