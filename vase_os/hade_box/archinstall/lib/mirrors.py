@@ -369,6 +369,19 @@ def select_custom_mirror(preset: list[CustomRepository] = []) -> list[CustomRepo
 	custom_mirrors = CustomMirrorRepositoriesList(preset).run()
 	return custom_mirrors
 
+def edit_mirrorlist_for_regions(regions: list[MirrorRegion]) -> None:
+	"""Edit mirrorlist for specific regions only"""
+	# Extract mirrors from selected regions
+	mirrors = []
+	for region in regions:
+		mirrors.extend(region.urls)
+
+	if not mirrors:
+		Tui.print('No mirrors found in selected regions')
+		return
+
+	_edit_mirrors(mirrors)
+
 def edit_mirrorlist() -> None:
 	"""Interactive mirrorlist editor to reorder and filter mirrors"""
 	# Use the handler's mirrorlist path (temp copy on host, direct on ISO)
@@ -388,6 +401,12 @@ def edit_mirrorlist() -> None:
 	if not mirrors:
 		Tui.print('No mirrors found in mirrorlist')
 		return
+
+	_edit_mirrors(mirrors)
+
+def _edit_mirrors(mirrors: list[str]) -> None:
+	"""Core mirror editing logic - filters and reorders given list of mirrors"""
+	mirrorlist_path = mirror_list_handler._local_mirrorlist
 
 	# Loop to allow multiple operations
 	while True:
