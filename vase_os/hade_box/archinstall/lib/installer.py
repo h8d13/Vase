@@ -161,6 +161,19 @@ class Installer:
 		if mod not in self._modules:
 			self._modules.append(mod)
 
+	def _wait_for_service(self, service_name: str, timeout: int = 30) -> bool:
+		"""
+		Wait for a systemd service to complete with a timeout.
+		Returns True if completed successfully, False if timed out.
+		"""
+		waited = 0
+		while self._service_state(service_name) not in ('dead', 'failed', 'exited'):
+			if waited >= timeout:
+				return False
+			time.sleep(1)
+			waited += 1
+		return True
+
 	def _verify_service_stop(self) -> None:
 		"""
 		Certain services might be running that affects the system during installation.
@@ -190,14 +203,10 @@ class Installer:
 			info('Skipping waiting for automatic time sync (this can cause issues if time is out of sync during installation)')
 
 		info('Waiting for automatic mirror selection (reflector) to complete.')
-		reflector_timeout = 30  # 30 second timeout
-		reflector_waited = 0
-		while self._service_state('reflector') not in ('dead', 'failed', 'exited'):
-			if reflector_waited >= reflector_timeout:
-				warn(f'Reflector timeout after {reflector_timeout}s, continuing with existing mirrors')
-				break
-			time.sleep(1)
-			reflector_waited += 1
+		if self._wait_for_service('reflector', timeout=30):
+			info('Reflector completed.')
+		else:
+			warn('Reflector timed out after 30s, continuing with existing mirrors')
 
 		# info('Waiting for pacman-init.service to complete.')
 		# while self._service_state('pacman-init') not in ('dead', 'failed', 'exited'):
@@ -205,13 +214,20 @@ class Installer:
 
 		if not arch_config_handler.args.skip_wkd:
 			info('Waiting for Arch Linux keyring sync (archlinux-keyring-wkd-sync) to complete.')
-			# Wait for the timer to kick in
+			# Wait for the timer to kick in (10 second timeout)
+			timer_waited = 0
 			while self._service_started('archlinux-keyring-wkd-sync.timer') is None:
+				if timer_waited >= 10:
+					warn('Keyring timer did not start after 10s, skipping')
+					break
 				time.sleep(1)
-
-			# Wait for the service to enter a finished state
-			while self._service_state('archlinux-keyring-wkd-sync.service') not in ('dead', 'failed', 'exited'):
-				time.sleep(1)
+				timer_waited += 1
+			else:
+				# Wait for the service to complete (30 second timeout)
+				if self._wait_for_service('archlinux-keyring-wkd-sync.service', timeout=30):
+					info('Keyring sync completed.')
+				else:
+					warn('Keyring sync timed out after 30s, continuing with existing keyring')
 
 	def _verify_boot_part(self) -> None:
 		"""

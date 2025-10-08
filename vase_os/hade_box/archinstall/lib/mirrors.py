@@ -298,6 +298,7 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 
 def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
+	from .output import info
 
 	if arch_config_handler.args.offline:
 		Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
@@ -309,6 +310,25 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 
 	if not available_regions:
 		return []
+
+	# Check if we fell back to local mirrors (couldn't fetch remote)
+	fell_back_to_local = not mirror_list_handler._fetched_remote
+
+	if fell_back_to_local and not arch_config_handler.args.silent:
+		result = SelectMenu(
+			MenuItemGroup([
+				MenuItem('Edit mirrorlist (reorder/remove mirrors)', value='edit'),
+				MenuItem('Continue with current mirrorlist', value='continue'),
+			], sort_items=False),
+			alignment=Alignment.CENTER,
+			allow_skip=False,
+		).run()
+
+		if result.type_ == ResultType.Selection and result.get_value() == 'edit':
+			edit_mirrorlist()
+			# Reload after editing
+			mirror_list_handler.load_local_mirrors()
+			available_regions = mirror_list_handler.get_mirror_regions()
 
 	preset_regions = [region for region in available_regions if region in preset]
 
@@ -342,6 +362,77 @@ def add_custom_mirror_servers(preset: list[CustomServer] = []) -> list[CustomSer
 def select_custom_mirror(preset: list[CustomRepository] = []) -> list[CustomRepository]:
 	custom_mirrors = CustomMirrorRepositoriesList(preset).run()
 	return custom_mirrors
+
+def edit_mirrorlist() -> None:
+	"""Interactive mirrorlist editor to reorder and filter mirrors"""
+	# Use the handler's mirrorlist path (temp copy on host, direct on ISO)
+	mirrorlist_path = mirror_list_handler._local_mirrorlist
+
+	# Read current mirrorlist
+	with mirrorlist_path.open('r') as f:
+		lines = f.readlines()
+
+	# Extract active mirrors (uncommented Server lines)
+	mirrors = []
+	for line in lines:
+		if line.strip().startswith('Server = '):
+			url = line.strip().replace('Server = ', '')
+			mirrors.append(url)
+
+	if not mirrors:
+		Tui.print('No mirrors found in mirrorlist')
+		return
+
+	# Filter options menu
+	items = [
+		MenuItem('Keep only HTTPS mirrors', value='https_only'),
+		MenuItem('Reorder mirrors interactively', value='reorder'),
+		MenuItem('Keep current mirrorlist as-is', value='keep'),
+	]
+
+	result = SelectMenu(
+		MenuItemGroup(items, sort_items=False),
+		header='Mirror filtering options',
+		alignment=Alignment.CENTER,
+		allow_skip=False,
+	).run()
+
+	if result.type_ == ResultType.Selection:
+		choice = result.get_value()
+
+		if choice == 'https_only':
+			# Filter to HTTPS only
+			https_mirrors = [m for m in mirrors if m.startswith('https://')]
+			if https_mirrors:
+				mirrors = https_mirrors
+				# Write back to file
+				with mirrorlist_path.open('w') as f:
+					f.write('# Filtered mirrorlist (HTTPS only)\n')
+					for mirror in mirrors:
+						f.write(f'Server = {mirror}\n')
+
+		elif choice == 'reorder':
+			# Interactive mirror reordering
+			mirror_items = [MenuItem(url, value=url) for url in mirrors]
+			group = MenuItemGroup(mirror_items, sort_items=False)
+
+			result = SelectMenu(
+				group,
+				header='Select mirrors (SPACEBAR). First selected = highest priority!',
+				alignment=Alignment.CENTER,
+				allow_reset=False,
+				allow_skip=False,
+				multi=True,
+			).run()
+
+			if result.type_ == ResultType.Selection:
+				selected_mirrors = result.get_values()
+				if selected_mirrors:
+					# Write selected mirrors in selection order (first selected = top)
+					with mirrorlist_path.open('w') as f:
+						f.write('# Custom ordered mirrorlist\n')
+						for mirror in selected_mirrors:
+							f.write(f'Server = {mirror}\n')
 
 def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
 	"""
@@ -378,8 +469,20 @@ class MirrorListHandler:
 		self,
 		local_mirrorlist: Path = Path('/etc/pacman.d/mirrorlist'),
 	) -> None:
-		self._local_mirrorlist = local_mirrorlist
+		# Check if running from ISO or host system
+		self._running_from_iso = Path('/run/archiso').exists()
+
+		# If running from host, use temp copy to avoid modifying host's mirrorlist
+		if not self._running_from_iso:
+			import shutil
+			self._temp_mirrorlist = Path('/tmp/archinstall_mirrorlist')
+			shutil.copy(local_mirrorlist, self._temp_mirrorlist)
+			self._local_mirrorlist = self._temp_mirrorlist
+		else:
+			self._local_mirrorlist = local_mirrorlist
+
 		self._status_mappings: dict[str, list[MirrorStatusEntryV3]] | None = None
+		self._fetched_remote = False
 
 	def _mappings(self) -> dict[str, list[MirrorStatusEntryV3]]:
 		if self._status_mappings is None:
@@ -403,9 +506,11 @@ class MirrorListHandler:
 		from .args import arch_config_handler
 
 		if arch_config_handler.args.offline:
+			self._fetched_remote = False
 			self.load_local_mirrors()
 		else:
-			if not self.load_remote_mirrors():
+			self._fetched_remote = self.load_remote_mirrors()
+			if not self._fetched_remote:
 				self.load_local_mirrors()
 
 	def load_remote_mirrors(self) -> bool:
