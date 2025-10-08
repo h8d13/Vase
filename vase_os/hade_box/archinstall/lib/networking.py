@@ -127,7 +127,7 @@ def fetch_data_from_url(url: str, params: dict[str, str] | None = None) -> str:
 		full_url = url
 
 	try:
-		response = urlopen(full_url, context=ssl_context)
+		response = urlopen(full_url, context=ssl_context, timeout=5)
 		data = response.read().decode('UTF-8')
 		return data
 	except URLError as e:
