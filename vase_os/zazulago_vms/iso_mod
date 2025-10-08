@@ -140,6 +140,9 @@ if [ "$ADD_PROFILE" = "1" ]; then
                 info "Configuring pacman to use local repository with priority..."
                 mkdir -p "$PROFILE_DIR/airootfs/etc"
 
+                # Backup original pacman.conf
+                cp "$PROFILE_DIR/pacman.conf" "$PROFILE_DIR/pacman.conf.backup"
+
                 # Insert vase_repo BEFORE [core] so it has priority
                 awk '
                     /^\[core\]/ && !inserted {

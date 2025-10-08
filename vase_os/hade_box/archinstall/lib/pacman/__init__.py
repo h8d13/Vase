@@ -36,14 +36,33 @@ class Pacman:
 		return SysCommand(f'{default_cmd} {args}')
 
 	def ask(self, error_message: str, bail_message: str, func: Callable, *args, **kwargs) -> None:  # type: ignore[no-untyped-def, type-arg]
+		pacman_conf = Path('/etc/pacman.conf')
+		pacman_conf_backup = Path('/etc/pacman.conf.backup')
+		backup_attempted = False
+
 		while True:
 			try:
 				func(*args, **kwargs)
 				break
 			except Exception as err:
 				error(f'{error_message}: {err}')
+
+				# Try to restore backup config if it exists and not already attempted
+				if pacman_conf_backup.exists() and not backup_attempted:
+					warn('Attempting to restore default pacman.conf from backup...')
+					try:
+						import shutil
+						shutil.copy(pacman_conf_backup, pacman_conf)
+						info('Restored backup pacman.conf, retrying...')
+						backup_attempted = True
+						continue
+					except Exception as restore_err:
+						error(f'Failed to restore backup config: {restore_err}')
+
+				# Ultimate fallback: prompt user
 				if not self.silent and input('Would you like to re-try this download? (Y/n): ').lower().strip() in 'y':
 					continue
+
 				raise RequirementError(f'{bail_message}: {err}')
 
 	def sync(self) -> None:
