@@ -33,7 +33,7 @@ iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 kernel_version=$(uname -r | cut -d'-' -f1)
 
 # Read traffic data from traffic.json
-if [ -f "traffic.json" ]; then
+if file_ex "traffic.json"; then
     # Parse all clones entries, deduplicate by timestamp, sum counts
     clone_count=$(jq -s '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.count) | add // 0' traffic.json)
     unique_clones=$(jq -s '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.uniques) | add // 0' traffic.json)
