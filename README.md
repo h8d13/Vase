@@ -158,6 +158,6 @@ For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
 Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
 
-![ConkyGif](https://private-user-images.githubusercontent.com/52324046/438629100-a8912369-a8cc-49be-af79-80994e8d2ab6.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjAwMjEyMzUsIm5iZiI6MTc2MDAyMDkzNSwicGF0aCI6Ii81MjMyNDA0Ni80Mzg2MjkxMDAtYTg5MTIzNjktYThjYy00OWJlLWFmNzktODA5OTRlOGQyYWI2LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTEwMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMDA5VDE0NDIxNVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTgxZDA1NzliM2YwYWNiNGYxMWQ1ZDgzYTNhYTU1MWE5ZDJhMDAyOTViYTFkOWY0YWIwNDMzNjk3OWZlYmZkODkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.Yd6uBM4qj17ARqbcgtVW5iO_0EaNvYb2kdX1ILCnJcY)
+![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
 
 > Idea was simple: Faster testing/installs, fixing host to target installs, **saving mirror providers TBs in bandwith** and less choices to break something in TUI (kind of work for all scenario) testing on weird/old hardware like Hybrid Nvidia/Intel setups or more recent desktops too.
