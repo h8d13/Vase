@@ -110,7 +110,7 @@ If this helped you and earned you some time to touch grass (or you even just lea
 
 `$ ./main -f /dev/sdX`  : Flash ISO to USB device
 
-`$ ./main -a /dev/sdX`  : Complete workflow (build, sign, flash, log) 
+`$ ./main -a /dev/sdX`  : Complete workflow
 
 > Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts for building and KVM compatible hardware for VM options. 
 > Mostly tooling for devs... More readmes included. 
@@ -131,7 +131,12 @@ All long-form commands:
 
 ## Components
 
-> Tools used: mainly archinstall, mkarchiso, arch-install-scripts. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
+> Tools used: mainly archinstall, mkarchiso, arch-install-scripts, dd, jq. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
+
+Run in project root: `git submodule init && git submodule update` 
+
+Find files in `/vase_os/kaes_arch/` or better yet, fork all the repos and send me patches.
+
 
 | Component | Desc | Docs |
 |:----------|:------------|:--------------|
