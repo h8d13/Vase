@@ -102,7 +102,7 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 `$ ./main -a /dev/sdX`  : Complete workflow (build, sign, flash, log) 
 
-> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts. `gpg --list-secret-keys` for building and KVM compatible hardware for VM options. Also assumes valid sudo profile.
+> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts for building and KVM compatible hardware for VM options. 
 > Mostly tooling for devs... More readmes included. 
 
 To change the post install code aswell:
