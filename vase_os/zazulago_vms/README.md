@@ -29,4 +29,4 @@ And try it:
 
 - on first a horrible laptop from 2015 (Hybrid Nvidia/Intel) 
 - on Entreprise more recent Dell laptop to compare.
-- on my main desktop set-up (have several disks).
+- on my main desktop set-up (have several disks). Where I also code and game :D
