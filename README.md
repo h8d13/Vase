@@ -115,12 +115,6 @@ If this helped you and earned you some time to touch grass (or you even just lea
 > Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts for building and KVM compatible hardware for VM options. 
 > Mostly tooling for devs... More readmes included. 
 
-To change the post install code aswell:
-
-Run in project root: `git submodule init && git submodule update` 
-
-Find files in `/vase_os/kaes_arch/` or better yet, fork all the repos and send me patches.
-
 All long-form commands:
 
 ```
@@ -132,7 +126,7 @@ All long-form commands:
 --quick <command>       # Lanch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
---all <device>          # Complete workflow: build ISO, sign, flash, log to tests.status
+--all <device>          # Complete workflow
 ```
 
 ## Components
