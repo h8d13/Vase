@@ -127,7 +127,7 @@ All long-form commands:
 --tuimenu               # Launch modified TUI
 --isomod                # Create iso default `iso_profiles/fat.conf`
 --start                 # Start VM menu
---quick <command>       # Lanch VM "help" to see options
+--quick <command>       # Launch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
 --all <device>          # Complete workflow
