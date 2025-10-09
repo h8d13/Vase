@@ -3,6 +3,7 @@
 1. hade_box = Installer fork
 2. zazulago_vms = Testing suite
 3. kaes_arch = Post-install script
+4. pacto_pac = Pacman GUI
 
 Main program contains ISO building scripts and more ways to interact with all the project.
 
