@@ -130,7 +130,7 @@ All long-form commands:
 | Component | Description | Documentation |
 |:----------|:------------|:--------------|
 | **hade_box** | Installer fork - Modified TUI for fast Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
-| **zazulago_vms** | Testing suite - VM management and QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
+| **zazulago_vms** | Testing suite - VM meny QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
 | **kaes_arch** | Post-install script - System configuration and package installation | [README](./vase_os/kaes_arch/README.md) |
 | **pacto_pac** | GUI - Graphical user interface | [README](https://github.com/h8d13/PACTOPAC) |
 
