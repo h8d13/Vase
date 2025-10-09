@@ -127,7 +127,7 @@ All long-form commands:
 
 ## Components
 
-| Component | Description | Documentation |
+| Component | Desc | Docs |
 |:----------|:------------|:--------------|
 | **hade_box** | Installer fork - Modified TUI for fast Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
 | **zazulago_vms** | Testing suite - VM meny QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
