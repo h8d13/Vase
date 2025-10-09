@@ -42,7 +42,8 @@ Written in bash and python.
 
 This works from official arch ISO (using mirrors slower, depending on internet speed) or the one built here (faster, using cached files).
 
-> At our compute cost of having to do more frequent builds. For example at major releases of upstream sources.
+> At our compute cost of having to do more frequent builds whenever something is borken. 
+> Or at major releases of upstream sources which we have to track closely.
 
 ---
 
