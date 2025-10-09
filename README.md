@@ -144,10 +144,10 @@ Or better yet, fork all the repos and send me patches.
 
 | Component | Desc | Docs |
 |:----------|:------------|:--------------|
-| **hade_box** | Installer fork - Modified TUI for fast Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
-| **zazulago_vms** | Testing suite - VM meny QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
+| **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
+| **zazulago_vms** | Testing suite - VM menu QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
 
 [QEMU Docs](https://www.qemu.org/documentation/)
 
