@@ -13,10 +13,6 @@ image_name="${script_dir}/c/${vm_name}.${vm_ext}"
 session_uuid=$(cat /proc/sys/kernel/random/uuid)
 short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 
-# Encryption/decryption tool
-hedgen_bin="${script_dir}/lib/hedgen2c"
-key_file="${script_dir}/.vmkey.local"
-
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
@@ -36,57 +32,6 @@ run_headless() {
     else
         warn "VM exited with code: $exit_code"
     fi
-}
-
-get_magic_number() {
-    echo $((RANDOM * RANDOM % 4294957296 + 9999))
-}
-
-save_key() {
-    local key="$1"
-    echo "$key" > "$key_file"
-}
-
-load_key() {
-    if file_ex "$key_file"; then
-        head -n1 "$key_file" | tr -d '[:space:]'
-    else
-        postop "Encryption key not found."
-        exit 1
-    fi
-}
-
-decrypt_vm() {
-    local image="$1"
-    local key="$2"
-
-    $hedgen_bin d "${image}.bin" "$image" "$key"
-    rm -f "${image}.bin"
-
-    # Log launch
-    local hashed_name
-    hashed_name=$(echo "$image" | sha256sum | cut -c1-8)
-    {
-        echo ""
-        echo "#I$(date '+%Y-%m-%d %H:%M:%S')"
-        echo "#${session_uuid}"
-        echo "#${hashed_name}"
-    } >> "$key_file"
-}
-
-encrypt_vm() {
-    local image="$1"
-    local key="$2"
-
-    $hedgen_bin e "$image" "${image}.bin" "$key"
-    rm -f "$image"
-
-    # Log exit
-    {
-        echo ""
-        echo "#O$(date '+%Y-%m-%d %H:%M:%S')"
-        echo "#${session_uuid}"
-    } >> "$key_file"
 }
 
 copy_disk() {
@@ -216,7 +161,6 @@ show_menu() {
     echo "Zazulago VM Tooling: rdisk, then brick."
     echo "Display: ${qemu_display} | GL: ${qemu_gl}"
     echo "########################################"
-    echo " rk      : Refresh key"
     echo " rdisk   : Reset ${vm_name} ${size}"
     echo " dupk    : Permanent copy"
     echo " duck    : Temporary copy"
@@ -232,8 +176,7 @@ show_menu() {
     echo " macg    : Generate MAC + run"
     echo " conkd   : Boot w ${target} and disk"
     echo " conk    : Run w ${target} and disk"
-    echo " potk    : Delete key + encrypt"
-    echo " exit    : Exit without encrypt"
+    echo " exit    : Exit"
     echo "########################################"
 }
 
@@ -241,27 +184,14 @@ main() {
     local quick_cmd="${1:-}"  # Get quick command from argument
 
     # Setup
-    file_mex "$hedgen_bin"
+    dir_excreate "${script_dir}/a/"
     dir_excreate "${script_dir}/c/"
     dir_excreate "${script_dir}/d/"
 
     # Create disk if it doesn't exist
-    if ! file_ex "$image_name" && ! file_ex "${image_name}.bin"; then
+    if ! file_ex "$image_name"; then
         preop "Creating initial disk: $image_name"
         qemu-img create -f qcow2 "$image_name" "$size"
-    fi
-
-    # Load or create key
-    if file_ex "${image_name}.bin"; then
-        preop "Encrypted ${image_name}.bin detected"
-        key=$(load_key)
-        decrypt_vm "$image_name" "$key"
-    elif file_ex "$key_file"; then
-        key=$(load_key)
-    else
-        key=$(get_magic_number)
-        save_key "$key"
-        preop "Created new key"
     fi
 
     # Check for quick command from argument (bypass menu)
@@ -288,36 +218,21 @@ main() {
             return 0
             ;;
 
-        rk)
-            key=$(get_magic_number)
-            save_key "$key"
-            postop "Key refreshed"
-            return 0
-            ;;
-
         rdisk)
             qemu-img create -f qcow2 "$image_name" "$size"
             postop "Reset disk $image_name"
             return 0
             ;;
 
-        potk)
-            encrypt_vm "$image_name" "$key"
-            rm -f "$key_file"
-            preop "Encrypted and deleted key"
-            return 0
-            ;;
-
         exit)
-            postop "Exiting without encryption"
+            postop "Exiting."
             return 0
             ;;
 
         brick)
-            preop "Booting from ISO (first boot - no encryption after)..."
+            preop "Booting from ISO ..."
             cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
             run_vm "$cmd"
-            postop "Skipping encryption for brick (fresh install)"
             return 0
             ;;
         vncd)
@@ -370,13 +285,10 @@ main() {
             temp_name=$(copy_disk "$image_name")
             cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
-            printf "Save? (enc/raw/no): "
+            printf "Save? (raw/no): "
             read -r save_choice
             save_choice=$(echo "$save_choice" | tr '[:upper:]' '[:lower:]')
             case "$save_choice" in
-                enc)
-                    encrypt_vm "$temp_name" "$key"
-                    ;;
                 raw)
                     ;;
                 *)
@@ -421,9 +333,7 @@ main() {
             ;;
     esac
 
-    # Encrypt after use (unless we returned early or used brick for first boot)
-    encrypt_vm "$image_name" "$key"
-    postop "Done... Encrypted now exiting."
+    postop "Done...."
 }
 
 # Run main with all arguments

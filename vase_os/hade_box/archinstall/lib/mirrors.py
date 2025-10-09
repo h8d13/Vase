@@ -225,16 +225,11 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def _define_menu_options(self) -> list[MenuItem]:
 		return [
 			MenuItem(
-				text=('Select regions'),
-				action=select_mirror_regions,
+				text=('Mirror configuration'),
+				action=configure_mirrors,
 				value=self._mirror_config.mirror_regions,
 				preview_action=self._prev_regions,
 				key='mirror_regions',
-			),
-			MenuItem(
-				text=('Use system mirrorlist'),
-				action=use_system_mirrorlist,
-				preview_action=self._prev_system_mirrorlist,
 			),
 			MenuItem(
 				text=('Optional repositories'),
@@ -326,44 +321,62 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 		output = '\n'.join([server.url for server in custom_servers])
 		return output.strip()
 
-	def _prev_system_mirrorlist(self, item: MenuItem) -> str | None:
-		"""Preview current system mirrorlist"""
-		try:
-			system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
-			if not system_mirrorlist.exists():
-				return 'System mirrorlist not found'
-
-			with system_mirrorlist.open('r') as f:
-				lines = f.readlines()
-
-			# Extract active mirrors
-			mirrors = []
-			current_region = None
-			for line in lines:
-				line = line.strip()
-				if line.startswith('## ') and not line.startswith('## Arch Linux'):
-					current_region = line.replace('## ', '')
-				elif line.startswith('Server = '):
-					url = line.replace('Server = ', '')
-					mirrors.append((current_region, url))
-
-			if mirrors:
-				output = f'System mirrorlist ({len(mirrors)} mirrors):\n\n'
-				last_region = None
-				for region, url in mirrors:
-					if region != last_region and region:
-						output += f'## {region}\n'
-						last_region = region
-					output += f'Server = {url}\n'
-				return output
-			return 'No mirrors found in system mirrorlist'
-		except Exception as e:
-			return f'Unable to read system mirrorlist: {e}'
-
 	@override
 	def run(self, additional_title: str | None = None) -> MirrorConfiguration:
 		super().run(additional_title=additional_title)
 		return self._mirror_config
+
+def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
+	"""Main mirror configuration - choose between system mirrorlist or manual selection"""
+	from .args import arch_config_handler
+
+	# First, ask user how they want to configure mirrors
+	items = [
+		MenuItem('Use system mirrorlist (automatic/reflector)', value='system'),
+		MenuItem('Manual region selection', value='manual'),
+	]
+	group = MenuItemGroup(items, sort_items=False)
+
+	result = SelectMenu[str](
+		group,
+		alignment=Alignment.CENTER,
+		frame=FrameProperties.min('Mirror configuration method'),
+		allow_skip=True,
+	).run()
+
+	match result.type_:
+		case ResultType.Skip:
+			return preset
+		case ResultType.Selection:
+			choice = result.get_value()
+
+			if choice == 'system':
+				# Use system mirrorlist
+				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
+				if not system_mirrorlist.exists():
+					if not arch_config_handler.args.silent:
+						Tui.print('System mirrorlist not found, falling back to manual selection')
+						input('\nPress ENTER to continue...')
+					return select_mirror_regions(preset)
+
+				temp_mirrorlist = mirror_list_handler._local_mirrorlist
+
+				# Check if they're the same file
+				if system_mirrorlist.resolve() != temp_mirrorlist.resolve():
+					import shutil
+					shutil.copy(system_mirrorlist, temp_mirrorlist)
+
+				# Reload handler to parse the system mirrorlist
+				mirror_list_handler.load_local_mirrors()
+
+				# Return regions parsed from system mirrorlist
+				return mirror_list_handler.get_mirror_regions()
+
+			elif choice == 'manual':
+				# Manual region selection
+				return select_mirror_regions(preset)
+
+	return preset
 
 def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
@@ -438,43 +451,6 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			mirror_list_handler.load_local_mirrors()
 
 	return selected_regions
-
-def use_system_mirrorlist(preset: None = None) -> None:
-	"""Copy system mirrorlist to temp mirrorlist"""
-	from .args import arch_config_handler
-
-	try:
-		system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
-		if not system_mirrorlist.exists():
-			if not arch_config_handler.args.silent:
-				Tui.print('System mirrorlist not found')
-				input('\nPress ENTER to continue...')
-			return None
-
-		# Copy system mirrorlist to temp mirrorlist
-		temp_mirrorlist = mirror_list_handler._local_mirrorlist
-
-		# Check if they're the same file
-		if system_mirrorlist.resolve() == temp_mirrorlist.resolve():
-			# Already using system mirrorlist, just reload
-			mirror_list_handler.load_local_mirrors()
-			if not arch_config_handler.args.silent:
-				Tui.print('System mirrorlist loaded')
-				input('\nPress ENTER to continue...')
-		else:
-			import shutil
-			shutil.copy(system_mirrorlist, temp_mirrorlist)
-			# Reload handler
-			mirror_list_handler.load_local_mirrors()
-			if not arch_config_handler.args.silent:
-				Tui.print('System mirrorlist copied and loaded')
-				input('\nPress ENTER to continue...')
-	except Exception as e:
-		if not arch_config_handler.args.silent:
-			Tui.print(f'Failed to use system mirrorlist: {e}')
-			input('\nPress ENTER to continue...')
-
-	return None
 
 def add_custom_mirror_servers(preset: list[CustomServer] = []) -> list[CustomServer]:
 	custom_mirrors = CustomMirrorServersList(preset).run()
