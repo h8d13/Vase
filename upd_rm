@@ -34,8 +34,9 @@ kernel_version=$(uname -r | cut -d'-' -f1)
 
 # Read traffic data from traffic.json
 if [ -f "traffic.json" ]; then
-    clone_count=$(jq -r '.count' traffic.json)
-    unique_clones=$(jq -r '.uniques' traffic.json)
+    # Parse all clones entries, deduplicate by timestamp, sum counts
+    clone_count=$(jq -s '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.count) | add // 0' traffic.json)
+    unique_clones=$(jq -s '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.uniques) | add // 0' traffic.json)
 else
     clone_count="N/A"
     unique_clones="N/A"
