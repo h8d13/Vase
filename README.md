@@ -79,7 +79,7 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 ### From an existing arch installation (For devs)
 
-> On an exisitng install use sudo.  
+> On an existing install use sudo.  
 
 `$ ./main -t (*args)` : Launch TUI forked KDE install
 > This will check system subdeps for Arch to Arch installs.
