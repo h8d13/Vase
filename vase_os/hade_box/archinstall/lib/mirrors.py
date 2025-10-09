@@ -441,10 +441,14 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 
 def use_system_mirrorlist(preset: None = None) -> None:
 	"""Copy system mirrorlist to temp mirrorlist"""
+	from .args import arch_config_handler
+
 	try:
 		system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
 		if not system_mirrorlist.exists():
-			Tui.print('System mirrorlist not found')
+			if not arch_config_handler.args.silent:
+				Tui.print('System mirrorlist not found')
+				input('\nPress ENTER to continue...')
 			return None
 
 		# Copy system mirrorlist to temp mirrorlist
@@ -452,20 +456,23 @@ def use_system_mirrorlist(preset: None = None) -> None:
 
 		# Check if they're the same file
 		if system_mirrorlist.resolve() == temp_mirrorlist.resolve():
-			Tui.print('Already using system mirrorlist')
-			# Just reload to ensure it's loaded
+			# Already using system mirrorlist, just reload
 			mirror_list_handler.load_local_mirrors()
+			if not arch_config_handler.args.silent:
+				Tui.print('System mirrorlist loaded')
+				input('\nPress ENTER to continue...')
 		else:
 			import shutil
 			shutil.copy(system_mirrorlist, temp_mirrorlist)
 			# Reload handler
 			mirror_list_handler.load_local_mirrors()
-			Tui.print('Using system mirrorlist')
-
-		input('\nPress ENTER to continue...')
+			if not arch_config_handler.args.silent:
+				Tui.print('System mirrorlist copied and loaded')
+				input('\nPress ENTER to continue...')
 	except Exception as e:
-		Tui.print(f'Failed to use system mirrorlist: {e}')
-		input('\nPress ENTER to continue...')
+		if not arch_config_handler.args.silent:
+			Tui.print(f'Failed to use system mirrorlist: {e}')
+			input('\nPress ENTER to continue...')
 
 	return None
 
