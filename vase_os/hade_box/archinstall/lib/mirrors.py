@@ -450,13 +450,18 @@ def use_system_mirrorlist(preset: None = None) -> None:
 		# Copy system mirrorlist to temp mirrorlist
 		temp_mirrorlist = mirror_list_handler._local_mirrorlist
 
-		import shutil
-		shutil.copy(system_mirrorlist, temp_mirrorlist)
+		# Check if they're the same file
+		if system_mirrorlist.resolve() == temp_mirrorlist.resolve():
+			Tui.print('Already using system mirrorlist')
+			# Just reload to ensure it's loaded
+			mirror_list_handler.load_local_mirrors()
+		else:
+			import shutil
+			shutil.copy(system_mirrorlist, temp_mirrorlist)
+			# Reload handler
+			mirror_list_handler.load_local_mirrors()
+			Tui.print('Using system mirrorlist')
 
-		# Reload handler
-		mirror_list_handler.load_local_mirrors()
-
-		Tui.print('Using system mirrorlist')
 		input('\nPress ENTER to continue...')
 	except Exception as e:
 		Tui.print(f'Failed to use system mirrorlist: {e}')
