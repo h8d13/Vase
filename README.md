@@ -30,6 +30,8 @@
 
 ---
 
+## VaseOS - Archlinux KDE 🏺
+
 A testing suite to run VMs and development platform to perform Archlinux system installations. 
 
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
@@ -47,10 +49,6 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 ---
 
-<a href="https://github.com/h8d13/Vase/releases">
-    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-</a>
-
 ## Installation/Usage
 
 ### From USB/ISO
@@ -63,7 +61,13 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 `$ ./main -t` : Launch TUI forked KDE install
 
+> Follow the prompts here: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
+
 Go grab some coffee during installation (it'll be done when you come back).
+
+<a href="https://github.com/h8d13/Vase/releases">
+    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
+</a>
 
 After initial install pick `Reboot` and switch to hard disk.
 
@@ -74,6 +78,10 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 [![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
 
 See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
+
+If this helped you and earned you some time to touch grass (or you even just learned things), please consider sharing the project, opening pull requests, or even just a star ⭐. 
+
+> If you do want to contribrute to the project more in depth, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
 
 ---
 
@@ -127,12 +135,16 @@ All long-form commands:
 
 ## Components
 
+> Tools used: mainly archinstall, mkarchiso, arch-install-scripts. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
+
 | Component | Desc | Docs |
 |:----------|:------------|:--------------|
 | **hade_box** | Installer fork - Modified TUI for fast Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
 | **zazulago_vms** | Testing suite - VM meny QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
-| **pacto_pac** | GUI - Pacman commons operations Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
+| **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
+
+[QEMU Docs](https://www.qemu.org/documentation/)
 
 #### Settings
 
@@ -141,6 +153,10 @@ In project root, `...` file contains all configuration constants.
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
-Turn Konqi in Kodzilla.
+#### Turning Konqi in Konqzilla.
+
+Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
 
 ![ConkyGif](https://private-user-images.githubusercontent.com/52324046/438629100-a8912369-a8cc-49be-af79-80994e8d2ab6.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTk5OTYxODUsIm5iZiI6MTc1OTk5NTg4NSwicGF0aCI6Ii81MjMyNDA0Ni80Mzg2MjkxMDAtYTg5MTIzNjktYThjYy00OWJlLWFmNzktODA5OTRlOGQyYWI2LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTEwMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMDA5VDA3NDQ0NVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWJhMDY3NWEzZGViMmQ1ZTMyZmVlNmVlZWNkMjljNTMwNDM2YzUyZWFmNTgzNGI1ZDJlODRlYTNlNDJhMmMzNTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.riBvUa6we5z4KaHiTc1WixmVkjrkwbUOntNdRpJow9c)
+
+> Idea was simple: Faster testing/installs, fixing host to target installs, **saving mirror providers TBs in bandwith** and less choices to break something in TUI (kind of work for all scenario) testing on weird/old hardware like Hybrid Nvidia/Intel setups or more recent desktops too.

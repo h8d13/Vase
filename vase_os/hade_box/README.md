@@ -78,8 +78,14 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
     - Filter to HTTPS-only mirrors
     - Reorder mirrors interactively (first selected = highest priority)
     - Preserves region structure (`## Germany`) when writing edited mirrorlist
-  - **Host-compatible:** Uses temp copy `/tmp/archinstall_mirrorlist` when installing from host (doesn't modify host's mirrorlist)
-  - There are probably more aspects that need correction for host compat: Perhaps even setting keymaps should never be permanent change on host if that makes sense.
+  - **Keyring optimization:** Skips WKD sync if keyring already initialized (detects `/etc/pacman.d/gnupg` populated)
+
+- **HOST POLLUTION PREVENTION:**
+  - Created `running_from_iso()` utility function in `lib/general.py` to detect ISO vs host environment
+  - **Keyboard layout protection:** `set_kb_layout()` now skips `localectl` when running from host (only modifies ISO environment)
+  - **Mirror list protection:** Uses temp copy `/tmp/archinstall_mirrorlist` when installing from host (doesn't modify host's mirrorlist)
+  - **Environment detection:** Installer displays "Running from ISO" or "Running from Host" at startup
+  - Target system keymap is still properly configured via `installer.set_keyboard_language()` in chroot
 
 - Auto-restores backup pacman.conf from `/etc/pacman.conf.backup` if pacstrap fails (created by iso_mod for CUSTOM ISOs)
 - Swap config inside disks to make possible swap on partition

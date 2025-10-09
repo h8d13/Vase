@@ -69,7 +69,7 @@ class ArchConfig:
 	kernels: list[str] = field(default_factory=lambda: ['linux'])
 	ntp: bool = True
 	packages: list[str] = field(default_factory=list)
-	parallel_downloads: int = 10
+	parallel_downloads: int = 5
 	swap: SwapConfiguration = field(default_factory=SwapConfiguration)
 	timezone: str = 'UTC'
 	services: list[str] = field(default_factory=list)

@@ -37,6 +37,25 @@ info "Adding customizations to airootfs..."
 ## This keeps the ISO smaller and ensures they always get latest code
 mkdir -p "$PROFILE_DIR/airootfs/root"
 
+# Dev mode: Copy entire Vase project into ISO (including uncommitted changes, respects .gitignore)
+dev_mode="${dev_mode:-0}"
+if [ "$dev_mode" = "1" ]; then
+    info "dev_mode enabled: Copying entire Vase project into ISO..."
+    VASE_SRC="$SCRIPT_DIR/../../"
+    if dir_ex "$VASE_SRC"; then
+        mkdir -p "$PROFILE_DIR/airootfs/root/Vase"
+        # Use git ls-files to get all tracked and untracked (but not ignored) files
+        (cd "$VASE_SRC" && \
+         git ls-files && \
+         git ls-files --others --exclude-standard) | \
+        tar -C "$VASE_SRC" -cf - -T - | \
+        tar -C "$PROFILE_DIR/airootfs/root/Vase" -xf -
+        reop "Local Vase project (including uncommitted changes) copied to ISO for development"
+    else
+        warn "Vase source directory not found at $VASE_SRC"
+    fi
+fi
+
 # Add git to ISO packages (needed for users to clone Vase)
 info "Adding git to ISO package list..."
 echo "" >> "$PROFILE_DIR/packages.x86_64"
@@ -45,11 +64,11 @@ echo "git" >> "$PROFILE_DIR/packages.x86_64"
 
 # Append custom MOTD
 build_date=$(date '+%Y.%m.%d')
-cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
+if [ "$dev_mode" = "0" ]; then cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 
 ╔═══════════════════════════════════════╗
-      VASE ARCH INSTALLER ${vase_v}      
-      ISO Generated ${build_date}...          
+      VASE ARCH INSTALLER ${vase_v}
+      ISO Generated ${build_date}...
 ╚═══════════════════════════════════════╝
 ╔═══════════════════════════════════════╗
       Ethernet cable works out of box.
@@ -57,115 +76,110 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
       Where SSID is you WiFi...
 ╚═══════════════════════════════════════╝
 ╔═══════════════════════════════════════╗
-      To install: 
+      To install:
  git clone https://github.com/h8d13/Vase
       cd Vase && ./main -t
 ╚═══════════════════════════════════════╝
 EOF
+fi
 
-# Pre-cache Plasma packages in ISO without installing them (toggle with ADD_PROFILE)
-ADD_PROFILE="1"
+PROFILE_LIST="$SCRIPT_DIR/iso_profiles/fat.conf"
 
-if [ "$ADD_PROFILE" = "1" ]; then
-    PROFILE_LIST="$SCRIPT_DIR/iso_profiles/fat.conf"
-    if file_ex "$PROFILE_LIST"; then
-        info "Creating local package repository for fat profile packages..."
+if file_ex "$PROFILE_LIST"; then
+    info "Creating local package repository for fat profile packages..."
 
-        # Read packages from profile (skip comments and empty lines)
-        packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$' | tr '\n' ' ')
+    # Read packages from profile (skip comments and empty lines)
+    packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$' | tr '\n' ' ')
 
-        if [ -n "$packages" ]; then
-            # Create local repo directory in airootfs
-            REPO_DIR="$PROFILE_DIR/airootfs/root/vase_packages"
-            mkdir -p "$REPO_DIR"
+    if [ -n "$packages" ]; then
+        # Create local repo directory in airootfs
+        REPO_DIR="$PROFILE_DIR/airootfs/root/vase_packages"
+        mkdir -p "$REPO_DIR"
 
-            info "Downloading packages with dependencies: $packages"
+        info "Downloading packages with dependencies: $packages"
 
-            # Download packages (pacman resolves dependencies automatically)
-            if pacman -Sw --noconfirm $packages; then
-                # Recursively get ALL dependencies (not just first level)
-                info "Resolving complete dependency tree..."
-                all_packages="$packages"
-                to_check="$packages"
-                checked=""
+        # Download packages (pacman resolves dependencies automatically)
+        if pacman -Sw --noconfirm $packages; then
+            # Recursively get ALL dependencies (not just first level)
+            info "Resolving complete dependency tree..."
+            all_packages="$packages"
+            to_check="$packages"
+            checked=""
 
-                # Iterate through dependencies in batches (max 5 iterations to prevent infinite loops)
-                for iteration in 1 2 3 4 5; do
-                    if [ -z "$to_check" ]; then
-                        break
-                    fi
-
-                    info "Dependency iteration $iteration..."
-                    new_deps=$(pacman -Si $to_check 2>/dev/null | grep "^Depends On" | sed 's/Depends On.*: //' | tr ' ' '\n' | grep -v "^None$" | sed 's/[<>=].*//' | sort -u)
-
-                    # Find only new dependencies we haven't checked yet
-                    to_check=""
-                    for dep in $new_deps; do
-                        if ! echo " $checked " | grep -q " $dep "; then
-                            to_check="$to_check $dep"
-                            all_packages="$all_packages $dep"
-                        fi
-                    done
-
-                    checked="$checked $to_check"
-                done
-
-                # Deduplicate and count
-                all_packages=$(echo "$all_packages" | tr ' ' '\n' | sort -u | grep -v "^$")
-                dep_count=$(echo "$all_packages" | wc -l)
-                info "Copying $dep_count packages to ISO repository..."
-
-                # Copy all packages from cache
-                {
-                    for pkg_name in $all_packages; do
-                        latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
-                        if [ -n "$latest" ]; then
-                            cp "$latest" "$REPO_DIR/" 2>/dev/null || true
-                        fi
-                    done
-                } >/dev/null 2>&1
-
-                # Create local repository database (using explicit file list)
-                info "Creating repository database..."
-                if [ -n "$(ls -A "$REPO_DIR"/*.pkg.tar.zst 2>/dev/null)" ]; then
-                    repo-add "$REPO_DIR/vase_repo.db.tar.gz" "$REPO_DIR"/*.pkg.tar.zst >/dev/null 2>&1
-                else
-                    warn "No packages found to add to repository"
+            # Iterate through dependencies in batches (max 5 iterations to prevent infinite loops)
+            for iteration in 1 2 3 4 5; do
+                if [ -z "$to_check" ]; then
+                    break
                 fi
 
-                pkg_count=$(find "$REPO_DIR" -name "*.pkg.tar.zst" | wc -l)
-                cache_size=$(du -sh "$REPO_DIR" | cut -f1)
+                info "Dependency iteration $iteration..."
+                new_deps=$(pacman -Si $to_check 2>/dev/null | grep "^Depends On" | sed 's/Depends On.*: //' | tr ' ' '\n' | grep -v "^None$" | sed 's/[<>=].*//' | sort -u)
 
-                # Create pacman.conf in airootfs with custom repo FIRST (for live environment only)
-                info "Configuring pacman to use local repository with priority..."
-                mkdir -p "$PROFILE_DIR/airootfs/etc"
+                # Find only new dependencies we haven't checked yet
+                to_check=""
+                for dep in $new_deps; do
+                    if ! echo " $checked " | grep -q " $dep "; then
+                        to_check="$to_check $dep"
+                        all_packages="$all_packages $dep"
+                    fi
+                done
 
-                # Backup original pacman.conf to live ISO for fallback
-                cp "$PROFILE_DIR/pacman.conf" "$PROFILE_DIR/airootfs/etc/pacman.conf.backup"
+                checked="$checked $to_check"
+            done
 
-                # Insert vase_repo BEFORE [core] so it has priority
-                awk '
-                    /^\[core\]/ && !inserted {
-                        print "# Vase local repository for pre-cached Plasma packages (checked first)"
-                        print "[vase_repo]"
-                        print "SigLevel = Optional TrustAll"
-                        print "Server = file:///root/vase_packages"
-                        print ""
-                        inserted=1
-                    }
-                    {print}
-                ' "$PROFILE_DIR/pacman.conf" > "$PROFILE_DIR/airootfs/etc/pacman.conf"
+            # Deduplicate and count
+            all_packages=$(echo "$all_packages" | tr ' ' '\n' | sort -u | grep -v "^$")
+            dep_count=$(echo "$all_packages" | wc -l)
+            info "Copying $dep_count packages to ISO repository..."
 
-                reop "Created local repo with $pkg_count packages ($cache_size) for installation"
+            # Copy all packages from cache
+            {
+                for pkg_name in $all_packages; do
+                    latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
+                    if [ -n "$latest" ]; then
+                        cp "$latest" "$REPO_DIR/" 2>/dev/null || true
+                    fi
+                done
+            } >/dev/null 2>&1
+
+            # Create local repository database (using explicit file list)
+            info "Creating repository database..."
+            if [ -n "$(ls -A "$REPO_DIR"/*.pkg.tar.zst 2>/dev/null)" ]; then
+                repo-add "$REPO_DIR/vase_repo.db.tar.gz" "$REPO_DIR"/*.pkg.tar.zst >/dev/null 2>&1
             else
-                warn "Failed to download packages, continuing without cache"
+                warn "No packages found to add to repository"
             fi
+
+            pkg_count=$(find "$REPO_DIR" -name "*.pkg.tar.zst" | wc -l)
+            cache_size=$(du -sh "$REPO_DIR" | cut -f1)
+
+            # Create pacman.conf in airootfs with custom repo FIRST (for live environment only)
+            info "Configuring pacman to use local repository with priority..."
+            mkdir -p "$PROFILE_DIR/airootfs/etc"
+
+            # Backup original pacman.conf to live ISO for fallback
+            cp "$PROFILE_DIR/pacman.conf" "$PROFILE_DIR/airootfs/etc/pacman.conf.backup"
+
+            # Insert vase_repo BEFORE [core] so it has priority
+            awk '
+                /^\[core\]/ && !inserted {
+                    print "# Vase local repository for pre-cached Plasma packages (checked first)"
+                    print "[vase_repo]"
+                    print "SigLevel = Optional TrustAll"
+                    print "Server = file:///root/vase_packages"
+                    print ""
+                    inserted=1
+                }
+                {print}
+            ' "$PROFILE_DIR/pacman.conf" > "$PROFILE_DIR/airootfs/etc/pacman.conf"
+
+            reop "Created local repo with $pkg_count packages ($cache_size) for installation"
+        else
+            warn "Failed to download packages, continuing without cache"
         fi
-    else
-        warn "No profile found at $PROFILE_LIST, skipping package cache"
     fi
 else
-    info "ADD_PROFILE=0, skipping package caching"
+    warn "No profile found at $PROFILE_LIST, skipping package cache"
 fi
 
 ## xz/squashfs compression keeps ISO size efficient: 2.6GB with Plasma pre-cached

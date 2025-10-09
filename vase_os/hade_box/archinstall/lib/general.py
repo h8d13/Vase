@@ -26,6 +26,18 @@ from .output import debug, error, logger
 _VT100_ESCAPE_REGEX = r'\x1B\[[?0-9;]*[a-zA-Z]'
 _VT100_ESCAPE_REGEX_BYTES = _VT100_ESCAPE_REGEX.encode()
 
+def running_from_iso() -> bool:
+	"""
+	Check if running from Arch Linux ISO/USB live environment.
+
+	Returns True if /run/archiso exists (ISO mode).
+	Returns False if running from installed system (host mode).
+
+	This is used to prevent host system pollution when running installer
+	from an existing Arch installation.
+	"""
+	return Path('/run/archiso').exists()
+
 def generate_password(length: int = 64) -> str:
 	haystack = string.printable  # digits, ascii_letters, punctuation (!"#$[] etc) and whitespace
 	return ''.join(secrets.choice(haystack) for _ in range(length))

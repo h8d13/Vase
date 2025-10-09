@@ -232,6 +232,11 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 				key='mirror_regions',
 			),
 			MenuItem(
+				text=('Use system mirrorlist'),
+				action=use_system_mirrorlist,
+				preview_action=self._prev_system_mirrorlist,
+			),
+			MenuItem(
 				text=('Optional repositories'),
 				action=select_optional_repositories,
 				value=[],
@@ -257,13 +262,43 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def _prev_regions(self, item: MenuItem) -> str:
 		regions = item.get_value()
 
+		if not regions:
+			return 'No regions selected'
+
+		# After editing, show what's actually in the temp mirrorlist
+		try:
+			mirrorlist_path = mirror_list_handler._local_mirrorlist
+			if mirrorlist_path.exists():
+				with mirrorlist_path.open('r') as f:
+					content = f.read()
+
+				# Check if temp file has content for selected regions
+				has_content = any(f'## {region.name}' in content for region in regions)
+				if has_content:
+					# Show actual temp mirrorlist content (reflects edits)
+					lines = content.strip().split('\n')
+					output = ''
+					for line in lines:
+						if line.startswith('## '):
+							region_name = line.replace('## ', '')
+							# Only show if it's one of the selected regions
+							if any(r.name == region_name for r in regions):
+								output += f'{region_name}\n'
+						elif line.startswith('Server = '):
+							url = line.replace('Server = ', '')
+							output += f' - {url}\n'
+						elif line == '':
+							output += '\n'
+					return output.strip()
+		except Exception:
+			pass
+
+		# Fallback: show from region objects
 		output = ''
 		for region in regions:
 			output += f'{region.name}\n'
-
 			for url in region.urls:
 				output += f' - {url}\n'
-
 			output += '\n'
 
 		return output
@@ -290,6 +325,40 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 		custom_servers: list[CustomServer] = item.value
 		output = '\n'.join([server.url for server in custom_servers])
 		return output.strip()
+
+	def _prev_system_mirrorlist(self, item: MenuItem) -> str | None:
+		"""Preview current system mirrorlist"""
+		try:
+			system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
+			if not system_mirrorlist.exists():
+				return 'System mirrorlist not found'
+
+			with system_mirrorlist.open('r') as f:
+				lines = f.readlines()
+
+			# Extract active mirrors
+			mirrors = []
+			current_region = None
+			for line in lines:
+				line = line.strip()
+				if line.startswith('## ') and not line.startswith('## Arch Linux'):
+					current_region = line.replace('## ', '')
+				elif line.startswith('Server = '):
+					url = line.replace('Server = ', '')
+					mirrors.append((current_region, url))
+
+			if mirrors:
+				output = f'System mirrorlist ({len(mirrors)} mirrors):\n\n'
+				last_region = None
+				for region, url in mirrors:
+					if region != last_region and region:
+						output += f'## {region}\n'
+						last_region = region
+					output += f'Server = {url}\n'
+				return output
+			return 'No mirrors found in system mirrorlist'
+		except Exception as e:
+			return f'Unable to read system mirrorlist: {e}'
 
 	@override
 	def run(self, additional_title: str | None = None) -> MirrorConfiguration:
@@ -343,23 +412,57 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			selected_regions = result.get_values()
 
 	# After region selection, offer to edit/filter mirrors for selected regions
-	if fell_back_to_local and selected_regions and not arch_config_handler.args.silent:
+	if selected_regions and not arch_config_handler.args.silent:
 		result = SelectMenu(
 			MenuItemGroup([
-				MenuItem('Use selected regions as-is', value='continue'),
 				MenuItem('Filter/reorder mirrors for selected regions', value='edit'),
+				MenuItem('Use selected regions as-is', value='continue'),
 			], sort_items=False),
 			alignment=Alignment.CENTER,
 			allow_skip=False,
 		).run()
 
-		if result.type_ == ResultType.Selection and result.get_value() == 'edit':
-			# Edit only mirrors from selected regions
-			edit_mirrorlist_for_regions(selected_regions)
-			# Reload after editing
+		if result.type_ == ResultType.Selection:
+			choice = result.get_value()
+
+			if choice == 'edit':
+				# Edit only mirrors from selected regions
+				edited_regions = edit_mirrorlist_for_regions(selected_regions)
+				if edited_regions:
+					selected_regions = edited_regions
+			elif choice == 'continue':
+				# Write full mirrorlist from selected regions to temp file
+				_write_mirrorlist_from_regions(selected_regions)
+
+			# Reload after any changes
 			mirror_list_handler.load_local_mirrors()
 
 	return selected_regions
+
+def use_system_mirrorlist(preset: None = None) -> None:
+	"""Copy system mirrorlist to temp mirrorlist"""
+	try:
+		system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
+		if not system_mirrorlist.exists():
+			Tui.print('System mirrorlist not found')
+			return None
+
+		# Copy system mirrorlist to temp mirrorlist
+		temp_mirrorlist = mirror_list_handler._local_mirrorlist
+
+		import shutil
+		shutil.copy(system_mirrorlist, temp_mirrorlist)
+
+		# Reload handler
+		mirror_list_handler.load_local_mirrors()
+
+		Tui.print('Using system mirrorlist')
+		input('\nPress ENTER to continue...')
+	except Exception as e:
+		Tui.print(f'Failed to use system mirrorlist: {e}')
+		input('\nPress ENTER to continue...')
+
+	return None
 
 def add_custom_mirror_servers(preset: list[CustomServer] = []) -> list[CustomServer]:
 	custom_mirrors = CustomMirrorServersList(preset).run()
@@ -369,8 +472,19 @@ def select_custom_mirror(preset: list[CustomRepository] = []) -> list[CustomRepo
 	custom_mirrors = CustomMirrorRepositoriesList(preset).run()
 	return custom_mirrors
 
-def edit_mirrorlist_for_regions(regions: list[MirrorRegion]) -> None:
-	"""Edit mirrorlist for specific regions only"""
+def _write_mirrorlist_from_regions(regions: list[MirrorRegion]) -> None:
+	"""Write full mirrorlist from selected regions to temp file"""
+	mirrorlist_path = mirror_list_handler._local_mirrorlist
+
+	with mirrorlist_path.open('w') as f:
+		for region in regions:
+			f.write(f'## {region.name}\n')
+			for mirror in region.urls:
+				f.write(f'Server = {mirror}\n')
+			f.write('\n')
+
+def edit_mirrorlist_for_regions(regions: list[MirrorRegion]) -> list[MirrorRegion] | None:
+	"""Edit mirrorlist for specific regions only, returns updated regions with edited mirrors"""
 	# Extract mirrors from selected regions
 	mirrors = []
 	for region in regions:
@@ -378,34 +492,71 @@ def edit_mirrorlist_for_regions(regions: list[MirrorRegion]) -> None:
 
 	if not mirrors:
 		Tui.print('No mirrors found in selected regions')
-		return
+		return None
 
-	_edit_mirrors(mirrors, regions)
+	edited_mirrors = _edit_mirrors(mirrors, regions)
 
-def edit_mirrorlist() -> None:
-	"""Interactive mirrorlist editor to reorder and filter mirrors"""
-	# Use the handler's mirrorlist path (temp copy on host, direct on ISO)
-	mirrorlist_path = mirror_list_handler._local_mirrorlist
+	# If mirrors were edited, rebuild regions with new mirror list
+	if edited_mirrors:
+		# Create updated regions with new mirror URLs
+		updated_regions = []
+		for region in regions:
+			# Filter edited mirrors that belong to this region
+			region_mirrors = [m for m in edited_mirrors if m in region.urls]
+			if region_mirrors:
+				# Create new region with updated URLs
+				updated_region = MirrorRegion(region.name, region_mirrors)
+				updated_regions.append(updated_region)
+		return updated_regions
 
-	# Read current mirrorlist
-	with mirrorlist_path.open('r') as f:
-		lines = f.readlines()
+	return None
 
-	# Extract active mirrors (uncommented Server lines)
-	mirrors = []
-	for line in lines:
-		if line.strip().startswith('Server = '):
-			url = line.strip().replace('Server = ', '')
-			mirrors.append(url)
+def edit_mirrorlist(preset: None = None) -> None:
+	"""Interactive mirrorlist editor to reorder and filter mirrors
 
-	if not mirrors:
-		Tui.print('No mirrors found in mirrorlist')
-		return
+	Uses mirrors from selected regions if available, otherwise from temp mirrorlist
+	"""
+	from .args import arch_config_handler
 
-	_edit_mirrors(mirrors, None)
+	# Get selected regions from config
+	config = arch_config_handler.config
+	selected_regions = config.mirror_config.mirror_regions if config.mirror_config else []
 
-def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None) -> None:
-	"""Core mirror editing logic - filters and reorders given list of mirrors"""
+	if selected_regions:
+		# Use mirrors from selected regions
+		mirrors = []
+		for region in selected_regions:
+			mirrors.extend(region.urls)
+
+		if not mirrors:
+			Tui.print('No mirrors found in selected regions')
+			return None
+
+		_edit_mirrors(mirrors, selected_regions)
+	else:
+		# Fallback to reading temp mirrorlist
+		mirrorlist_path = mirror_list_handler._local_mirrorlist
+
+		with mirrorlist_path.open('r') as f:
+			lines = f.readlines()
+
+		# Extract active mirrors (uncommented Server lines)
+		mirrors = []
+		for line in lines:
+			if line.strip().startswith('Server = '):
+				url = line.strip().replace('Server = ', '')
+				mirrors.append(url)
+
+		if not mirrors:
+			Tui.print('No mirrors found in mirrorlist')
+			return None
+
+		_edit_mirrors(mirrors, None)
+
+	return None
+
+def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None) -> list[str] | None:
+	"""Core mirror editing logic - filters and reorders given list of mirrors, returns final list"""
 	mirrorlist_path = mirror_list_handler._local_mirrorlist
 
 	# Loop to allow multiple operations
@@ -413,6 +564,7 @@ def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None)
 		items = [
 			MenuItem('Keep only HTTPS mirrors', value='https_only'),
 			MenuItem('Reorder mirrors interactively', value='reorder'),
+			MenuItem('Preview current selection', value='preview'),
 			MenuItem('Done - save and continue', value='done'),
 		]
 
@@ -454,6 +606,14 @@ def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None)
 					if selected_mirrors:
 						mirrors = selected_mirrors
 
+			elif choice == 'preview':
+				# Show current mirror selection
+				preview_text = f'Current mirror selection ({len(mirrors)} mirrors):\n\n'
+				for idx, mirror in enumerate(mirrors, 1):
+					preview_text += f'{idx}. {mirror}\n'
+				Tui.print(preview_text)
+				input('\nPress ENTER to continue...')
+
 			elif choice == 'done':
 				# Write final mirrorlist with region structure preserved
 				with mirrorlist_path.open('w') as f:
@@ -471,7 +631,7 @@ def _edit_mirrors(mirrors: list[str], regions: list[MirrorRegion] | None = None)
 						f.write('# Custom mirrorlist\n')
 						for mirror in mirrors:
 							f.write(f'Server = {mirror}\n')
-				break
+				return mirrors  # Return edited mirrors
 
 def select_optional_repositories(preset: list[Repository]) -> list[Repository]:
 	"""
@@ -508,8 +668,10 @@ class MirrorListHandler:
 		self,
 		local_mirrorlist: Path = Path('/etc/pacman.d/mirrorlist'),
 	) -> None:
+		from .general import running_from_iso
+
 		# Check if running from ISO or host system
-		self._running_from_iso = Path('/run/archiso').exists()
+		self._running_from_iso = running_from_iso()
 
 		# If running from host, use temp copy to avoid modifying host's mirrorlist
 		if not self._running_from_iso:

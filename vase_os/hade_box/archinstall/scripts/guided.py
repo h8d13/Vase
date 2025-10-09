@@ -19,6 +19,7 @@ from archinstall.lib.models.device import (
 	SnapshotType,
 )
 from archinstall.lib.models.users import User
+from archinstall.lib.general import running_from_iso
 from archinstall.lib.output import debug, error, info
 from archinstall.lib.profile.profiles_handler import profile_handler
 from archinstall.tui import Tui
@@ -100,6 +101,14 @@ def perform_installation(mountpoint: Path) -> None:
 	"""
 	start_time = time.time()
 	checkpoint_time = start_time
+
+	# Display environment detection (visible output)
+	from archinstall.lib.output import log
+	if running_from_iso():
+		log('Running from Arch Linux ISO / USB Medium', fg='yellow')
+	else:
+		log('Running from a Arch Linux Host System', fg='yellow')
+
 	info('Starting installation...')
 
 	config = arch_config_handler.config
@@ -123,10 +132,6 @@ def perform_installation(mountpoint: Path) -> None:
 		installation.mount_ordered_layout()
 
 		installation.sanity_check()
-
-		if disk_config.disk_encryption and disk_config.disk_encryption.encryption_type != EncryptionType.NoEncryption:
-			# generate encryption key files for the mounted luks devices
-			installation.generate_key_files()
 
 		if mirror_config := config.mirror_config:
 			installation.set_mirrors(mirror_config, on_target=False)

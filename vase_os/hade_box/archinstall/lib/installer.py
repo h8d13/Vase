@@ -64,6 +64,7 @@ class Installer:
 		`Installer()` is the wrapper for most basic installation steps.
 		It also wraps :py:func:`~archinstall.Installer.pacstrap` among other things.
 		"""
+		
 		self._base_packages = base_packages or __packages__[:4] # Added sof-firmare :4 to default
 		self.kernels = kernels or ['linux']
 		self._disk_config = disk_config
@@ -161,73 +162,57 @@ class Installer:
 		if mod not in self._modules:
 			self._modules.append(mod)
 
-	def _wait_for_service(self, service_name: str, timeout: int = 30) -> bool:
-		"""
-		Wait for a systemd service to complete with a timeout.
-		Returns True if completed successfully, False if timed out.
-		"""
-		waited = 0
-		while self._service_state(service_name) not in ('dead', 'failed', 'exited'):
-			if waited >= timeout:
-				return False
-			time.sleep(1)
-			waited += 1
-		return True
-
 	def _verify_service_stop(self) -> None:
 		"""
 		Certain services might be running that affects the system during installation.
 		One such service is "reflector.service" which updates /etc/pacman.d/mirrorlist
 		We need to wait for it before we continue since we opted in to use a custom mirror/region.
 		"""
-		# Im wondering if reflector is not already run as soon as an internet connection is found
-		# Hence we might be able to use the medium's already done reflector and skip this
-		# But it would still have to be done if NOT running from USB medium
-
 		if not arch_config_handler.args.skip_ntp:
 			info('Waiting for time sync (timedatectl show) to complete.')
-
 			started_wait = time.time()
 			notified = False
 			while True:
 				if not notified and time.time() - started_wait > 5:
 					notified = True
 					warn('Time synchronization not completing, while you wait - check the docs for workarounds: https://archinstall.readthedocs.io/')
-
 				time_val = SysCommand('timedatectl show --property=NTPSynchronized --value').decode()
 				if time_val and time_val.strip() == 'yes':
-					info('Time sync completed.')
 					break
 				time.sleep(1)
 		else:
 			info('Skipping waiting for automatic time sync (this can cause issues if time is out of sync during installation)')
 
 		info('Waiting for automatic mirror selection (reflector) to complete.')
-		if self._wait_for_service('reflector', timeout=30):
-			info('Reflector completed.')
-		else:
-			warn('Reflector timed out after 30s, continuing with existing mirrors')
-
+		while self._service_state('reflector') not in ('dead', 'failed', 'exited'):
+			time.sleep(1)
 		# info('Waiting for pacman-init.service to complete.')
 		# while self._service_state('pacman-init') not in ('dead', 'failed', 'exited'):
 		# 	time.sleep(1)
 
 		if not arch_config_handler.args.skip_wkd:
-			info('Waiting for Arch Linux keyring sync (archlinux-keyring-wkd-sync) to complete.')
-			# Wait for the timer to kick in (10 second timeout)
-			timer_waited = 0
-			while self._service_started('archlinux-keyring-wkd-sync.timer') is None:
-				if timer_waited >= 10:
-					warn('Keyring timer did not start after 10s, skipping')
-					break
-				time.sleep(1)
-				timer_waited += 1
+			# Check if keyring is already initialized
+			keyring_dir = Path('/etc/pacman.d/gnupg')
+			keyring_initialized = keyring_dir.exists() and any(keyring_dir.iterdir())
+
+			if keyring_initialized:
+				info('Keyring already initialized, skipping WKD sync')
 			else:
-				# Wait for the service to complete (30 second timeout)
-				if self._wait_for_service('archlinux-keyring-wkd-sync.service', timeout=30):
-					info('Keyring sync completed.')
+				info('Waiting for Arch Linux keyring sync (archlinux-keyring-wkd-sync) to complete.')
+				# Wait for the timer to kick in (10 second timeout)
+				timer_waited = 0
+				while self._service_started('archlinux-keyring-wkd-sync.timer') is None:
+					if timer_waited >= 10:
+						warn('Keyring timer did not start after 10s, skipping')
+						break
+					time.sleep(1)
+					timer_waited += 1
 				else:
-					warn('Keyring sync timed out after 30s, continuing with existing keyring')
+					# Wait for the service to complete (30 second timeout)
+					if self._wait_for_service('archlinux-keyring-wkd-sync.service', timeout=30):
+						info('Keyring sync completed.')
+					else:
+						warn('Keyring sync timed out after 30s, continuing with existing keyring')
 
 	def _verify_boot_part(self) -> None:
 		"""
@@ -254,8 +239,7 @@ class Installer:
 	def set_graphics_driver(self, gfx_driver: GfxDriver) -> None:
 		"""
 		Set the graphics driver for hardware-specific kernel parameters.
-		This should be called when installing the graphics driver.
-		Parameters will be added to GRUB_CMDLINE_LINUX_DEFAULT during bootloader installation.
+		This should be called when installing the graphics driver. Pre-cached
 		"""
 		self._gfx_driver = gfx_driver
 		debug(f'Graphics driver set to {gfx_driver.value} for kernel parameter configuration')

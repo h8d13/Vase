@@ -15,6 +15,7 @@ PACKAGES=(
     "mkinitcpio"
     "pciutils"
     "dosfstools"
+    "reflector"
     # Optional (depending on options picked in archinstall)
     "btrfs-progs"
     #"cryptsetup"

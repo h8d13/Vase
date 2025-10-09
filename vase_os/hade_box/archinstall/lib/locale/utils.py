@@ -72,6 +72,20 @@ def get_kb_layout() -> str:
 	return layout
 
 def set_kb_layout(locale: str) -> bool:
+	"""
+	Set keyboard layout for the installer session.
+
+	IMPORTANT: This function only runs in ISO mode to set the live environment keymap.
+	When running from an installed host system, it skips to prevent host pollution.
+	The target system's keymap is set separately via installer.set_keyboard_language().
+	"""
+	from ..general import running_from_iso
+
+	if not running_from_iso():
+		# Skip when running from host - no need to change host keymap
+		# The target installation keymap is set via installer.set_keyboard_language()
+		return True
+
 	if len(locale.strip()):
 		if not verify_keyboard_layout(locale):
 			error(f'Invalid keyboard locale specified: {locale}')
