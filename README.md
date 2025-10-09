@@ -38,7 +38,11 @@ A testing suite to run VMs and development platforn to perform Archlinux system 
 Written in bash and python. 
 
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed onto the ISO. 
-> And also due to tools made by the release engineering teams at Arch. At the cost of having to do more frequent builds.
+> And also due to tools made by the release engineering teams at Arch. 
+
+This works from official arch ISO (using mirrors slower depending on internet speed) or the one built here (faster,using cached files).
+
+> At the cost of having to do more frequent builds. For example at major releases of upstream sources.
 
 ---
 
@@ -51,7 +55,6 @@ Written in bash and python.
 ### From USB/ISO
 
 > By default you are already root in the ISO env. 
-> This should work from official arch ISO (using mirrors) or the one built here (using cached).
 
 `$ pacman-key --init && pacman -Sy git`
 
