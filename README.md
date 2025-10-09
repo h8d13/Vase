@@ -40,7 +40,7 @@ Written in bash and python.
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed onto the ISO. 
 > And also due to tools made by the release engineering teams at Arch. 
 
-This works from official arch ISO (using mirrors slower, depending on internet speed) or the one built here (faster, using cached files).
+This works from official arch [ISO](https://archlinux.org/download/) (using mirrors slower, depending on internet speed) or the one built [here](https://github.com/h8d13/Vase/releases) (faster, using cached files).
 
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
