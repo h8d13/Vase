@@ -12,7 +12,7 @@
     <tr>
         <td>
             <a href="https://github.com/h8d13/Vase/releases">
-                <img src="https://img.shields.io/badge/Menu_Status-Passing-darkgreen" alt="TUIStatus">
+                <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
             </a>
         </td>
     </tr>
