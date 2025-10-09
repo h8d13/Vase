@@ -70,3 +70,7 @@ Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma ove
 > This would let me expand on sections I thought were missing out on like grub configs, hardware specific stuff, snapshots, etc... 
 
 Another relevant example is setting latin keymaps for Grub in case of using password/rescue shell/editing launch lines. I've included this in [Grub2_Utils](https://github.com/h8d13/Vase/tree/master/vase_os/hade_box/archinstall/grub2_utils)
+
+#### Debug
+
+You can extract install logs using `curl -F'file=@/root/Vase/vase_os/hade_box/logs/install.log' https://0x0.st` adapt the path to be relative to where you are. This will return a logfile you can consult an another device if needed.

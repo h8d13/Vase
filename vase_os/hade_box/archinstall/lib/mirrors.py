@@ -726,7 +726,9 @@ class MirrorListHandler:
 	def get_status_by_region(self, region: str, speed_sort: bool) -> list[MirrorStatusEntryV3]:
 		mappings = self._mappings()
 		region_list = mappings[region]
-		return sorted(region_list, key=lambda mirror: (mirror.score, mirror.speed))
+		# Filter out mirrors where speed test failed (speed == 0)
+		working_mirrors = [mirror for mirror in region_list if mirror.speed > 0]
+		return sorted(working_mirrors, key=lambda mirror: (mirror.score, mirror.speed))
 
 	def _parse_remote_mirror_list(self, mirrorlist: str) -> dict[str, list[MirrorStatusEntryV3]]:
 		mirror_status = MirrorStatusListV3.model_validate_json(mirrorlist)

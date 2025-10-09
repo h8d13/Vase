@@ -1,8 +1,8 @@
 #... strucs
 # This file is an absolute mess but everything is declared here
 ################## ISO CREATION
-vase_v="0.0.06"
-dev_mode=0 
+vase_v="0.0.06" # For motd
+dev_mode=0 # Copy host files or not (local vs remote -b)
 ################## VM STUFF
 arch="x86_64"
 ram="8096"
