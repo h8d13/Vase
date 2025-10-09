@@ -77,7 +77,7 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 If this helped you and earned you some time to touch grass (or you even just learned things), please consider sharing the project, opening pull requests, or even just a star ⭐. 
 
-> If you do want to contribrute to the project more in depth, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
+> If you do want to contribrute to the project more in depth or want to chat about the next feature, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
 
 
 <a href="https://github.com/h8d13/Vase/releases">
