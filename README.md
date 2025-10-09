@@ -135,7 +135,7 @@ All long-form commands:
 
 Run in project root: `git submodule init && git submodule update` 
 
-Find files in `/vase_os/kaes_arch/` or better yet, fork all the repos and send me patches.
+Or better yet, fork all the repos and send me patches.
 
 
 | Component | Desc | Docs |
