@@ -28,7 +28,6 @@
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 
-
 ---
 
 ## VaseOS - Archlinux KDE 🏺
@@ -66,10 +65,6 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 Go grab some coffee during installation (it'll be done when you come back).
 
-<a href="https://github.com/h8d13/Vase/releases">
-    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-</a>
-
 After initial install pick `Reboot` and switch to hard disk.
 
 Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
@@ -83,6 +78,12 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 If this helped you and earned you some time to touch grass (or you even just learned things), please consider sharing the project, opening pull requests, or even just a star ⭐. 
 
 > If you do want to contribrute to the project more in depth, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
+
+
+<a href="https://github.com/h8d13/Vase/releases">
+    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
+</a>
+
 
 ---
 
