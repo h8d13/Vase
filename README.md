@@ -124,9 +124,23 @@ All long-form commands:
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
 --all <device>          # Complete workflow: build ISO, sign, flash, log to tests.status
 ```
+
+## Components
+
+| Component | Description | Documentation |
+|-----------|-------------|---------------|
+| **hade_box** | Installer fork - Modified TUI for fast Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
+| **zazulago_vms** | Testing suite - VM management and QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
+| **kaes_arch** | Post-install script - System configuration and package installation | [README](./vase_os/kaes_arch/README.md) |
+| **PACTOPAC** | GUI - Graphical user interface | [h8d13/PACTOPAC](https://github.com/h8d13/PACTOPAC) |
+
 #### Settings
 
 In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
+
+Turn Konqi in Kodzilla.
+
+[ConkyGif](https://private-user-images.githubusercontent.com/52324046/438629100-a8912369-a8cc-49be-af79-80994e8d2ab6.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTk5OTYxODUsIm5iZiI6MTc1OTk5NTg4NSwicGF0aCI6Ii81MjMyNDA0Ni80Mzg2MjkxMDAtYTg5MTIzNjktYThjYy00OWJlLWFmNzktODA5OTRlOGQyYWI2LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTEwMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMDA5VDA3NDQ0NVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWJhMDY3NWEzZGViMmQ1ZTMyZmVlNmVlZWNkMjljNTMwNDM2YzUyZWFmNTgzNGI1ZDJlODRlYTNlNDJhMmMzNTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.riBvUa6we5z4KaHiTc1WixmVkjrkwbUOntNdRpJow9c)
