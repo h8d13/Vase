@@ -94,10 +94,6 @@ If this helped you and earned you some time to touch grass (or you even just lea
 `$ ./main -t (*args)` : Launch TUI forked KDE install
 > This will check system subdeps for Arch to Arch installs.
 
-[![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
-
-See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
-
 `$ ./main`              : Check envir deps for QEMU/KVM
 
 `$ ./main -s`           : Start VMs testing suite menu
@@ -115,6 +111,10 @@ See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 `$ ./main -f /dev/sdX`  : Flash ISO to USB device
 
 `$ ./main -a /dev/sdX`  : Complete workflow
+
+[![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
+
+See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 
 > Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts for building and KVM compatible hardware for VM options. 
 > Mostly tooling for devs... More readmes included. 
