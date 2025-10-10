@@ -430,13 +430,41 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
 	from .output import info
 
+	# Preserve original mirrorlist before reflector/manual modifications
+	original_mirrorlist = Path('/etc/pacman.d/mirrorlist.pacnew')
+	if not original_mirrorlist.exists():
+		original_mirrorlist = Path('/etc/pacman.d/mirrorlist.pacsave')
+
+	# Backup system mirrorlist to preserve original full list
+	system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
+	mirrorlist_backup = mirror_list_handler._local_mirrorlist.parent / 'mirrorlist.original'
+	if not mirrorlist_backup.exists():
+		if original_mirrorlist.exists():
+			import shutil
+			shutil.copy(original_mirrorlist, mirrorlist_backup)
+		elif system_mirrorlist.exists():
+			import shutil
+			shutil.copy(system_mirrorlist, mirrorlist_backup)
+
 	# Only load mirrors if not already loaded
 	if mirror_list_handler._status_mappings is None:
-		if arch_config_handler.args.offline:
-			Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+		# Try to load from our backup first (has all regions), then fall back to fetching
+		if mirrorlist_backup.exists():
+			# Temporarily copy backup to temp location and load from there
+			temp_full = mirror_list_handler._local_mirrorlist.parent / 'mirrorlist.full_temp'
+			import shutil
+			shutil.copy(mirrorlist_backup, temp_full)
+			# Load from the full backup
+			old_path = mirror_list_handler._local_mirrorlist
+			mirror_list_handler._local_mirrorlist = temp_full
+			mirror_list_handler.load_local_mirrors()
+			mirror_list_handler._local_mirrorlist = old_path
 		else:
-			Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
-		mirror_list_handler.load_mirrors()
+			if arch_config_handler.args.offline:
+				Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+			else:
+				Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
+			mirror_list_handler.load_mirrors()
 
 	available_regions = mirror_list_handler.get_mirror_regions()
 
