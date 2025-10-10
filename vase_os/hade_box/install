@@ -57,7 +57,7 @@ fi
 
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database..."
-pacman -Sy --noconfirm >/dev/null 2>&1 && pacman -Sy --noconfirm --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
+pacman -Sy --noconfirm && pacman -Sy --noconfirm --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
 
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
