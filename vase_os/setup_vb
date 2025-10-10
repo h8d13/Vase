@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. ./util_f
-. ./...
+. ../util_f
+. ../...
 
 if file_ex "${rel}${p_lib}/${rcw_file}"; then
     . "${rel}${p_lib}/${rcw_file}"

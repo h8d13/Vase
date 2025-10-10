@@ -1,5 +1,5 @@
 #!/bin/bash
 
 chmod +x main 
-chmod +x ./vase_os/hade_box/install
+chmod +x ./hade_box/install
 ./main -t
