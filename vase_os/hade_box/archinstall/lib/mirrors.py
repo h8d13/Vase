@@ -430,21 +430,14 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
 	from .output import info
 
-	# Preserve original mirrorlist before reflector/manual modifications
-	original_mirrorlist = Path('/etc/pacman.d/mirrorlist.pacnew')
-	if not original_mirrorlist.exists():
-		original_mirrorlist = Path('/etc/pacman.d/mirrorlist.pacsave')
+	# Look for original mirrorlist backup (created by install script before reflector runs)
+	system_original = Path('/etc/pacman.d/mirrorlist.original')
 
-	# Backup system mirrorlist to preserve original full list
-	system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
+	# Copy to temp location for handler to use
 	mirrorlist_backup = mirror_list_handler._local_mirrorlist.parent / 'mirrorlist.original'
-	if not mirrorlist_backup.exists():
-		if original_mirrorlist.exists():
-			import shutil
-			shutil.copy(original_mirrorlist, mirrorlist_backup)
-		elif system_mirrorlist.exists():
-			import shutil
-			shutil.copy(system_mirrorlist, mirrorlist_backup)
+	if not mirrorlist_backup.exists() and system_original.exists():
+		import shutil
+		shutil.copy(system_original, mirrorlist_backup)
 
 	# Only load mirrors if not already loaded
 	if mirror_list_handler._status_mappings is None:
