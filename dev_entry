@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pacman-key --init
 chmod +x main 
 chmod +x ./vase_os/hade_box/install
 ./main -t
