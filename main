@@ -326,4 +326,4 @@ else
         die "Running as regular user." # Or warn and do smthn else
     fi
 fi
-# best time current: 2m05s for full install
+# best time current: 2m09s for full install
