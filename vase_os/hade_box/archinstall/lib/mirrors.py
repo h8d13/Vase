@@ -420,7 +420,8 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 				return mirror_list_handler.get_mirror_regions()
 
 			elif choice == 'manual':
-				# Manual region selection
+				# Manual region selection - force reload from global mirrorlist
+				mirror_list_handler._status_mappings = None  # Clear cached mappings
 				return select_mirror_regions(preset)
 
 	return preset
