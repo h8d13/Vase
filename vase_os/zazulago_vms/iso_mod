@@ -84,7 +84,7 @@ if [ "$dev_mode" = "0" ]; then cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
       Where SSID is you WiFi...
 ╚═══════════════════════════════════════╝
 ╔═══════════════════════════════════════╗
-      To install:
+      To install: (or use UP key)
  git clone https://github.com/h8d13/Vase
       cd Vase && ./main -t
 ╚═══════════════════════════════════════╝
