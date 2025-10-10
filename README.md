@@ -8,6 +8,9 @@
                 <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
             </a>
         </td>
+        <td>
+            <img src="https://img.shields.io/badge/Plasma-6.4.5-darkgreen" alt="Plasma">
+        </td>
     </tr>
     <tr>
         <td>
@@ -15,16 +18,22 @@
                 <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
             </a>
         </td>
+        <td>
+            <img src="https://img.shields.io/badge/Qt-6.10.0-darkgreen" alt="Qt">
+        </td>
     </tr>
     <tr>
         <td>
             <img src="https://img.shields.io/badge/Git_Clones-687-blue" alt="Clones">
         </td>
+        <td>
+            <img src="https://img.shields.io/badge/Frameworks-6.18.0-blue" alt="Frameworks">
+        </td>
     </tr>
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.07 | <strong>Tested:</strong> 2025-10-10 11:58:01 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.08 | <strong>Tested:</strong> 2025-10-10 16:47:35 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 

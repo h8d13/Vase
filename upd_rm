@@ -32,6 +32,18 @@ iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
 kernel_version=$(uname -r | cut -d'-' -f1)
 
+# Get KDE/Qt versions from latest Host KDE/Qt entry in tests.status
+kde_entry=$(grep "Host KDE/Qt" tests.status 2>/dev/null | tail -1)
+if [ -n "$kde_entry" ]; then
+    plasma_ver=$(echo "$kde_entry" | grep -oP 'Plasma: \K[0-9.]+' || echo "N/A")
+    frameworks_ver=$(echo "$kde_entry" | grep -oP 'Frameworks: \K[0-9.]+' || echo "N/A")
+    qt_ver=$(echo "$kde_entry" | grep -oP 'Qt: \K[0-9.]+' || echo "N/A")
+else
+    plasma_ver="N/A"
+    frameworks_ver="N/A"
+    qt_ver="N/A"
+fi
+
 # Read traffic data from traffic.json
 if file_ex "traffic.json"; then
     # Parse all clones entries from array, deduplicate by timestamp, sum counts
@@ -44,7 +56,7 @@ fi
 
 sed -i '/<img src="\.\/vase.*\.svg"/d; /<table>/,/<\/table>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d; /^---$/d' README.md
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" '
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
 /^# Vase$/ {
     print
     print ""
@@ -56,6 +68,9 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "                <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
     print "            </a>"
     print "        </td>"
+    print "        <td>"
+    print "            <img src=\"https://img.shields.io/badge/Plasma-" plasma "-darkgreen\" alt=\"Plasma\">"
+    print "        </td>"
     print "    </tr>"
     print "    <tr>"
     print "        <td>"
@@ -63,10 +78,16 @@ awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v i
     print "                <img src=\"https://img.shields.io/badge/TUI_Status-" tui_badge "-" tui_color "\" alt=\"TUIStatus\">"
     print "            </a>"
     print "        </td>"
+    print "        <td>"
+    print "            <img src=\"https://img.shields.io/badge/Qt-" qt "-darkgreen\" alt=\"Qt\">"
+    print "        </td>"
     print "    </tr>"
     print "    <tr>"
     print "        <td>"
     print "            <img src=\"https://img.shields.io/badge/Git_Clones-" clones "-blue\" alt=\"Clones\">"
+    print "        </td>"
+    print "        <td>"
+    print "            <img src=\"https://img.shields.io/badge/Frameworks-" frameworks "-blue\" alt=\"Frameworks\">"
     print "        </td>"
     print "    </tr>"
     print "</table>"
