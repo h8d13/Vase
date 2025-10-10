@@ -389,8 +389,6 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 
 			if choice == 'system':
 				# Use system mirrorlist - force reload from global
-				mirror_list_handler._status_mappings = None  # Clear cached mappings
-
 				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
 				temp_mirrorlist = mirror_list_handler._local_mirrorlist
 				reflector_cache = temp_mirrorlist.parent / 'mirrorlist.reflector_cache'
@@ -414,7 +412,8 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 					import shutil
 					shutil.copy(source, temp_mirrorlist)
 
-				# Reload handler to parse the system mirrorlist
+				# Force complete reload by clearing cache and reloading from temp file
+				mirror_list_handler._status_mappings = None
 				mirror_list_handler.load_local_mirrors()
 
 				# Return regions parsed from system mirrorlist
