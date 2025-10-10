@@ -44,17 +44,17 @@ else
     qt_ver="N/A"
 fi
 
-# Read traffic data from traffic.json
+# Read traffic data from traffic.json (use latest entry)
 if file_ex "traffic.json"; then
-    # Parse all clones entries from array, deduplicate by timestamp, sum counts
-    clone_count=$(jq '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.count) | add // 0' traffic.json)
-    unique_clones=$(jq '[.[] | .clones[]? | select(.timestamp != null)] | unique_by(.timestamp) | map(.uniques) | add // 0' traffic.json)
+    clone_count=$(jq '.[-1].count // 0' traffic.json)
+    unique_clones=$(jq '.[-1].uniques // 0' traffic.json)
 else
     clone_count="N/A"
     unique_clones="N/A"
 fi
 
-sed -i '/<img src="\.\/vase.*\.svg"/d; /<a href.*releases.*>/d; /<table>/,/<\/table>/d; /<\/a>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d; /^---$/d' README.md
+# Remove old badge table and related elements (including stray whitespace)
+sed -i '/<img src="\.\/vase.*\.svg"/d; /<a href.*releases.*>/d; /<table>/,/<\/table>/d; /<\/a>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d; /^---$/d; /^[[:space:]]*$/d' README.md
 
 awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
 function badge(label, value, color) {
@@ -98,12 +98,9 @@ function badge(label, value, color) {
     next
 }
 /^## VaseOS/ {
+    print ""
     print "---"
     print ""
-}
-# Skip multiple blank lines between Releases and VaseOS
-/^<a href.*Releases/,/^## VaseOS/ {
-    if (/^$/) next
 }
 { print }
 ' README.md > README.md.tmp && mv README.md.tmp README.md
