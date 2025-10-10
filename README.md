@@ -47,7 +47,6 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
----
 
 ## Installation/Usage
 
@@ -85,7 +84,6 @@ If this helped you and earned you some time to touch grass (or you even just lea
 </a>
 
 
----
 
 ### From an existing arch installation (For devs)
 
