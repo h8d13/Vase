@@ -50,6 +50,8 @@ if [ "$dev_mode" = "1" ]; then
          git ls-files --others --exclude-standard) | \
         tar -C "$VASE_SRC" -cf - -T - | \
         tar -C "$PROFILE_DIR/airootfs/root/Vase" -xf -
+        # Make dev_entry executable
+        chmod +x "$PROFILE_DIR/airootfs/root/Vase/dev_entry"
         reop "Local Vase project (including uncommitted changes) copied to ISO for development"
     else
         warn "Vase source directory not found at $VASE_SRC"

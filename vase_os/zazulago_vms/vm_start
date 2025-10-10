@@ -17,6 +17,8 @@ display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
 
+cat ./cli_art
+
 run_vm() {
     local cmd="$1"
     $cmd

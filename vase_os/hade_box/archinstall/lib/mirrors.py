@@ -8,6 +8,7 @@ from archinstall.tui.menu_item import MenuItem, MenuItemGroup
 from archinstall.tui.result import ResultType
 from archinstall.tui.types import Alignment, FrameProperties
 
+from .general import SysCommand
 from .menu.abstract_menu import AbstractSubMenu
 from .menu.list_manager import ListManager
 from .models.mirrors import (
@@ -323,6 +324,21 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 
 	@override
 	def run(self, additional_title: str | None = None) -> MirrorConfiguration:
+		# Check if reflector is running and add to title
+		reflector_status = None
+		try:
+			status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
+			if status == 'active':
+				reflector_status = 'Reflector still running...'
+		except Exception:
+			pass
+
+		if reflector_status:
+			if additional_title:
+				additional_title = f'{additional_title} | {reflector_status}'
+			else:
+				additional_title = reflector_status
+
 		super().run(additional_title=additional_title)
 		return self._mirror_config
 
@@ -351,7 +367,21 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			choice = result.get_value()
 
 			if choice == 'system':
-				# Use system mirrorlist
+				# Use system mirrorlist (wait for reflector if running)
+				try:
+					status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
+					if status == 'active':
+						while True:
+							status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
+							if status != 'active':
+								break
+							Tui.print('Reflector still running...', clear_screen=True)
+							time.sleep(0.5)
+						Tui.print('Reflector still running... Done.', clear_screen=True)
+						time.sleep(1)
+				except Exception:
+					pass  # reflector not available or failed
+
 				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
 				if not system_mirrorlist.exists():
 					if not arch_config_handler.args.silent:
