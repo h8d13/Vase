@@ -392,18 +392,27 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 				mirror_list_handler._status_mappings = None  # Clear cached mappings
 
 				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
-				if not system_mirrorlist.exists():
+				temp_mirrorlist = mirror_list_handler._local_mirrorlist
+				reflector_cache = temp_mirrorlist.parent / 'mirrorlist.reflector_cache'
+
+				# First time using system mirrorlist: backup it to cache
+				if not reflector_cache.exists() and system_mirrorlist.exists():
+					import shutil
+					shutil.copy(system_mirrorlist, reflector_cache)
+
+				# Use cached reflector results if available, otherwise use current system mirrorlist
+				source = reflector_cache if reflector_cache.exists() else system_mirrorlist
+
+				if not source.exists():
 					if not arch_config_handler.args.silent:
 						Tui.print('System mirrorlist not found, falling back to manual selection')
 						input('\nPress ENTER to continue...')
 					return select_mirror_regions(preset)
 
-				temp_mirrorlist = mirror_list_handler._local_mirrorlist
-
-				# Check if they're the same file
-				if system_mirrorlist.resolve() != temp_mirrorlist.resolve():
+				# Copy to temp mirrorlist
+				if source.resolve() != temp_mirrorlist.resolve():
 					import shutil
-					shutil.copy(system_mirrorlist, temp_mirrorlist)
+					shutil.copy(source, temp_mirrorlist)
 
 				# Reload handler to parse the system mirrorlist
 				mirror_list_handler.load_local_mirrors()
