@@ -110,7 +110,7 @@ If this helped you and earned you some time to touch grass (or you even just lea
 
 `$ ./main -f /dev/sdX`  : Flash ISO to USB device
 
-`$ ./main -a /dev/sdX`  : Complete workflow
+`$ ./main -w /dev/sdX`  : Complete workflow
 
 [![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
 
@@ -130,7 +130,7 @@ All long-form commands:
 --quick <command>       # Launch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
---all <device>          # Complete workflow
+--workflow <device>     # Complete workflow
 ```
 
 ## Components

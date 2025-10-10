@@ -46,13 +46,13 @@ parse_args() {
                 FLASH_DEVICE="$2"
                 shift 2
                 ;;
-            -a|--all)
-                ALL=1
+            -w|--workflow)
+                WORKFLOW=1
                 if [ -z "$2" ] || [[ "$2" == -* ]]; then
-                    echo "Error: -a requires a device argument (e.g., /dev/sdd)"
+                    echo "Error: -w requires a device argument (e.g., /dev/sdd)"
                     exit 1
                 fi
-                ALL_DEVICE="$2"
+                WORKFLOW_DEVICE="$2"
                 shift 2
                 ;;
             *)
@@ -72,7 +72,7 @@ exec_args() {
         UPDATE) [ "${UPDATE}" = "1" ] ;;
         BENCH) [ "${BENCH}" = "1" ] ;;
         FLASH) [ "${FLASH}" = "1" ] ;;
-        ALL) [ "${ALL}" = "1" ] ;;
+        WORKFLOW) [ "${WORKFLOW}" = "1" ] ;;
         *) return 1 ;;
     esac
 }
@@ -88,8 +88,8 @@ get_bench_cmd() {
 get_flash_device() {
     echo "${FLASH_DEVICE}"
 }
-get_all_device() {
-    echo "${ALL_DEVICE}"
+get_workflow_device() {
+    echo "${WORKFLOW_DEVICE}"
 }
 get_iso_profile() {
     echo "${ISO_PROFILE:-fat}"

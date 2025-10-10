@@ -40,7 +40,7 @@ LOGCLR=0 # 1 Enables non standard ascii in log
 CATART=1 # 0 Disables cli art sadface
 EOF
 else
-    preop "Settings already exist. Skipping..."
+    preop "Settings already exists. Skipping..."
 fi
 # Load settings > Linked to functionalities
 if file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
@@ -154,7 +154,7 @@ init_log() {
 }
 EOF
 else
-    preop "Rcw already exist. Skipping..."
+    preop "Rcw already exists. Skipping..."
 fi
 if file_ex "${rel}${vase_d}/${cli_a}" && [ "${CATART:-1}" = "1" ]; then
     nlp
@@ -263,10 +263,10 @@ if im_groot; then
             preop "Flashing ISO to device..."
             "./${zl_d}/flash_iso" "$iso_file" "$flash_device" && rcw true && exit
         fi
-        if exec_args "ALL"; then
-            all_device="$(get_all_device)"
+        if exec_args "WORKFLOW"; then
+            all_device="$(get_workflow_device)"
             if [ -z "$all_device" ]; then
-                die "No device specified. Use: -a /dev/sdX"
+                die "No device specified. Use: -w /dev/sdX"
             fi
 
             preop "Starting ISO workflow..."

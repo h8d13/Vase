@@ -1,0 +1,244 @@
+#!/bin/sh
+# Klartix - Artix Linux Bootstrap Installer
+# Script for my good friend Klagan who values no being on Systemd & Minimalism approach
+# Assumes x86_64, GPT/UEFI, and can run from any Linux distro
+
+# Cleanup function on failures
+cleanup_disk() {
+    echo "Cleaning up disk..."
+    swapoff -a 2>/dev/null || true
+
+    # Unmount everything related to target disk
+    mount | grep "$TARGET_DISK" | awk '{print $3}' | sort -r | while read mnt; do
+        umount -l "$mnt" 2>/dev/null || true
+    done
+
+    partprobe "$TARGET_DISK" 2>/dev/null || true
+    sleep 1
+}
+
+# Trap to cleanup on exit
+trap cleanup_disk EXIT INT TERM
+
+set -e  # Exit on error
+
+# Configuration variables
+# Init system selection (openrc, runit, s6, dinit)
+INIT_SYSTEM="openrc"
+TARGET_DISK="/dev/sdl"
+SWAP_SIZE="4GiB"
+KB_LAYOUT="us"
+TARGET_TIMEZONE="Europe/Paris"
+TARGET_HOSTNAME="kartix"
+TARGET_USER="hadean"
+ROOT_PASSWORD="Everest"
+
+# Host package manager for prerequisites
+PKG_MAN="pacman"
+PKG_MAN_W="-S"
+ARG1="--noconfirm --needed"
+
+# Prerequisites (need wget to fetch artix-bootstrap)
+PKGS="wget parted"
+
+echo "=== Klartix - Artix Linux Bootstrap Installer ==="
+echo ""
+echo "Current block devices:"
+lsblk
+echo ""
+echo "Configuration:"
+echo "  Init system:  $INIT_SYSTEM"
+echo "  Target disk:  $TARGET_DISK"
+echo "  Swap size:    $SWAP_SIZE"
+echo "  Hostname:     $TARGET_HOSTNAME"
+echo "  User:         $TARGET_USER"
+echo "  Timezone:     $TARGET_TIMEZONE"
+echo ""
+echo "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
+echo ""
+read -p "Continue with installation? (yes/no): " confirm
+if [ "$confirm" != "yes" ]; then
+    echo "Installation cancelled."
+    exit 0
+fi
+echo ""
+
+# Install required packages
+echo "Installing required packages on host..."
+$PKG_MAN $PKG_MAN_W $PKGS $ARG1
+
+# Clean up previous files if canceled/failed install
+rm -rf /tmp/artix-bootstrap*
+
+# Ensure target mount point exists
+TARGET_MOUNT="/mnt/artix"
+mkdir -p "$TARGET_MOUNT"
+
+# Clean the disk before starting
+cleanup_disk
+
+# Partitioning with three partitions: EFI, swap, and root
+echo "Partitioning $TARGET_DISK..."
+parted -s -a optimal "$TARGET_DISK" -- mklabel gpt \
+    mkpart primary fat32 0% 512MiB \
+    set 1 esp on \
+    mkpart primary linux-swap 512MiB 4608MiB \
+    mkpart primary ext4 4608MiB 100%
+
+# Force kernel to re-read partition table
+echo "Updating kernel partition table..."
+partprobe "${TARGET_DISK}"
+sleep 2
+
+# Format partitions
+echo "Formatting partitions..."
+mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1  # EFI partition
+mkswap "${TARGET_DISK}2" > /dev/null 2>&1         # Swap partition
+swapon "${TARGET_DISK}2"                          # Enable swap
+mkfs.ext4 -F -q "${TARGET_DISK}3"                 # Root partition (quiet mode)
+
+# Mount filesystems
+echo "Mounting filesystems..."
+mount "${TARGET_DISK}3" "$TARGET_MOUNT"       # Mount root
+
+mkdir -p "$TARGET_MOUNT/boot/efi"
+mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"  # Mount EFI
+
+# Download and extract Artix bootstrap using official artix-bootstrap tool
+echo "Downloading Artix bootstrap tool..."
+cd /tmp
+wget -q https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
+chmod +x artix-bootstrap.sh
+
+echo "Bootstrapping Artix Linux with $INIT_SYSTEM..."
+./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT" > /dev/null 2>&1
+
+# At this point, artix-bootstrap should have set up the base system
+# Configure chroot mounts
+echo "Configuring chroot environment..."
+mount -t proc /proc "$TARGET_MOUNT/proc"
+mount -t sysfs /sys "$TARGET_MOUNT/sys"
+mount -o bind /dev "$TARGET_MOUNT/dev"
+mount -o bind /dev/pts "$TARGET_MOUNT/dev/pts"
+# Mount efivarfs since we assume UEFI systems
+if [ -d /sys/firmware/efi/efivars ]; then
+    mount -t efivarfs efivarfs "$TARGET_MOUNT/sys/firmware/efi/efivars" 2>/dev/null || true
+fi
+cp /etc/resolv.conf "$TARGET_MOUNT/etc/"
+
+# Generate fstab
+echo "Generating fstab..."
+if command -v fstabgen >/dev/null 2>&1; then
+    fstabgen -U "$TARGET_MOUNT" > "$TARGET_MOUNT/etc/fstab"
+else
+    # Fallback: manual fstab generation
+    echo "# Generated fstab" > "$TARGET_MOUNT/etc/fstab"
+    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) / ext4 defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+fi
+
+# Create configuration script for chroot
+cat > "$TARGET_MOUNT/configure.sh" << EOF
+#!/bin/bash
+# Klartix system configuration
+set -e
+
+# Initialize pacman keyring first
+echo "Initializing pacman keyring..."
+pacman-key --init
+pacman-key --populate artix
+
+# Update package databases
+echo "Updating package databases..."
+pacman -Sy
+
+# Basic configuration
+ln -sf /usr/share/zoneinfo/$TARGET_TIMEZONE /etc/localtime
+hwclock --systohc
+
+# Locale
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+# Console keymap
+echo "KEYMAP=$KB_LAYOUT" > /etc/vconsole.conf
+
+# Hostname
+echo "$TARGET_HOSTNAME" > /etc/hostname
+echo "127.0.0.1 localhost" > /etc/hosts
+echo "::1 localhost" >> /etc/hosts
+echo "127.0.1.1 $TARGET_HOSTNAME.localdomain $TARGET_HOSTNAME" >> /etc/hosts
+
+# DNS
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+
+# Set root password
+echo "root:$ROOT_PASSWORD" | chpasswd
+
+# Install essential packages first
+echo "Installing kernel and base packages..."
+pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo
+
+# Create user
+useradd -m -s /bin/bash -G wheel $TARGET_USER
+echo "$TARGET_USER:$ROOT_PASSWORD" | chpasswd
+
+# Enable sudo for wheel group
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+
+# Install init-specific network manager
+case "$INIT_SYSTEM" in
+    openrc)
+        pacman -S --noconfirm networkmanager-openrc
+        rc-update add NetworkManager default
+        ;;
+    runit)
+        pacman -S --noconfirm networkmanager-runit
+        ln -s /etc/runit/sv/NetworkManager /etc/runit/runsvdir/default/
+        ;;
+    s6)
+        pacman -S --noconfirm networkmanager-s6
+        s6-rc-bundle-update add default NetworkManager
+        ;;
+    dinit)
+        pacman -S --noconfirm networkmanager-dinit
+        dinitctl enable NetworkManager
+        ;;
+esac
+
+# Install and configure GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Artix
+# Also install to removable path for better compatibility
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable
+grub-mkconfig -o /boot/grub/grub.cfg
+EOF
+
+chmod +x "$TARGET_MOUNT/configure.sh"
+
+# Execute configuration in chroot
+echo "Configuring system in chroot..."
+chroot "$TARGET_MOUNT" /bin/bash /configure.sh
+
+rm "$TARGET_MOUNT/configure.sh"
+
+# Cleanup
+echo "Cleaning up..."
+sync
+sleep 2
+
+echo "Unmounting filesystems..."
+swapoff "${TARGET_DISK}2" || true
+umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
+umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
+umount -l "$TARGET_MOUNT/proc" 2>/dev/null || true
+umount -l "$TARGET_MOUNT/sys" 2>/dev/null || true
+umount -l "$TARGET_MOUNT/boot/efi" 2>/dev/null || true
+umount -l "$TARGET_MOUNT" 2>/dev/null || true
+
+echo "=== Klartix installation complete! ==="
+echo "You can now reboot into your new Artix Linux system."
+echo "Init system: $INIT_SYSTEM"
+echo "User: $TARGET_USER"

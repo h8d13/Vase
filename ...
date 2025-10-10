@@ -1,7 +1,7 @@
 #... strucs
 # This file is an absolute mess but everything is declared here
 ################## ISO CREATION
-vase_v="0.0.06" # For motd
+vase_v="0.0.07" # For motd
 dev_mode=0 # Copy host files or not (local vs remote -b)
 ################## VM STUFF
 arch="x86_64"
@@ -14,7 +14,7 @@ size="60G"
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
-iso_n="VASE-2025.10.09-x86_64"
+iso_n="VASE-2025.10.10-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
