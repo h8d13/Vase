@@ -1,6 +1,6 @@
 # Vase
 
-<img src="./vase.svg" alt="VaseLogo" width="117" align="left">
+<img src="./vase_os/vase.svg" alt="VaseLogo" width="117" align="left">
 <table>
     <tr>
         <td>
