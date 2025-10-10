@@ -4,6 +4,8 @@
 vase_v="0.0.08" # For motd
 dev_mode=0 # Copy host files or not (local vs remote -b)
 silent_mode=1 #Supress output of mkarchiso
+
+
 ################## VM STUFF
 arch="x86_64"
 ram="8096"
@@ -12,6 +14,8 @@ cores="6"
 # vCPUS so actually threads but named it cores
 size="60G" 
 # Preallocation doesnt take space directly
+
+
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
@@ -21,6 +25,8 @@ vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
 vm_ext="qcow2" #raw, bin
+
+
 ## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
 target_p="sdd"
 target_t="/dev/"
@@ -29,6 +35,8 @@ target="${target_t}${target_p}"
 # Mount it first. 
 # Check lsblk output to find which partition it is. 
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
+
+
 ## QEMU Display Settings
 qemu_display="gtk"
 # Display backend: gtk, sdl, vnc, spice
@@ -36,6 +44,8 @@ qemu_gl="on"
 # GL acceleration: on, off
 qemu_uefi=1
 # Copy EFI vars to QEMU: 1 or 0
+
+
 ################## DIRS/LOGS/PERMS
 iso_sig="asc"
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -49,6 +59,8 @@ ext_d_mod=1 # 1=hidden, 0=visible
 custom_n="vase"
 [ "$hide_d_mod" = "1" ] && custom_n="${hide_d}${custom_n}"
 [ "$ext_d_mod" = "1" ] && custom_n="${custom_n}${ext_d}"
+
+
 #### Names
 p_lib="$custom_n"
 c_file="logs"
@@ -57,13 +69,19 @@ rcw_file="rcw"
 log_n="vase"
 log_ext="log"
 cli_a="cli_art"
+
+
 #### More paths
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazulago_vms"
 vase_p_env="$vase_d/env"
+
+
 #### Future alpine imp 
 # Privilege escalation (ex: doas alternative)
 elev_cmd="sudo"
+
+
 ## For runtime output
 script_s=$(date +%s%6N)
