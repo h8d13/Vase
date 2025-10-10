@@ -185,7 +185,7 @@ class Installer:
 
 		# Skip reflector wait if mirrors were already configured in TUI
 		# (pacman -Sy was already run in install script before TUI launch)
-		if arch_config_handler.args.mirror_config:
+		if arch_config_handler.config.mirror_config:
 			info('Mirrors already configured, skipping reflector wait.')
 		else:
 			info('Waiting for automatic mirror selection (reflector) to complete.')
