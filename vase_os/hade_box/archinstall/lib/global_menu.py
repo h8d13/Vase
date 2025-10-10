@@ -97,13 +97,6 @@ class GlobalMenu(AbstractMenu[None]):
 				key='locale_config',
 			),
 			MenuItem(
-				text=('Mirrors and repos'),
-				action=self._mirror_configuration,
-				preview_action=self._prev_mirror_config,
-				mandatory=True,
-				key='mirror_config',
-			),
-			MenuItem(
 				text=('Authentication'),
 				action=self._select_authentication,
 				preview_action=self._prev_authentication,
@@ -181,6 +174,13 @@ class GlobalMenu(AbstractMenu[None]):
 				value=True,
 				preview_action=self._prev_ntp,
 				key='ntp',
+			),
+			MenuItem(
+				text=('Mirrors and repos'),
+				action=self._mirror_configuration,
+				preview_action=self._prev_mirror_config,
+				mandatory=True,
+				key='mirror_config',
 			),
 			MenuItem(
 				text='',

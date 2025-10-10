@@ -303,7 +303,7 @@ if im_groot; then
             else
                 echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
             fi
-
+            
             chown "$SUDO_USER:$SUDO_USER" tests.status README.md || true
 
             reop "All workflow finished! Change Status to FAIL in tests.status if physical test fails."

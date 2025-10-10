@@ -85,17 +85,6 @@ def list_interfaces(skip_loopback: bool = True) -> dict[str, str]:
 
 	return interfaces
 
-def update_keyring() -> bool:
-	info('Updating archlinux-keyring ...')
-	try:
-		Pacman.run('-Sy --noconfirm archlinux-keyring')
-		return True
-	except SysCallError:
-		if os.geteuid() != 0:
-			error("update_keyring() uses 'pacman -Sy archlinux-keyring' which requires root.")
-
-	return False
-
 def enrich_iface_types(interfaces: list[str]) -> dict[str, str]:
 	result = {}
 

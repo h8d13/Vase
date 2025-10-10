@@ -226,6 +226,11 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def _define_menu_options(self) -> list[MenuItem]:
 		return [
 			MenuItem(
+				text=('Reflector status'),
+				action=lambda preset: preset,
+				preview_action=self._prev_reflector_status,
+			),
+			MenuItem(
 				text=('Mirror configuration'),
 				action=configure_mirrors,
 				value=self._mirror_config.mirror_regions,
@@ -254,6 +259,37 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 				key='custom_repositories',
 			),
 		]
+
+	def _check_reflector_status(self) -> str:
+		from .exceptions import SysCallError
+		try:
+			result = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'})
+			status = result.decode().strip()
+		except SysCallError as e:
+			# systemctl is-active returns non-zero for inactive/failed services
+			# but still outputs the status, so we can extract it
+			status = str(e).split('\n')[0] if str(e) else 'unknown'
+			# Try to extract from the exception output
+			if 'inactive' in str(e).lower():
+				status = 'inactive'
+			elif 'failed' in str(e).lower():
+				status = 'failed'
+			elif 'activating' in str(e).lower():
+				status = 'activating'
+		except Exception:
+			return 'N/A'
+
+		if status in ['active', 'activating']:
+			return 'Running...'
+		elif status == 'inactive':
+			return 'Done.'
+		elif status in ['dead', 'failed']:
+			return f'Error ({status})'
+		else:
+			return f'Status: {status}'
+
+	def _prev_reflector_status(self, item: MenuItem) -> str:
+		return self._check_reflector_status()
 
 	def _prev_regions(self, item: MenuItem) -> str:
 		regions = item.get_value()
@@ -324,21 +360,6 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 
 	@override
 	def run(self, additional_title: str | None = None) -> MirrorConfiguration:
-		# Check if reflector is running and add to title
-		reflector_status = None
-		try:
-			status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
-			if status == 'active':
-				reflector_status = 'Reflector still running...'
-		except Exception:
-			pass
-
-		if reflector_status:
-			if additional_title:
-				additional_title = f'{additional_title} | {reflector_status}'
-			else:
-				additional_title = reflector_status
-
 		super().run(additional_title=additional_title)
 		return self._mirror_config
 
@@ -367,20 +388,8 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			choice = result.get_value()
 
 			if choice == 'system':
-				# Use system mirrorlist (wait for reflector if running)
-				try:
-					status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
-					if status == 'active':
-						while True:
-							status = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'}).decode().strip()
-							if status != 'active':
-								break
-							Tui.print('Reflector still running...', clear_screen=True)
-							time.sleep(0.5)
-						Tui.print('Reflector still running... Done.', clear_screen=True)
-						time.sleep(1)
-				except Exception:
-					pass  # reflector not available or failed
+				# Use system mirrorlist - force reload from global
+				mirror_list_handler._status_mappings = None  # Clear cached mappings
 
 				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
 				if not system_mirrorlist.exists():

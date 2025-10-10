@@ -20,9 +20,17 @@
 2025-10-10 11:58:01 | Version: 0.0.07 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 11:56:07 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
 2025-10-10 13:15:09 | Version: 0.0.07 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 13:13:54 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
 2025-10-10 13:24:00 | Version: 0.0.07 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 13:22:49 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
-2025-10-10 13:42:58 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 13:41:44 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
-2025-10-10 13:55:07 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 13:53:51 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
 2025-10-10 14:06:37 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
 2025-10-10 14:21:34 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
 2025-10-10 14:38:13 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
 2025-10-10 14:47:00 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 15:04:27 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 15:13:26 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 15:25:10 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 16:04:57 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 16:12:44 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 16:22:21 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 16:32:27 | Host KDE/Qt: Plasma: 6.4.5 | Frameworks: 6.18.0 | Qt: 6.10.0
+2025-10-10 16:37:02 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: N/A (dev_mode) | Status: DEV
+2025-10-10 16:41:23 | Host KDE/Qt: Plasma: 6.4.5 | Frameworks: 6.18.0 | Qt: 6.10.0
+2025-10-10 16:47:35 | Version: 0.0.08 | ISO: VASE-2025.10.10-x86_64.iso | Size: 2.7G | GPG: gpg: Signature made Fri 10 Oct 2025 16:46:12 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK

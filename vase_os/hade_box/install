@@ -55,6 +55,10 @@ else # Always check full deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
+# Sync package database before launching TUI to prevent hangs
+preop "Syncing package database..."
+pacman -Sy --noconfirm >/dev/null 2>&1 && pacman -Sy --noconfirm archlinux-keyring || postop "Database sync failed (continuing anyway)"
+
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 
