@@ -794,10 +794,12 @@ class MirrorListHandler:
 
 	def get_status_by_region(self, region: str, speed_sort: bool) -> list[MirrorStatusEntryV3]:
 		mappings = self._mappings()
-		# Skip "Local" region - it's just a marker for reflector results
 		if region not in mappings:
 			return []
 		region_list = mappings[region]
+		# For "Local" region (reflector results), don't filter by speed since it's not available
+		if region == 'Local':
+			return region_list
 		# Filter out mirrors where speed test failed (speed == 0)
 		working_mirrors = [mirror for mirror in region_list if mirror.speed > 0]
 		return sorted(working_mirrors, key=lambda mirror: (mirror.score, mirror.speed))
