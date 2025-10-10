@@ -132,7 +132,7 @@ qemu_cmd() {
                 shift 2
                 ;;
             --usb-drive)
-                cmd="$cmd -usb -device usb-storage,drive=mydrive -drive file=$2,format=raw,if=none,id=mydrive"
+                cmd="$cmd -drive file=$2,format=raw,if=virtio,cache=none,aio=native"
                 shift 2
                 ;;
             --network)

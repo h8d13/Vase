@@ -1,11 +1,68 @@
-#!/bin/sh
+#!/bin/bash
 # Klartix - Artix Linux Bootstrap Installer
 # Script for my good friend Klagan who values no being on Systemd & Minimalism approach
 # Assumes x86_64, GPT/UEFI, and can run from any Linux distro
 
-# Cleanup function on failures
+# Source utilities and colors
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${SCRIPT_DIR}/../util_f"
+if file_ex "${SCRIPT_DIR}/../.vase.d/rcw"; then
+    . "${SCRIPT_DIR}/../.vase.d/rcw"
+fi
+
+# Progress bar configuration
+TOTAL_STEPS=16
+CURRENT_STEP=0
+
+# Progress bar function
+show_progress() {
+    local step_desc="$1"
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+
+    # Calculate percentage
+    local percent=$((CURRENT_STEP * 100 / TOTAL_STEPS))
+
+    # Bar width (50 characters)
+    local bar_width=50
+    local filled=$((CURRENT_STEP * bar_width / TOTAL_STEPS))
+    local empty=$((bar_width - filled))
+
+    # Build the bar
+    local bar=""
+    local i
+    for i in $(seq 1 $filled); do
+        bar="${bar}█"
+    done
+    for i in $(seq 1 $empty); do
+        bar="${bar}░"
+    done
+
+    # Clear line and print progress bar
+    printf "\r\033[K"
+    printf "${CYAN}[%s]${NC} %3d%% (%d/%d)\n" "$bar" "$percent" "$CURRENT_STEP" "$TOTAL_STEPS"
+
+    # Print step description below
+    info "$step_desc"
+}
+
+set -e  # Exit on error
+
+# Parse arguments
+VERBOSE=0
+for arg in "$@"; do
+    case $arg in
+        -v|--verbose)
+            VERBOSE=1
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
+# Cleanup function for failures during installation
 cleanup_disk() {
-    echo "Cleaning up disk..."
+    warn "Cleaning up disk..."
     swapoff -a 2>/dev/null || true
 
     # Unmount everything related to target disk
@@ -17,20 +74,15 @@ cleanup_disk() {
     sleep 1
 }
 
-# Trap to cleanup on exit
-trap cleanup_disk EXIT INT TERM
-
-set -e  # Exit on error
-
 # Configuration variables
 # Init system selection (openrc, runit, s6, dinit)
 INIT_SYSTEM="openrc"
-TARGET_DISK="/dev/sdl"
+TARGET_DISK="/dev/sdm" # Pleqse chqnge me and will erase data.
 SWAP_SIZE="4GiB"
 KB_LAYOUT="us"
 TARGET_TIMEZONE="Europe/Paris"
-TARGET_HOSTNAME="kartix"
-TARGET_USER="hadean"
+TARGET_HOSTNAME="klartix"
+TARGET_USER="klagan"
 ROOT_PASSWORD="Everest"
 
 # Host package manager for prerequisites
@@ -41,30 +93,35 @@ ARG1="--noconfirm --needed"
 # Prerequisites (need wget to fetch artix-bootstrap)
 PKGS="wget parted"
 
-echo "=== Klartix - Artix Linux Bootstrap Installer ==="
-echo ""
-echo "Current block devices:"
+obanner "Klartix - Artix Linux Bootstrap Installer"
+nlp
+info "Current block devices:"
 lsblk
-echo ""
-echo "Configuration:"
+nlp
+info "Configuration:"
 echo "  Init system:  $INIT_SYSTEM"
 echo "  Target disk:  $TARGET_DISK"
 echo "  Swap size:    $SWAP_SIZE"
 echo "  Hostname:     $TARGET_HOSTNAME"
 echo "  User:         $TARGET_USER"
 echo "  Timezone:     $TARGET_TIMEZONE"
-echo ""
-echo "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
-echo ""
-read -p "Continue with installation? (yes/no): " confirm
-if [ "$confirm" != "yes" ]; then
-    echo "Installation cancelled."
+nlp
+warn "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
+nlp
+cbanner "Klartix - Artix Linux Bootstrap Installer"
+
+read -p "Continue with installation? [y/N]: " confirm
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    warn "Installation cancelled."
     exit 0
 fi
-echo ""
+nlp
+
+# Set up cleanup trap now that user confirmed
+trap cleanup_disk EXIT INT TERM
 
 # Install required packages
-echo "Installing required packages on host..."
+preop "Installing required packages on host..."
 $PKG_MAN $PKG_MAN_W $PKGS $ARG1
 
 # Clean up previous files if canceled/failed install
@@ -78,7 +135,7 @@ mkdir -p "$TARGET_MOUNT"
 cleanup_disk
 
 # Partitioning with three partitions: EFI, swap, and root
-echo "Partitioning $TARGET_DISK..."
+show_progress "Partitioning $TARGET_DISK..."
 parted -s -a optimal "$TARGET_DISK" -- mklabel gpt \
     mkpart primary fat32 0% 512MiB \
     set 1 esp on \
@@ -86,48 +143,67 @@ parted -s -a optimal "$TARGET_DISK" -- mklabel gpt \
     mkpart primary ext4 4608MiB 100%
 
 # Force kernel to re-read partition table
-echo "Updating kernel partition table..."
+show_progress "Updating kernel partition table..."
 partprobe "${TARGET_DISK}"
 sleep 2
 
 # Format partitions
-echo "Formatting partitions..."
-mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1  # EFI partition
-mkswap "${TARGET_DISK}2" > /dev/null 2>&1         # Swap partition
-swapon "${TARGET_DISK}2"                          # Enable swap
-mkfs.ext4 -F -q "${TARGET_DISK}3"                 # Root partition (quiet mode)
+show_progress "Formatting partitions..."
+if [ "$VERBOSE" = "1" ]; then
+    mkfs.fat -F32 "${TARGET_DISK}1"
+    mkswap "${TARGET_DISK}2"
+    swapon "${TARGET_DISK}2"
+    mkfs.ext4 -F "${TARGET_DISK}3"
+else
+    mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
+    mkswap "${TARGET_DISK}2" > /dev/null 2>&1
+    swapon "${TARGET_DISK}2"
+    mkfs.ext4 -F -q "${TARGET_DISK}3"
+fi
 
 # Mount filesystems
-echo "Mounting filesystems..."
+show_progress "Mounting filesystems..."
 mount "${TARGET_DISK}3" "$TARGET_MOUNT"       # Mount root
 
 mkdir -p "$TARGET_MOUNT/boot/efi"
 mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"  # Mount EFI
 
 # Download and extract Artix bootstrap using official artix-bootstrap tool
-echo "Downloading Artix bootstrap tool..."
+show_progress "Downloading Artix bootstrap tool..."
 cd /tmp
-wget -q https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
+if [ "$VERBOSE" = "1" ]; then
+    wget https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
+else
+    wget -q https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
+fi
 chmod +x artix-bootstrap.sh
 
-echo "Bootstrapping Artix Linux with $INIT_SYSTEM..."
-./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT" > /dev/null 2>&1
+show_progress "Bootstrapping Artix Linux with $INIT_SYSTEM..."
+if [ "$VERBOSE" = "1" ]; then
+    ./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT"
+else
+    ./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT" > /dev/null 2>&1
+fi
 
 # At this point, artix-bootstrap should have set up the base system
 # Configure chroot mounts
-echo "Configuring chroot environment..."
+show_progress "Configuring chroot environment..."
 mount -t proc /proc "$TARGET_MOUNT/proc"
 mount -t sysfs /sys "$TARGET_MOUNT/sys"
 mount -o bind /dev "$TARGET_MOUNT/dev"
 mount -o bind /dev/pts "$TARGET_MOUNT/dev/pts"
+
 # Mount efivarfs since we assume UEFI systems
+show_progress "Copying host UEFI vars..."
 if [ -d /sys/firmware/efi/efivars ]; then
     mount -t efivarfs efivarfs "$TARGET_MOUNT/sys/firmware/efi/efivars" 2>/dev/null || true
 fi
+
+show_progress "Copying host resolv.conf..."
 cp /etc/resolv.conf "$TARGET_MOUNT/etc/"
 
 # Generate fstab
-echo "Generating fstab..."
+show_progress "Generating fstab..."
 if command -v fstabgen >/dev/null 2>&1; then
     fstabgen -U "$TARGET_MOUNT" > "$TARGET_MOUNT/etc/fstab"
 else
@@ -139,6 +215,7 @@ else
 fi
 
 # Create configuration script for chroot
+show_progress "Creating chroot configuration script..."
 cat > "$TARGET_MOUNT/configure.sh" << EOF
 #!/bin/bash
 # Klartix system configuration
@@ -211,25 +288,26 @@ esac
 
 # Install and configure GRUB
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Artix
-# Also install to removable path for better compatibility
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
+show_progress "Making configuration script executable..."
 chmod +x "$TARGET_MOUNT/configure.sh"
 
 # Execute configuration in chroot
-echo "Configuring system in chroot..."
+show_progress "Configuring system in chroot..."
 chroot "$TARGET_MOUNT" /bin/bash /configure.sh
 
+show_progress "Removing configuration script..."
 rm "$TARGET_MOUNT/configure.sh"
 
 # Cleanup
-echo "Cleaning up..."
+show_progress "Syncing data to disk..."
 sync
 sleep 2
 
-echo "Unmounting filesystems..."
+show_progress "Unmounting filesystems..."
 swapoff "${TARGET_DISK}2" || true
 umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
@@ -238,7 +316,8 @@ umount -l "$TARGET_MOUNT/sys" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/boot/efi" 2>/dev/null || true
 umount -l "$TARGET_MOUNT" 2>/dev/null || true
 
-echo "=== Klartix installation complete! ==="
-echo "You can now reboot into your new Artix Linux system."
-echo "Init system: $INIT_SYSTEM"
-echo "User: $TARGET_USER"
+echo ""
+reop "=== Klartix installation complete! ==="
+reop "You can now reboot into your new Artix Linux system."
+info "Init system: $INIT_SYSTEM"
+info "User: $TARGET_USER"
