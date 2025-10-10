@@ -57,38 +57,39 @@ fi
 sed -i '/<img src="\.\/vase.*\.svg"/d; /<a href.*releases.*>/d; /<table>/,/<\/table>/d; /<\/a>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d; /^---$/d' README.md
 
 awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
+function badge(label, value, color) {
+    return "<a href=\"https://github.com/h8d13/Vase/releases\"><img src=\"https://img.shields.io/badge/" label "-" value "-" color "\" alt=\"" label "\"></a>"
+}
 /^# Vase$/ {
     print
     print ""
     print "<img src=\"./vase_os/vase.svg\" alt=\"VaseLogo\" width=\"117\" align=\"left\">"
-    print "<a href=\"https://github.com/h8d13/Vase/releases\">"
     print "<table>"
     print "    <tr>"
     print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Arch_Linux-v" kernel "-" kernel_color "\" alt=\"Arch\">"
+    print "            " badge("Arch_Linux", "v" kernel, kernel_color)
     print "        </td>"
     print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Plasma-" plasma "-darkgreen\" alt=\"Plasma\">"
-    print "        </td>"
-    print "    </tr>"
-    print "    <tr>"
-    print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/TUI_Status-" tui_badge "-" tui_color "\" alt=\"TUIStatus\">"
-    print "        </td>"
-    print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Qt-" qt "-darkgreen\" alt=\"Qt\">"
+    print "            " badge("Plasma", plasma, "darkgreen")
     print "        </td>"
     print "    </tr>"
     print "    <tr>"
     print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Git_Clones-" clones "-blue\" alt=\"Clones\">"
+    print "            " badge("TUI_Status", tui_badge, tui_color)
     print "        </td>"
     print "        <td>"
-    print "            <img src=\"https://img.shields.io/badge/Frameworks-" frameworks "-blue\" alt=\"Frameworks\">"
+    print "            " badge("Qt", qt, "darkgreen")
+    print "        </td>"
+    print "    </tr>"
+    print "    <tr>"
+    print "        <td>"
+    print "            " badge("Git_Clones", clones, "blue")
+    print "        </td>"
+    print "        <td>"
+    print "            " badge("Frameworks", frameworks, "blue")
     print "        </td>"
     print "    </tr>"
     print "</table>"
-    print "</a>"
     print "<br clear=\"left\">"
     print ""
     print "<strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
