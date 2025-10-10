@@ -83,11 +83,6 @@ If this helped you and earned you some time to touch grass (or you even just lea
 
 > If you do want to contribrute to the project more in depth or want to chat about the next feature, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
 
-
-    <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-
-
-
 ### From an existing arch installation (For devs)
 
 > On an existing install use sudo.  
