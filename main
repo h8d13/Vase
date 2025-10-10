@@ -277,13 +277,18 @@ if im_groot; then
             preop "Building ISO..."
             "./${zl_d}/iso_mod" || exit 1
 
-            # Sign ISO
-            preop "Signing ISO..."
-            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
+            # Sign ISO (skip in dev_mode)
+            if [ "${dev_mode:-0}" = "0" ]; then
+                preop "Signing ISO..."
+                sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
 
-            # Verify signature
-            preop "Verifying signature..."
-            gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
+                # Verify signature
+                preop "Verifying signature..."
+                gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
+            else
+                info "Skipping GPG signing (dev_mode enabled)"
+                gpg_info="N/A (dev_mode)"
+            fi
 
             # Flash ISO
             iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
@@ -293,8 +298,12 @@ if im_groot; then
             # Log to test.status
             test_date=$(date '+%Y-%m-%d %H:%M:%S')
             iso_size=$(du -h "$iso_file" 2>/dev/null | cut -f1)
-            echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
-
+            if [ "${dev_mode:-0}" = "1" ]; then
+                echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: DEV" >> tests.status
+            else
+                echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
+            fi
+            
             chown "$SUDO_USER:$SUDO_USER" tests.status README.md || true
 
             reop "All workflow finished! Change Status to FAIL in tests.status if physical test fails."
@@ -317,4 +326,4 @@ else
         die "Running as regular user." # Or warn and do smthn else
     fi
 fi
-# best time current: 2m05s for full install
+# best time current: 2m09s for full install

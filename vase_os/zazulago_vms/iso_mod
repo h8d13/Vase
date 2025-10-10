@@ -39,6 +39,7 @@ mkdir -p "$PROFILE_DIR/airootfs/root"
 
 # Dev mode: Copy entire Vase project into ISO (including uncommitted changes, respects .gitignore)
 dev_mode="${dev_mode:-0}"
+silent_mode="${silent_mode:-0}"
 if [ "$dev_mode" = "1" ]; then
     info "dev_mode enabled: Copying entire Vase project into ISO..."
     VASE_SRC="$SCRIPT_DIR/../../"
@@ -50,6 +51,8 @@ if [ "$dev_mode" = "1" ]; then
          git ls-files --others --exclude-standard) | \
         tar -C "$VASE_SRC" -cf - -T - | \
         tar -C "$PROFILE_DIR/airootfs/root/Vase" -xf -
+        # Make dev_entry executable
+        chmod +x "$PROFILE_DIR/airootfs/root/Vase/dev_entry"
         reop "Local Vase project (including uncommitted changes) copied to ISO for development"
     else
         warn "Vase source directory not found at $VASE_SRC"
@@ -85,6 +88,8 @@ if [ "$dev_mode" = "0" ]; then cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 ╚═══════════════════════════════════════╝
 ╔═══════════════════════════════════════╗
       To install: (or use UP key)
+
+        pacman-key --init
  git clone https://github.com/h8d13/Vase
       cd Vase && ./main -t
 ╚═══════════════════════════════════════╝
@@ -190,9 +195,9 @@ else
     warn "No profile found at $PROFILE_LIST, skipping package cache"
 fi
 
-## xz/squashfs compression keeps ISO size efficient: 2.6GB with Plasma pre-cached
-## Using new fat.conf which has ~856 pkgs cached (This is actually picking up on optionals?)
-## Might be totally tripping on how to actually get dep trees properly for iteration in 1 2 3 4 5 
+## xz/squashfs compression keeps ISO size efficient: 2.7GB with Plasma pre-cached
+## Using new fat.conf which has ~856 pkgs cached 
+## Might be totally tripping on how to actually get dep trees properly see for iteration in 1 2 3 4 5 
 
 info "Building ISO with mkarchiso..."
 ## Think of this as a temp file for intermediate building
@@ -200,10 +205,13 @@ mkdir -p "$WORK_DIR"
 
 ISO_LABEL="VASE_$(date +%Y%m)"
 # Limit to configured cores from VM settings using taskset (CPUs 0 through cores-1)
-# Again named cores but its threads 
-taskset -c 0-$((cores-1)) mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
-# To use all available (this is VERY intese on CPU and can look frozen but alwasy still succeeds)
-#mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
+# Again named cores but its threads
+if [ "$silent_mode" = "1" ]; then
+    taskset -c 0-$((cores-1)) mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR" >/dev/null 2>&1
+else
+    taskset -c 0-$((cores-1)) mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
+fi 
+# To use all available (this is VERY intese on CPU and can look frozen but always still succeeds)
 info "Cleaning up..."
 rm -rf "$PROFILE_DIR"
 rm -rf "$WORK_DIR"

@@ -55,6 +55,15 @@ else # Always check full deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
+# Backup FULL mirror list before anything happens (auto reflector)
+if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
+    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
+fi
+
+# Sync package database before launching TUI to prevent hangs
+preop "Syncing package database..."
+pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
+
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
 

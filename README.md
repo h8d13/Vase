@@ -114,10 +114,10 @@ If this helped you and earned you some time to touch grass (or you even just lea
 
 See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 
-> Assumes valid GPG key setup: `gpg --full-generate-key` and follow prompts for building and KVM compatible hardware for VM options. 
+> Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... More readmes included. 
 
-All long-form commands:
+### All long-form commands:
 
 ```
 --reset                 # Resets logs
@@ -149,7 +149,7 @@ Or better yet, fork all the repos and send me patches.
 
 [QEMU Docs](https://www.qemu.org/documentation/)
 
-#### Settings
+### Settings
 
 In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...

@@ -17,6 +17,11 @@ display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
 
+# Check for CATART setting and display CLI art
+if [ "${CATART:-1}" = "1" ] && file_ex "${script_dir}/cli_art"; then
+    cat "${script_dir}/cli_art"
+fi
+
 run_vm() {
     local cmd="$1"
     $cmd

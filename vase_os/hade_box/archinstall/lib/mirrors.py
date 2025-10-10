@@ -8,6 +8,7 @@ from archinstall.tui.menu_item import MenuItem, MenuItemGroup
 from archinstall.tui.result import ResultType
 from archinstall.tui.types import Alignment, FrameProperties
 
+from .general import SysCommand
 from .menu.abstract_menu import AbstractSubMenu
 from .menu.list_manager import ListManager
 from .models.mirrors import (
@@ -225,6 +226,11 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def _define_menu_options(self) -> list[MenuItem]:
 		return [
 			MenuItem(
+				text=('Reflector status'),
+				action=lambda preset: preset,
+				preview_action=self._prev_reflector_status,
+			),
+			MenuItem(
 				text=('Mirror configuration'),
 				action=configure_mirrors,
 				value=self._mirror_config.mirror_regions,
@@ -253,6 +259,37 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 				key='custom_repositories',
 			),
 		]
+
+	def _check_reflector_status(self) -> str:
+		from .exceptions import SysCallError
+		try:
+			result = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'})
+			status = result.decode().strip()
+		except SysCallError as e:
+			# systemctl is-active returns non-zero for inactive/failed services
+			# but still outputs the status, so we can extract it
+			status = str(e).split('\n')[0] if str(e) else 'unknown'
+			# Try to extract from the exception output
+			if 'inactive' in str(e).lower():
+				status = 'inactive'
+			elif 'failed' in str(e).lower():
+				status = 'failed'
+			elif 'activating' in str(e).lower():
+				status = 'activating'
+		except Exception:
+			return 'N/A'
+
+		if status in ['active', 'activating']:
+			return 'Running...'
+		elif status == 'inactive':
+			return 'Done.'
+		elif status in ['dead', 'failed']:
+			return f'Error ({status})'
+		else:
+			return f'Status: {status}'
+
+	def _prev_reflector_status(self, item: MenuItem) -> str:
+		return self._check_reflector_status()
 
 	def _prev_regions(self, item: MenuItem) -> str:
 		regions = item.get_value()
@@ -351,29 +388,40 @@ def configure_mirrors(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 			choice = result.get_value()
 
 			if choice == 'system':
-				# Use system mirrorlist
+				# Use system mirrorlist - force reload from global
 				system_mirrorlist = Path('/etc/pacman.d/mirrorlist')
-				if not system_mirrorlist.exists():
+				temp_mirrorlist = mirror_list_handler._local_mirrorlist
+				reflector_cache = temp_mirrorlist.parent / 'mirrorlist.reflector_cache'
+
+				# First time using system mirrorlist: backup it to cache
+				if not reflector_cache.exists() and system_mirrorlist.exists():
+					import shutil
+					shutil.copy(system_mirrorlist, reflector_cache)
+
+				# Use cached reflector results if available, otherwise use current system mirrorlist
+				source = reflector_cache if reflector_cache.exists() else system_mirrorlist
+
+				if not source.exists():
 					if not arch_config_handler.args.silent:
 						Tui.print('System mirrorlist not found, falling back to manual selection')
 						input('\nPress ENTER to continue...')
 					return select_mirror_regions(preset)
 
-				temp_mirrorlist = mirror_list_handler._local_mirrorlist
-
-				# Check if they're the same file
-				if system_mirrorlist.resolve() != temp_mirrorlist.resolve():
+				# Copy to temp mirrorlist
+				if source.resolve() != temp_mirrorlist.resolve():
 					import shutil
-					shutil.copy(system_mirrorlist, temp_mirrorlist)
+					shutil.copy(source, temp_mirrorlist)
 
-				# Reload handler to parse the system mirrorlist
+				# Force complete reload by clearing cache and reloading from temp file
+				mirror_list_handler._status_mappings = None
 				mirror_list_handler.load_local_mirrors()
 
 				# Return regions parsed from system mirrorlist
 				return mirror_list_handler.get_mirror_regions()
 
 			elif choice == 'manual':
-				# Manual region selection
+				# Manual region selection - force reload from global mirrorlist
+				mirror_list_handler._status_mappings = None  # Clear cached mappings
 				return select_mirror_regions(preset)
 
 	return preset
@@ -382,13 +430,34 @@ def select_mirror_regions(preset: list[MirrorRegion]) -> list[MirrorRegion]:
 	from .args import arch_config_handler
 	from .output import info
 
+	# Look for original mirrorlist backup (created by install script before reflector runs)
+	system_original = Path('/etc/pacman.d/mirrorlist.original')
+
+	# Copy to temp location for handler to use
+	mirrorlist_backup = mirror_list_handler._local_mirrorlist.parent / 'mirrorlist.original'
+	if not mirrorlist_backup.exists() and system_original.exists():
+		import shutil
+		shutil.copy(system_original, mirrorlist_backup)
+
 	# Only load mirrors if not already loaded
 	if mirror_list_handler._status_mappings is None:
-		if arch_config_handler.args.offline:
-			Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+		# Try to load from our backup first (has all regions), then fall back to fetching
+		if mirrorlist_backup.exists():
+			# Temporarily copy backup to temp location and load from there
+			temp_full = mirror_list_handler._local_mirrorlist.parent / 'mirrorlist.full_temp'
+			import shutil
+			shutil.copy(mirrorlist_backup, temp_full)
+			# Load from the full backup
+			old_path = mirror_list_handler._local_mirrorlist
+			mirror_list_handler._local_mirrorlist = temp_full
+			mirror_list_handler.load_local_mirrors()
+			mirror_list_handler._local_mirrorlist = old_path
 		else:
-			Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
-		mirror_list_handler.load_mirrors()
+			if arch_config_handler.args.offline:
+				Tui.print('Loading mirror regions (offline mode)...', clear_screen=True)
+			else:
+				Tui.print('Loading mirror regions (fetching from archlinux.org, may timeout and fallback to local)...', clear_screen=True)
+			mirror_list_handler.load_mirrors()
 
 	available_regions = mirror_list_handler.get_mirror_regions()
 
@@ -725,7 +794,12 @@ class MirrorListHandler:
 
 	def get_status_by_region(self, region: str, speed_sort: bool) -> list[MirrorStatusEntryV3]:
 		mappings = self._mappings()
+		if region not in mappings:
+			return []
 		region_list = mappings[region]
+		# For "Local" region (reflector results), don't filter by speed since it's not available
+		if region == 'Local':
+			return region_list
 		# Filter out mirrors where speed test failed (speed == 0)
 		working_mirrors = [mirror for mirror in region_list if mirror.speed > 0]
 		return sorted(working_mirrors, key=lambda mirror: (mirror.score, mirror.speed))
