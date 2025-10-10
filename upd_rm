@@ -53,14 +53,12 @@ else
     unique_clones="N/A"
 fi
 
-# Remove old badge table and related elements
-sed -i '/<img src="\.\/vase.*\.svg"/d; /<a href.*releases.*>/d; /<table>/,/<\/table>/d; /<\/a>/d; /<br clear="left">/d; /<strong>Version/d; /^<a href.*Releases/d; /^<br><br>$/d; /^---$/d' README.md
-
 awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
 function badge(label, value, color) {
     return "<a href=\"https://github.com/h8d13/Vase/releases\"><img src=\"https://img.shields.io/badge/" label "-" value "-" color "\" alt=\"" label "\"></a>"
 }
 /^# Vase$/ {
+    skip = 1
     print
     print ""
     print "<img src=\"./vase_os/vase.svg\" alt=\"VaseLogo\" width=\"117\" align=\"left\">"
@@ -95,14 +93,15 @@ function badge(label, value, color) {
     print "<strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
     print "<br><br>"
     print "<a href=\"https://github.com/h8d13/Vase/releases\">Releases</a>"
+    print ""
     next
 }
 /^## VaseOS/ {
-    print ""
+    skip = 0
     print "---"
     print ""
 }
-{ print }
+!skip { print }
 ' README.md > README.md.tmp && mv README.md.tmp README.md
 
 echo "README updated with latest release: ${version} (Kernel: ${kernel_version})"
