@@ -18,15 +18,16 @@
     </tr>
     <tr>
         <td>
-            <img src="https://img.shields.io/badge/Git_Clones-668-blue" alt="Clones">
+            <img src="https://img.shields.io/badge/Git_Clones-687-blue" alt="Clones">
         </td>
     </tr>
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.06 | <strong>Tested:</strong> 2025-10-09 16:01:19 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.07 | <strong>Tested:</strong> 2025-10-10 11:58:01 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
+<img src="./vase_os/vase.svg" alt="VaseLogo" width="117" align="left">
 
 ---
 
