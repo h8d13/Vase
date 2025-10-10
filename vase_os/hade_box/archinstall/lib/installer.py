@@ -183,9 +183,14 @@ class Installer:
 		else:
 			info('Skipping waiting for automatic time sync (this can cause issues if time is out of sync during installation)')
 
-		info('Waiting for automatic mirror selection (reflector) to complete.')
-		while self._service_state('reflector') not in ('dead', 'failed', 'exited'):
-			time.sleep(1)
+		# Skip reflector wait if mirrors were already configured in TUI
+		# (pacman -Sy was already run in install script before TUI launch)
+		if arch_config_handler.args.mirror_config:
+			info('Mirrors already configured, skipping reflector wait.')
+		else:
+			info('Waiting for automatic mirror selection (reflector) to complete.')
+			while self._service_state('reflector') not in ('dead', 'failed', 'exited'):
+				time.sleep(1)
 		# info('Waiting for pacman-init.service to complete.')
 		# while self._service_state('pacman-init') not in ('dead', 'failed', 'exited'):
 		# 	time.sleep(1)
