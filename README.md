@@ -166,3 +166,10 @@ Making it all open so people can edit anything they desire from the flow, while 
 > Idea was simple: Faster testing/installs, fixing host to target installs, **saving mirror providers TBs in bandwith** and less choices to break something in TUI (kind of work for all scenario) testing on weird/old hardware like Hybrid Nvidia/Intel setups or more recent desktops too.
 
 ![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
+
+#### For the elitists, purists and minimalism people:
+
+Added a script to bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
+> Here `vase_os/klartix`
+
+Made specially for my friend Klagan <3
