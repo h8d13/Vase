@@ -754,9 +754,6 @@ class MirrorListHandler:
 		mappings = self._mappings()
 
 		for region_name, status_entry in mappings.items():
-			# Skip "Local" region - it's just a marker for reflector results
-			if region_name == 'Local':
-				continue
 			urls = [entry.server_url for entry in status_entry]
 			region = MirrorRegion(region_name, urls)
 			available_mirrors.append(region)
