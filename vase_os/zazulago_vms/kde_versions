@@ -1,8 +1,0 @@
-#!/bin/bash
-# Extract KDE/Qt versions from installed packages
-plasma_ver=$(pacman -Q plasma-desktop 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
-frameworks_ver=$(pacman -Q ki18n 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
-qt_ver=$(pacman -Q qt6-base 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
-
-echo "Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
-

@@ -83,7 +83,7 @@ KB_LAYOUT="us"
 TARGET_TIMEZONE="Europe/Paris"
 TARGET_HOSTNAME="klartix"
 TARGET_USER="klagan"
-ROOT_PASSWORD="Everest"
+ROOT_PASSWORD="Everest" # Please change me
 
 # Host package manager for prerequisites
 PKG_MAN="pacman"
