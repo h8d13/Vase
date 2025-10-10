@@ -27,7 +27,6 @@
 <strong>Version:</strong> 0.0.07 | <strong>Tested:</strong> 2025-10-10 11:58:01 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
-<img src="./vase_os/vase.svg" alt="VaseLogo" width="117" align="left">
 
 ---
 
