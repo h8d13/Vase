@@ -1,12 +1,11 @@
 # Vase
 
 <img src="./vase_os/vase.svg" alt="VaseLogo" width="117" align="left">
+<a href="https://github.com/h8d13/Vase/releases">
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases">
-                <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
-            </a>
+            <img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch">
         </td>
         <td>
             <img src="https://img.shields.io/badge/Plasma-6.4.5-darkgreen" alt="Plasma">
@@ -14,9 +13,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases">
-                <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
-            </a>
+            <img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUIStatus">
         </td>
         <td>
             <img src="https://img.shields.io/badge/Qt-6.10.0-darkgreen" alt="Qt">
@@ -31,6 +28,7 @@
         </td>
     </tr>
 </table>
+</a>
 <br clear="left">
 
 <strong>Version:</strong> 0.0.08 | <strong>Tested:</strong> 2025-10-10 16:47:35 | <strong>Size:</strong> 2.7G
@@ -88,9 +86,7 @@ If this helped you and earned you some time to touch grass (or you even just lea
 > If you do want to contribrute to the project more in depth or want to chat about the next feature, I'm also active on reddit u/Responsable-Sky-1336 do message me! 
 
 
-<a href="https://github.com/h8d13/Vase/releases">
     <img src="https://img.shields.io/badge/Install_Time-00:02:35-blue" alt="InstallTime">
-</a>
 
 
 
