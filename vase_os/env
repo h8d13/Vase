@@ -50,7 +50,7 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
 
     case "$distro_id" in
         arch)
-            info "Detected: Arch Linux (systemd)"
+            info "Detected: Arch Linux"
             "./${zl_d}/setup_arch"
             ;;
         artix)
