@@ -22,7 +22,27 @@ kvm_check=$(lsmod | grep kvm || die "No Virtualization Found")
 info "OS Type: ${os_type}"
 info "Kernel: ${kernel_version}"
 
-# Currently only Arch Linux is supported
+# Detect init system
+init_system="unknown"
+if [ -d /run/systemd/system ]; then
+    init_system="systemd"
+elif [ -f /sbin/openrc ] || [ -f /usr/bin/openrc ]; then
+    init_system="openrc"
+elif [ -f /sbin/runit-init ] || [ -d /run/runit ]; then
+    init_system="runit"
+elif [ -f /sbin/dinit ] || [ -f /usr/bin/dinitctl ]; then
+    init_system="dinit"
+elif [ -f /sbin/s6-svscan ] || [ -d /run/s6 ]; then
+    init_system="s6"
+elif readlink /proc/1/exe | grep -q systemd; then
+    init_system="systemd"
+elif readlink /proc/1/exe | grep -q openrc; then
+    init_system="openrc"
+fi
+
+info "Init System: ${init_system}"
+
+# Currently Arch Linux and Artix Linux are supported
 # To add support for other distros, extend the case statement below
 if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
     distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
@@ -30,14 +50,23 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
 
     case "$distro_id" in
         arch)
-            info "Detected: Arch Linux"
+            info "Detected: Arch Linux (systemd)"
+            "./${zl_d}/setup_arch"
+            ;;
+        artix)
+            info "Detected: Artix Linux (${init_system})"
+            if [ "$init_system" != "unknown" ]; then
+                info "Artix init: ${init_system}"
+            else
+                warn "Could not detect init system on Artix"
+            fi
             "./${zl_d}/setup_arch"
             ;;
         *)
             # Check if it's Arch-based via ID_LIKE
             case "$distro_like" in
-                *arch*)
-                    info "Detected: Arch-based ($distro_id)"
+                *arch*|*artix*)
+                    info "Detected: Arch-based ($distro_id) with ${init_system}"
                     "./${zl_d}/setup_arch"
                     ;;
                 *)
