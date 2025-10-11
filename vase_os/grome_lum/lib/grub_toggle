@@ -47,7 +47,7 @@ grub_toggle() {
 }
 
 # Check if commands requiring sudo are used without it
-if [[ "$1" == "-a" ]] || [[ "$1" == "-s" ]] || [[ "$1" == "-r" ]] || ([[ "$1" == "-p" ]] && [[ -n "$2" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])); then
+if [[ "$1" == "-a" ]] || [[ "$1" == "-s" ]] || [[ "$1" == "-r" ]] || ([[ "$1" == "-p" ]] && [[ -n "$2" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])) || ([[ "$1" == "-c" ]] && [[ -n "$2" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-n" ]])); then
     if [[ $EUID -ne 0 ]]; then
         echo "Error: This command requires root privileges."
         exit 1

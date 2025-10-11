@@ -2,31 +2,33 @@
 # Klartix - Artix Linux Bootstrap Installer
 # Script for my good friend Klagan who values no being on Systemd & Minimalism approach
 # Assumes x86_64, GPT/UEFI, and can run from any Linux distro
-
+# Doesnot need an ISO bootstrap direclty from official tool
+# Has many clean up steps to not pollute host device
 # Source utilities and colors
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../util_f"
 if file_ex "${SCRIPT_DIR}/../.vase.d/rcw"; then
     . "${SCRIPT_DIR}/../.vase.d/rcw"
 fi
-
-# Progress bar configuration
-TOTAL_STEPS=16
+# Source cfg file
+. "${SCRIPT_DIR}/klartix.conf"
+# Adjust total steps based on LUKS configuration
+if [ "$ENABLE_LUKS" = "1" ]; then
+    TOTAL_STEPS=17  # With LUKS encryption
+else
+    TOTAL_STEPS=16  # Without LUKS encryption
+fi
 CURRENT_STEP=0
-
 # Progress bar function
 show_progress() {
     local step_desc="$1"
     CURRENT_STEP=$((CURRENT_STEP + 1))
-
     # Calculate percentage
     local percent=$((CURRENT_STEP * 100 / TOTAL_STEPS))
-
     # Bar width (50 characters)
     local bar_width=50
     local filled=$((CURRENT_STEP * bar_width / TOTAL_STEPS))
     local empty=$((bar_width - filled))
-
     # Build the bar
     local bar=""
     local i
@@ -36,17 +38,13 @@ show_progress() {
     for i in $(seq 1 $empty); do
         bar="${bar}░"
     done
-
     # Clear line and print progress bar
     printf "\r\033[K"
     printf "${CYAN}[%s]${NC} %3d%% (%d/%d)\n" "$bar" "$percent" "$CURRENT_STEP" "$TOTAL_STEPS"
-
     # Print step description below
     info "$step_desc"
 }
-
 set -e  # Exit on error
-
 # Parse arguments
 VERBOSE=0
 for arg in "$@"; do
@@ -59,44 +57,60 @@ for arg in "$@"; do
             ;;
     esac
 done
-
-# Cleanup function for failures during installation
+# Cleanup function 
 cleanup_disk() {
     warn "Cleaning up disk..."
-    swapoff -a 2>/dev/null || true
-
+    
+    # Force sync multiple times (important for USB)
+    sync && sync && sync
+    sleep 2
+    
+    # Only turn off swap on the target disk partitions (not all swap with -a)
+    if [ -n "$TARGET_DISK" ]; then
+        if [ "$SEPARATE_BOOT" = "1" ]; then
+            swapoff "${TARGET_DISK}${PART_PREFIX}3" 2>/dev/null || true
+        else
+            swapoff "${TARGET_DISK}${PART_PREFIX}2" 2>/dev/null || true
+        fi
+    fi
+    
     # Unmount everything related to target disk
     mount | grep "$TARGET_DISK" | awk '{print $3}' | sort -r | while read mnt; do
         umount -l "$mnt" 2>/dev/null || true
     done
-
+    
+    # Also unmount by mapper name
+    mount | grep "/dev/mapper/crypt" | awk '{print $3}' | sort -r | while read mnt; do
+        umount -l "$mnt" 2>/dev/null || true
+    done
+    
+    # Close LUKS devices if they exist (always try, not just if ENABLE_LUKS=1)
+    cryptsetup close cryptroot 2>/dev/null || true
+    cryptsetup close cryptboot 2>/dev/null || true
+    
+    # Force remove all device mapper entries
+    dmsetup remove_all --force 2>/dev/null || true
+    
+    # Wait for device removal
+    sleep 1
+    
+    # Flush block device buffers
+    blockdev --flushbufs "$TARGET_DISK" 2>/dev/null || true
+    
+    # Re-read partition table
     partprobe "$TARGET_DISK" 2>/dev/null || true
     sleep 1
 }
-
-# Configuration consts
-# Init system selection (openrc, runit, s6, dinit)
-INIT_SYSTEM="runit"
-TARGET_FS="ext4" # Filesystem: ext4, btrfs, xfs, f2fs
-EFI_SIZE="1GiB" # Default
-SEPARATE_BOOT=1 # 0=no separate boot, 1=separate boot partition
-BOOT_SIZE="4GiB" # Only used if SEPARATE_BOOT=1
-SWAP_SIZE="4GiB"
-KB_LAYOUT="us"
-TARGET_TIMEZONE="Europe/Paris"
-TARGET_HOSTNAME="klartix"
-
 # Vars
 TARGET_DISK="" # Will be prompted
 TARGET_USER="" # Will be prompted
 USER_PASSWORD="" # Will be prompted
 ROOT_PASSWORD="" # Will be prompted
-
+LUKS_PASSWORD="" # Will be prompted if ENABLE_LUKS=1
 # Host package manager for prerequisites
 PKG_MAN="pacman"
 PKG_MAN_W="-S"
 ARG1="--noconfirm --needed"
-
 # Prerequisites (need wget to fetch artix-bootstrap)
 # Add filesystem tools based on selected filesystem
 PKGS="wget parted"
@@ -111,25 +125,24 @@ case "$TARGET_FS" in
         PKGS="$PKGS f2fs-tools"
         ;;
 esac
-
+# Add cryptsetup if LUKS is enabled
+if [ "$ENABLE_LUKS" = "1" ]; then
+    PKGS="$PKGS cryptsetup"
+fi
 obanner "Klartix - Artix Linux Bootstrap Installer"
 nlp
-
 # Show available disks first
 info "Current block devices:"
 lsblk
 nlp
-
 # Prompt for target disk
 read -p "Enter target disk (e.g., /dev/sda): " TARGET_DISK
 if [ -z "$TARGET_DISK" ]; then
     die "Target disk cannot be empty."
 fi
-
 if [ ! -b "$TARGET_DISK" ]; then
     die "Device $TARGET_DISK does not exist or is not a block device."
 fi
-
 nlp
 info "Partitioning layout:"
 echo "  Init system:  $INIT_SYSTEM"
@@ -142,53 +155,98 @@ else
     echo "  Boot:         Combined with root"
 fi
 echo "  Swap size:    $SWAP_SIZE"
+if [ "$ENABLE_LUKS" = "1" ]; then
+    if [ "$SEPARATE_BOOT" = "1" ] && [ "$ENCRYPT_BOOT" = "0" ]; then
+        echo "  Encryption:   LUKS2 enabled (root only, boot unencrypted)"
+    elif [ "$SEPARATE_BOOT" = "1" ] && [ "$ENCRYPT_BOOT" = "1" ]; then
+        echo "  Encryption:   LUKS2 enabled (root + boot encrypted)"
+    else
+        echo "  Encryption:   LUKS2 enabled (combined boot+root)"
+    fi
+else
+    echo "  Encryption:   Disabled"
+fi
 nlp
 warn "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
 nlp
-
 read -p "Continue with this disk? [y/N]: " confirm
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     warn "Installation cancelled."
     exit 0
 fi
-
 nlp
 cbanner "Klartix - Artix Linux Bootstrap Installer"
 nlp
-
 # Now prompt for passwords and user after disk confirmation
 read -sp "Enter password for root: " ROOT_PASSWORD
 echo ""
 read -sp "Confirm root password: " ROOT_PASSWORD_CONFIRM
 echo ""
-
 if [ "$ROOT_PASSWORD" != "$ROOT_PASSWORD_CONFIRM" ]; then
     die "Root passwords do not match."
 fi
-
 if [ -z "$ROOT_PASSWORD" ]; then
     die "Root password cannot be empty."
 fi
-
 # Prompt for username and password
 read -p "Enter a username: " TARGET_USER
 if [ -z "$TARGET_USER" ]; then
     die "Username cannot be empty."
 fi
-
 read -sp "Enter password for $TARGET_USER: " USER_PASSWORD
 echo ""
 read -sp "Confirm user password: " USER_PASSWORD_CONFIRM
 echo ""
-
 if [ "$USER_PASSWORD" != "$USER_PASSWORD_CONFIRM" ]; then
     die "User passwords do not match."
 fi
-
 if [ -z "$USER_PASSWORD" ]; then
     die "User password cannot be empty."
 fi
-
+# Prompt for LUKS password if encryption is enabled
+if [ "$ENABLE_LUKS" = "1" ]; then
+    nlp
+    warn "IMPORTANT: GRUB uses US keyboard layout at boot!"
+    warn "Your password will be typed with US layout even if you use '$KB_LAYOUT' now."
+    warn "Avoid special characters that differ between layouts (e.g., shifted symbols)."
+    nlp
+    info "LUKS encryption password options:"
+    echo "  1) Reuse root password"
+    echo "  2) Reuse user password"
+    echo "  3) Use a different password"
+    nlp
+    read -p "Choose password option [1-3]: " luks_choice
+    case "$luks_choice" in
+        1)
+            LUKS_PASSWORD="$ROOT_PASSWORD"
+            info "Using root password for LUKS encryption"
+            ;;
+        2)
+            LUKS_PASSWORD="$USER_PASSWORD"
+            info "Using user password for LUKS encryption"
+            ;;
+        3)
+            nlp
+            warn "Test your password: after entering, type it again to verify characters match."
+            nlp
+            read -sp "Enter LUKS encryption password: " LUKS_PASSWORD
+            echo ""
+            read -sp "Confirm LUKS encryption password: " LUKS_PASSWORD_CONFIRM
+            echo ""
+            if [ "$LUKS_PASSWORD" != "$LUKS_PASSWORD_CONFIRM" ]; then
+                die "LUKS passwords do not match."
+            fi
+            if [ -z "$LUKS_PASSWORD" ]; then
+                die "LUKS password cannot be empty."
+            fi
+            # Show password length to help verify
+            info "Password length: ${#LUKS_PASSWORD} characters"
+            ;;
+        *)
+            die "Invalid choice. Please select 1, 2, or 3."
+            ;;
+    esac
+fi
 nlp
 info "Final configuration:"
 echo "  Hostname:     $TARGET_HOSTNAME"
@@ -196,31 +254,24 @@ echo "  User:         $TARGET_USER"
 echo "  Timezone:     $TARGET_TIMEZONE"
 nlp
 cbanner "Klartix - Artix Linux Bootstrap Installer"
-
 read -p "Begin installation? [y/N]: " confirm
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     warn "Installation cancelled."
     exit 0
 fi
 nlp
-
 # Set up cleanup trap now that user confirmed
 trap cleanup_disk EXIT INT TERM
-
 # Install required packages
 preop "Installing required packages on host..."
 $PKG_MAN $PKG_MAN_W $PKGS $ARG1
-
 # Clean up previous files if canceled/failed install
 rm -rf /tmp/artix-bootstrap*
-
 # Ensure target mount point exists
 TARGET_MOUNT="/mnt/artix"
 mkdir -p "$TARGET_MOUNT"
-
 # Clean the disk before starting
 cleanup_disk
-
 # Partitioning
 show_progress "Partitioning $TARGET_DISK..."
 PARTED_OUTPUT=$(mktemp)
@@ -241,7 +292,6 @@ else
         mkpart primary linux-swap "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
         mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
 fi
-
 # Check if kernel couldn't be informed about partition changes
 if grep -q "unable to inform the kernel" "$PARTED_OUTPUT"; then
     rm -f "$PARTED_OUTPUT"
@@ -256,93 +306,205 @@ if grep -q "unable to inform the kernel" "$PARTED_OUTPUT"; then
     die "Cannot continue with stale partition table. Fix the issue above and try again."
 fi
 rm -f "$PARTED_OUTPUT"
-
 # Force kernel to re-read partition table
 show_progress "Updating kernel partition table..."
 partprobe "${TARGET_DISK}"
 sleep 2
-
+# Determine partition naming scheme (nvme uses p1, others use 1)
+if [[ "$TARGET_DISK" == *"nvme"* ]] || [[ "$TARGET_DISK" == *"mmcblk"* ]]; then
+    PART_PREFIX="p"
+else
+    PART_PREFIX=""
+fi
+# Setup LUKS encryption if enabled
+if [ "$ENABLE_LUKS" = "1" ]; then
+    show_progress "Setting up LUKS2 encryption..."
+    # Close any existing LUKS mappings from previous attempts (ignore if they don't exist)
+    cryptsetup close cryptroot 2>/dev/null || true
+    cryptsetup close cryptboot 2>/dev/null || true
+    # Also try with full device mapper paths
+    dmsetup remove cryptroot 2>/dev/null || true
+    dmsetup remove cryptboot 2>/dev/null || true
+    # Wait for device removal to complete
+    sleep 2
+    # Wipe any existing LUKS signatures
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            wipefs -af "${TARGET_DISK}${PART_PREFIX}2" 2>/dev/null || true
+        fi
+        wipefs -af "${TARGET_DISK}${PART_PREFIX}4" 2>/dev/null || true
+    else
+        wipefs -af "${TARGET_DISK}${PART_PREFIX}3" 2>/dev/null || true
+    fi
+    # Force partition table re-read
+    partprobe "${TARGET_DISK}" 2>/dev/null || true
+    sleep 1
+    # Get password length for keyfile-size (prevents reading trailing newlines)
+    PASS_LEN=${#LUKS_PASSWORD}
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        # Conditionally encrypt boot partition based on ENCRYPT_BOOT flag
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            # Encrypt boot partition (partition 2) - GRUB requires PBKDF2, not argon2id
+            # Use --iter-time 1000 for faster unlock on USB devices
+            if [ "$VERBOSE" = "1" ]; then
+                printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" || die "Failed to encrypt boot partition"
+                printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" cryptboot || die "Failed to open encrypted boot partition"
+            else
+                printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" > /dev/null 2>&1 || die "Failed to encrypt boot partition"
+                printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" cryptboot > /dev/null 2>&1 || die "Failed to open encrypted boot partition"
+            fi
+        fi
+        # Encrypt root partition (partition 4) - Can use argon2id since kernel handles this
+        # Use --iter-time 2000 for reasonable security/speed balance on USB
+        if [ "$VERBOSE" = "1" ]; then
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot || die "Failed to open encrypted root partition"
+        else
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" > /dev/null 2>&1 || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
+        fi
+    else
+        # Encrypt root partition only (partition 3) - GRUB needs to unlock this, use PBKDF2
+        # Use --iter-time 1000 for faster unlock on USB devices
+        if [ "$VERBOSE" = "1" ]; then
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot || die "Failed to open encrypted root partition"
+        else
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" > /dev/null 2>&1 || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
+        fi
+    fi
+    # Verify the password works by testing it
+    info "Verifying LUKS password..."
+    if [ "$SEPARATE_BOOT" = "1" ] && [ "$ENCRYPT_BOOT" = "1" ]; then
+        cryptsetup close cryptboot || true
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" cryptboot || die "LUKS password verification failed for boot partition"
+    fi
+    cryptsetup close cryptroot || true
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot || die "LUKS password verification failed for root partition"
+    else
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot || die "LUKS password verification failed for root partition"
+    fi
+    reop "LUKS password verified successfully!"
+    # Save password length for debugging
+    echo "$PASS_LEN" > /tmp/luks_pass_len.txt
+fi
 # Format partitions
 show_progress "Formatting partitions..."
 if [ "$SEPARATE_BOOT" = "1" ]; then
     # Four partitions: EFI(1), Boot(2), Swap(3), Root(4)
+    # Determine boot and root devices based on encryption
+    if [ "$ENABLE_LUKS" = "1" ]; then
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            BOOT_DEV="/dev/mapper/cryptboot"
+        else
+            BOOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
+        fi
+        ROOT_DEV="/dev/mapper/cryptroot"
+    else
+        BOOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}4"
+    fi
     if [ "$VERBOSE" = "1" ]; then
-        mkfs.fat -F32 "${TARGET_DISK}1"
+        mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1"
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F "${TARGET_DISK}2" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}2" ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}2" ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}2" ;;
+            ext4) mkfs.ext4 -F "$BOOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$BOOT_DEV" ;;
+            xfs) mkfs.xfs -f "$BOOT_DEV" ;;
+            f2fs) mkfs.f2fs -f "$BOOT_DEV" ;;
         esac
-        mkswap "${TARGET_DISK}3"
-        swapon "${TARGET_DISK}3"
+        mkswap "${TARGET_DISK}${PART_PREFIX}3"
+        swapon "${TARGET_DISK}${PART_PREFIX}3"
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F "${TARGET_DISK}4" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}4" ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}4" ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}4" ;;
+            ext4) mkfs.ext4 -F "$ROOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$ROOT_DEV" ;;
+            xfs) mkfs.xfs -f "$ROOT_DEV" ;;
+            f2fs) mkfs.f2fs -f "$ROOT_DEV" ;;
         esac
     else
-        mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
+        mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1" > /dev/null 2>&1
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F -q "${TARGET_DISK}2" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
+            ext4) mkfs.ext4 -F -q "$BOOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$BOOT_DEV" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "$BOOT_DEV" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "$BOOT_DEV" > /dev/null 2>&1 ;;
         esac
-        mkswap "${TARGET_DISK}3" > /dev/null 2>&1
-        swapon "${TARGET_DISK}3"
+        mkswap "${TARGET_DISK}${PART_PREFIX}3" > /dev/null 2>&1
+        swapon "${TARGET_DISK}${PART_PREFIX}3"
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F -q "${TARGET_DISK}4" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
+            ext4) mkfs.ext4 -F -q "$ROOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
         esac
     fi
 else
     # Three partitions: EFI(1), Swap(2), Root(3)
+    # Determine root device based on encryption
+    if [ "$ENABLE_LUKS" = "1" ]; then
+        ROOT_DEV="/dev/mapper/cryptroot"
+    else
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}3"
+    fi
     if [ "$VERBOSE" = "1" ]; then
-        mkfs.fat -F32 "${TARGET_DISK}1"
-        mkswap "${TARGET_DISK}2"
-        swapon "${TARGET_DISK}2"
+        mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1"
+        mkswap "${TARGET_DISK}${PART_PREFIX}2"
+        swapon "${TARGET_DISK}${PART_PREFIX}2"
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F "${TARGET_DISK}3" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}3" ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}3" ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}3" ;;
+            ext4) mkfs.ext4 -F "$ROOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$ROOT_DEV" ;;
+            xfs) mkfs.xfs -f "$ROOT_DEV" ;;
+            f2fs) mkfs.f2fs -f "$ROOT_DEV" ;;
         esac
     else
-        mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
-        mkswap "${TARGET_DISK}2" > /dev/null 2>&1
-        swapon "${TARGET_DISK}2"
+        mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1" > /dev/null 2>&1
+        mkswap "${TARGET_DISK}${PART_PREFIX}2" > /dev/null 2>&1
+        swapon "${TARGET_DISK}${PART_PREFIX}2"
         case "$TARGET_FS" in
-            ext4) mkfs.ext4 -F -q "${TARGET_DISK}3" ;;
-            btrfs) mkfs.btrfs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
-            xfs) mkfs.xfs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
-            f2fs) mkfs.f2fs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
+            ext4) mkfs.ext4 -F -q "$ROOT_DEV" ;;
+            btrfs) mkfs.btrfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
         esac
     fi
 fi
-
 # Mount filesystems
 show_progress "Mounting filesystems..."
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    # Mount root (partition 4)
-    mount "${TARGET_DISK}4" "$TARGET_MOUNT"
-    # Mount boot (partition 2)
+    # Determine boot and root devices based on encryption
+    if [ "$ENABLE_LUKS" = "1" ]; then
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            BOOT_DEV="/dev/mapper/cryptboot"
+        else
+            BOOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
+        fi
+        ROOT_DEV="/dev/mapper/cryptroot"
+    else
+        BOOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}4"
+    fi
+    # Mount root
+    mount "$ROOT_DEV" "$TARGET_MOUNT"
+    # Mount boot
     mkdir -p "$TARGET_MOUNT/boot"
-    mount "${TARGET_DISK}2" "$TARGET_MOUNT/boot"
+    mount "$BOOT_DEV" "$TARGET_MOUNT/boot"
     # Mount EFI (partition 1)
     mkdir -p "$TARGET_MOUNT/boot/efi"
-    mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"
+    mount "${TARGET_DISK}${PART_PREFIX}1" "$TARGET_MOUNT/boot/efi"
 else
-    # Mount root (partition 3)
-    mount "${TARGET_DISK}3" "$TARGET_MOUNT"
+    # Determine root device based on encryption
+    if [ "$ENABLE_LUKS" = "1" ]; then
+        ROOT_DEV="/dev/mapper/cryptroot"
+    else
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}3"
+    fi
+    # Mount root
+    mount "$ROOT_DEV" "$TARGET_MOUNT"
     # Mount EFI (partition 1)
     mkdir -p "$TARGET_MOUNT/boot/efi"
-    mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"
+    mount "${TARGET_DISK}${PART_PREFIX}1" "$TARGET_MOUNT/boot/efi"
 fi
-
 # Download and extract Artix bootstrap using official artix-bootstrap tool
 show_progress "Downloading Artix bootstrap tool..."
 cd /tmp
@@ -352,14 +514,12 @@ else
     wget -q https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
 fi
 chmod +x artix-bootstrap.sh
-
 show_progress "Bootstrapping Artix Linux with $INIT_SYSTEM..."
 if [ "$VERBOSE" = "1" ]; then
     ./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT"
 else
     ./artix-bootstrap.sh -i "$INIT_SYSTEM" "$TARGET_MOUNT" > /dev/null 2>&1
 fi
-
 # At this point, artix-bootstrap should have set up the base system
 # Configure chroot mounts
 show_progress "Configuring chroot environment..."
@@ -367,16 +527,13 @@ mount -t proc /proc "$TARGET_MOUNT/proc"
 mount -t sysfs /sys "$TARGET_MOUNT/sys"
 mount -o bind /dev "$TARGET_MOUNT/dev"
 mount -o bind /dev/pts "$TARGET_MOUNT/dev/pts"
-
 # Mount efivarfs since we assume UEFI systems
 show_progress "Copying host UEFI vars..."
 if [ -d /sys/firmware/efi/efivars ]; then
     mount -t efivarfs efivarfs "$TARGET_MOUNT/sys/firmware/efi/efivars" 2>/dev/null || true
 fi
-
 show_progress "Copying host resolv.conf..."
 cp /etc/resolv.conf "$TARGET_MOUNT/etc/"
-
 # Generate fstab
 show_progress "Generating fstab..."
 if command -v fstabgen >/dev/null 2>&1; then
@@ -386,70 +543,103 @@ else
     echo "# Generated fstab" > "$TARGET_MOUNT/etc/fstab"
     if [ "$SEPARATE_BOOT" = "1" ]; then
         # Four partitions layout
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}4) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+        if [ "$ENABLE_LUKS" = "1" ]; then
+            # For LUKS, use /dev/mapper paths for encrypted partitions
+            echo "/dev/mapper/cryptroot / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+            if [ "$ENCRYPT_BOOT" = "1" ]; then
+                echo "/dev/mapper/cryptboot /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+            else
+                echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+            fi
+        else
+            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}4) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        fi
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
     else
         # Three partitions layout
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+        if [ "$ENABLE_LUKS" = "1" ]; then
+            # For LUKS, use /dev/mapper path
+            echo "/dev/mapper/cryptroot / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+        else
+            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+        fi
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
     fi
 fi
-
+# Create keyfile for LUKS if combined boot+root (must be done BEFORE chroot)
+if [ "$ENABLE_LUKS" = "1" ] && [ "$SEPARATE_BOOT" = "0" ]; then
+    show_progress "Creating LUKS keyfile..."
+    # Generate random keyfile in the target system
+    dd if=/dev/urandom of="$TARGET_MOUNT/crypto_keyfile.bin" bs=512 count=8 iflag=fullblock > /dev/null 2>&1
+    chmod 000 "$TARGET_MOUNT/crypto_keyfile.bin"
+    # Get password length
+    PASS_LEN=${#LUKS_PASSWORD}
+    # Add keyfile to LUKS (this must happen on the host, not in chroot)
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup luksAddKey "${TARGET_DISK}${PART_PREFIX}4" "$TARGET_MOUNT/crypto_keyfile.bin" --key-file=- --keyfile-size="$PASS_LEN" || die "Failed to add keyfile to LUKS"
+    else
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup luksAddKey "${TARGET_DISK}${PART_PREFIX}3" "$TARGET_MOUNT/crypto_keyfile.bin" --key-file=- --keyfile-size="$PASS_LEN" || die "Failed to add keyfile to LUKS"
+    fi
+    reop "LUKS keyfile created and added successfully"
+fi
 # Create configuration script for chroot
 show_progress "Creating chroot configuration script..."
+# Get UUIDs before creating the script
+if [ "$ENABLE_LUKS" = "1" ]; then
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            BOOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}2")
+        fi
+        ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}4")
+    else
+        ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}3")
+    fi
+fi
 cat > "$TARGET_MOUNT/configure.sh" << EOF
 #!/bin/bash
 # Klartix system configuration
 set -e
-
 # Initialize pacman keyring first
 echo "Initializing pacman keyring..."
 pacman-key --init
 pacman-key --populate artix
-
 # Update package databases
 echo "Updating package databases..."
 pacman -Sy
-
 # Basic configuration
 ln -sf /usr/share/zoneinfo/$TARGET_TIMEZONE /etc/localtime
 hwclock --systohc
-
 # Locale
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
-
 # Console keymap
 echo "KEYMAP=$KB_LAYOUT" > /etc/vconsole.conf
-
 # Hostname
 echo "$TARGET_HOSTNAME" > /etc/hostname
 echo "127.0.0.1 localhost" > /etc/hosts
 echo "::1 localhost" >> /etc/hosts
 echo "127.0.1.1 $TARGET_HOSTNAME.localdomain $TARGET_HOSTNAME" >> /etc/hosts
-
 # DNS
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 echo "nameserver 8.8.4.4" >> /etc/resolv.conf
-
 # Set root password
 echo "root:$ROOT_PASSWORD" | chpasswd
-
 # Install essential packages first
 echo "Installing kernel and base packages..."
-pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo
-
+if [ "$ENABLE_LUKS" = "1" ]; then
+    pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo cryptsetup
+else
+    pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo
+fi
 # Create user
 useradd -m -s /bin/bash -G wheel $TARGET_USER
 echo "$TARGET_USER:$USER_PASSWORD" | chpasswd
-
 # Enable sudo for wheel group
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
-
 # Install init-specific network manager
 case "$INIT_SYSTEM" in
     openrc)
@@ -469,33 +659,76 @@ case "$INIT_SYSTEM" in
         dinitctl enable NetworkManager
         ;;
 esac
-
+# Configure LUKS if enabled
+if [ "$ENABLE_LUKS" = "1" ]; then
+    echo "Configuring LUKS encryption..."
+    # Create crypttab
+    echo "# crypttab for LUKS encrypted partitions" > /etc/crypttab
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        if [ "$ENCRYPT_BOOT" = "1" ]; then
+            echo "cryptboot UUID=$BOOT_UUID none luks" >> /etc/crypttab
+        fi
+        echo "cryptroot UUID=$ROOT_UUID none luks" >> /etc/crypttab
+    else
+        # For combined boot+root: use keyfile to avoid double password prompt
+        echo "cryptroot UUID=$ROOT_UUID /crypto_keyfile.bin luks" >> /etc/crypttab
+    fi
+    # Configure keyfile for automatic unlock (only when SEPARATE_BOOT=0)
+    if [ "$SEPARATE_BOOT" = "0" ]; then
+        echo "Configuring keyfile for automatic unlock..."
+        # The keyfile already exists, created by the host script
+        # Just ensure permissions are correct
+        chmod 000 /crypto_keyfile.bin
+        
+        # Embed keyfile in initramfs
+        echo "FILES=(/crypto_keyfile.bin)" >> /etc/mkinitcpio.conf
+        
+        # Update kernel cmdline to use keyfile
+        sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$ROOT_UUID:cryptroot:allow-discards cryptkey=rootfs:/crypto_keyfile.bin root=/dev/mapper/cryptroot\"|" /etc/default/grub
+    else
+        # Separate boot partition
+        if [ "$ENCRYPT_BOOT" = "0" ]; then
+            # Unencrypted boot: only need to unlock root once at initramfs
+            sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$ROOT_UUID:cryptroot root=/dev/mapper/cryptroot\"|" /etc/default/grub
+        else
+            # Encrypted boot: GRUB unlocks boot, kernel unlocks root (two prompts)
+            sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$ROOT_UUID:cryptroot root=/dev/mapper/cryptroot\"|" /etc/default/grub
+        fi
+    fi
+    # Add encrypt hook to mkinitcpio
+    sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+    # Regenerate initramfs
+    echo "Regenerating initramfs with encryption support..."
+    mkinitcpio -P
+    # Enable GRUB cryptodisk support (only needed if boot is encrypted or combined with root)
+    if [ "$SEPARATE_BOOT" = "0" ] || [ "$ENCRYPT_BOOT" = "1" ]; then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /etc/default/grub
+        # Terminal input/output for better compatibility
+        echo "GRUB_TERMINAL_INPUT=console" >> /etc/default/grub
+        echo "GRUB_TERMINAL_OUTPUT=console" >> /etc/default/grub
+    fi
+fi
 # Install and configure GRUB
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Artix
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
-
 show_progress "Making configuration script executable..."
 chmod +x "$TARGET_MOUNT/configure.sh"
-
 # Execute configuration in chroot
 show_progress "Configuring system in chroot..."
 chroot "$TARGET_MOUNT" /bin/bash /configure.sh
-
 show_progress "Removing configuration script..."
 rm "$TARGET_MOUNT/configure.sh"
-
 # Cleanup
 show_progress "Syncing data to disk..."
 sync
 sleep 2
-
 show_progress "Unmounting filesystems..."
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    swapoff "${TARGET_DISK}3" || true
+    swapoff "${TARGET_DISK}${PART_PREFIX}3" || true
 else
-    swapoff "${TARGET_DISK}2" || true
+    swapoff "${TARGET_DISK}${PART_PREFIX}2" || true
 fi
 umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
@@ -506,9 +739,54 @@ if [ "$SEPARATE_BOOT" = "1" ]; then
     umount -l "$TARGET_MOUNT/boot" 2>/dev/null || true
 fi
 umount -l "$TARGET_MOUNT" 2>/dev/null || true
-
+# Close LUKS devices if they exist
+if [ "$ENABLE_LUKS" = "1" ]; then
+    cryptsetup close cryptroot 2>/dev/null || true
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        cryptsetup close cryptboot 2>/dev/null || true
+    fi
+fi
+# Reset USB device to prevent host shutdown issues
+info "Resetting USB device to prevent host shutdown issues..."
+# Force sync multiple times for USB devices
+sync && sync && sync
+sleep 2
+# Get the USB device's sysfs path
+if [ -b "$TARGET_DISK" ]; then
+    # Find the USB device in sysfs
+    DISK_NAME=$(basename "$TARGET_DISK")
+    USB_PATH="/sys/block/${DISK_NAME}/device"
+    
+    if [ -d "$USB_PATH" ]; then
+        # Try to unbind and rebind the USB device
+        if [ -f "${USB_PATH}/../../authorized" ]; then
+            echo 0 > "${USB_PATH}/../../authorized" 2>/dev/null || true
+            sleep 1
+            echo 1 > "${USB_PATH}/../../authorized" 2>/dev/null || true
+        fi
+        
+        # Alternative: use the delete method if available
+        if [ -f "${USB_PATH}/../delete" ]; then
+            echo 1 > "${USB_PATH}/../delete" 2>/dev/null || true
+            sleep 1
+            # Trigger rescan
+            echo "- - -" > /sys/class/scsi_host/host*/scan 2>/dev/null || true
+        fi
+    fi
+fi
+# Force remove any remaining device mapper entries
+dmsetup remove_all --force 2>/dev/null || true
+# Force kernel to re-read partition table one more time
+partprobe "$TARGET_DISK" 2>/dev/null || true
+blockdev --flushbufs "$TARGET_DISK" 2>/dev/null || true
+# Final sync
+sync
+sleep 1
 echo ""
 reop "=== Klartix installation complete! ==="
 reop "You can now reboot into your new Artix Linux system."
 info "Init system: $INIT_SYSTEM"
 info "User: $TARGET_USER"
+if [ "$ENABLE_LUKS" = "1" ]; then
+    warn "LUKS encryption is enabled - you will be prompted for password at boot"
+fi

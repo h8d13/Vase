@@ -28,14 +28,13 @@ vm_ext="qcow2" #raw, bin
 
 
 ## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
-target_p="sdm"
+target_p="sdb"
 target_t="/dev/"
 target="${target_t}${target_p}"
 ## This can also be a mounted fs
 # Mount it first. 
 # Check lsblk output to find which partition it is. 
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
-
 
 ## QEMU Display Settings
 qemu_display="gtk"
