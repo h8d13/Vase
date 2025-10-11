@@ -18,7 +18,7 @@ pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plas
 #pacman -S kde-applications
 
 echo "=== Installing audio support ==="
-pacman -S --noconfirm --needed pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire-jack #wireplumber
 
 #echo "=== Installing Bluetooth support ==="
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil

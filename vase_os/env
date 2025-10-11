@@ -55,12 +55,7 @@ if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
             ;;
         artix)
             info "Detected: Artix Linux (${init_system})"
-            if [ "$init_system" != "unknown" ]; then
-                info "Artix init: ${init_system}"
-            else
-                warn "Could not detect init system on Artix"
-            fi
-            "./${zl_d}/setup_arch"
+            #"./${zl_d}/setup_arch" TODO: Check pkgs names for qemu/kvm
             ;;
         *)
             # Check if it's Arch-based via ID_LIKE
