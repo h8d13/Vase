@@ -1,4 +1,4 @@
-# SYMAN - Grome_lum
+# grome_lum
 
 - This section assumes some degree of familiarity on how to modify grub. And do be careful doing stuff like this as it can leave your system unbootable if used unproperly.
 

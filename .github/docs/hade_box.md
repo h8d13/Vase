@@ -1,4 +1,4 @@
-# Hade_box - KDE ARCH LINUX
+# hade_box
 
 ----
 

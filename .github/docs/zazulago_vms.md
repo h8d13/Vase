@@ -1,4 +1,4 @@
-# Zazulago VMs
+# zazulago_vms
 
 This module is dedicated to testing stuff quickly inside Virtual Machines.
 
