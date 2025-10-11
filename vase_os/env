@@ -46,30 +46,19 @@ info "Init System: ${init_system}"
 # To add support for other distros, extend the case statement below
 if [ "$os_type" = "Linux" ] && file_ex "/etc/os-release"; then
     distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
-    distro_like=$(grep "^ID_LIKE=" /etc/os-release | cut -d= -f2 | tr -d '"')
 
     case "$distro_id" in
         arch)
             info "Detected: Arch Linux"
-            "./${zl_d}/setup_arch"
+            "./${zl_d}/setup_vms"
             ;;
         artix)
             info "Detected: Artix Linux (${init_system})"
-            #"./${zl_d}/setup_arch" TODO: Check pkgs names for qemu/kvm
+            "./${zl_d}/setup_vms"
             ;;
         *)
-            # Check if it's Arch-based via ID_LIKE
-            case "$distro_like" in
-                *arch*|*artix*)
-                    info "Detected: Arch-based ($distro_id) with ${init_system}"
-                    "./${zl_d}/setup_arch"
-                    ;;
-                *)
-                    warn "Unsupported distribution: $distro_id"
-                    warn "Currently only Arch Linux and derivatives are supported"
-                    die "To add support for $distro_id, create a setup script at ${zl_d}/setup_${distro_id}"
-                    ;;
-            esac
+            warn "Unsupported distribution: $distro_id"
+            die "Only Arch and Artix Linux are officially supported currently."
             ;;
     esac
 else

@@ -22,7 +22,7 @@ Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 
 - Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
 
-- Inside `vase_os/zazulago_vms/setup_arch` for needed packages for QEMU/KVM.
+- Inside `vase_os/zazulago_vms/setup_vms` for needed packages for QEMU/KVM.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
