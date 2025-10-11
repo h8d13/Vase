@@ -139,7 +139,6 @@ Run in project root: `git submodule init && git submodule update`
 
 Or better yet, fork all the repos and send me patches.
 
-
 | Component | Desc | Docs |
 |:----------|:------------|:--------------|
 | **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
@@ -157,7 +156,9 @@ In project root, `...` file contains all configuration constants.
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
-#### Turning Konqi in Konqzilla.
+### Turning Konqi in Konqzilla.
+
+We believe builds should receive almost daily updates, proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way.
 
 Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
 
