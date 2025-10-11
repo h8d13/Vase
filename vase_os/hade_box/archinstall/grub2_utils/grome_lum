@@ -6,11 +6,20 @@ if [[ "$1" == "-h" ]]; then cat << EOF
 # -fc       - Find custom GRUB scripts
 # -fc 40    - View specific script content
 # -p        - Check os-prober status
+# -p -p     - Run os-prober scan 
 # -p -a     - Toggle os-prober state
 # -a        - Regenerate GRUB config
 EOF
     exit 0
-fi 
+fi
+
+# Check if commands requiring sudo are used without it
+if [[ "$1" == "-a" ]] || ([[ "$1" == "-p" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])); then
+    if [[ $EUID -ne 0 ]]; then
+        echo "Error: This command requires root privileges."
+        exit 1
+    fi
+fi
 
 # Define system/default GRUB vs what people usually edit
 default_stuff="^(00_header|10_linux|20_linux_xen|30_os-prober|30_uefi-firmware|41_custom|README)$"
@@ -36,15 +45,29 @@ if [[ "$1" == "-p" ]] || [[ "$1" == "--prober" ]]; then
         else
             echo "Status: NOT CONFIGURED"
         fi
-        echo "Toggle: Use -p -a to enable/disable"
+        echo "Hint to Toggle: Use -p -a to enable/disable"
+        echo "Hint to Probe: Use -p -p to scan for OSes (requires sudo)"
+
+        # Handle -p flag to just run os-prober
+        if [[ "$2" == "-p" ]] || [[ "$2" == "--probe" ]]; then
+            echo -e "\n=== Running OS Prober Scan ==="
+            os_found=$(os-prober 2>/dev/null)
+            if [[ -n "$os_found" ]]; then
+                echo "Found operating systems:"
+                echo "$os_found" | while read line; do
+                    device=$(echo $line | cut -d: -f1)
+                    os_name=$(echo $line | cut -d: -f2)
+                    os_type=$(echo $line | cut -d: -f3)
+                    echo "  - $os_name [$os_type] on $device"
+                done
+            else
+                echo "No other operating systems detected"
+            fi
+            exit 0
+        fi
 
         # Handle -a flag to toggle os-prober state
         if [[ "$2" == "-a" ]] || [[ "$2" == "--apply" ]]; then
-            if [[ $EUID -ne 0 ]]; then
-                echo -e "\nError: Apply requires root privileges. Run with sudo."
-                exit 1
-            fi
-
             echo -e "\n=== Toggling OS Prober Configuration ==="
 
             # Toggle os-prober state
@@ -182,11 +205,6 @@ elif [[ "$1" == "-fb" ]] || [[ "$1" == "--findboot" ]]; then
 
 elif [[ "$1" == "-a" ]] || [[ "$1" == "--apply" ]]; then
     # Standalone -a just regenerates GRUB config
-    if [[ $EUID -ne 0 ]]; then
-        echo "Error: Regenerating GRUB requires root privileges. Run with sudo."
-        exit 1
-    fi
-
     echo "=== Regenerating GRUB Configuration ==="
     grub-mkconfig -o /boot/grub/grub.cfg
     echo "GRUB configuration updated successfully"
