@@ -1,9 +1,10 @@
 # Project structure
 
-1. hade_box = Installer fork
-2. zazulago_vms = Testing suite
-3. kaes_arch = Post-install script
-4. pacto_pac = Pacman GUI
+1. hade_box = Installer fork for Arch
+2. grom_lun = Grub2 utils
+3. zazulago_vms = Testing suite
+4. kaes_arch = Post-install script
+5. pacto_pac = Pacman GUI
 
 Main program contains ISO building scripts and more ways to interact with all the project.
 
@@ -64,13 +65,3 @@ Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma ove
 - extra x11 legacy libs (optional)
 
 **PACKGS:** ~720 Base then ~750 with post install script essentials (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
-
-> Built this tool because I knew that maintaining Archinstall seems like hell (judging by issues reported) 
-> So I had to have a safe space to test AND change installer code OR create ISOs directly. 
-> This would let me expand on sections I thought were missing out on like grub configs, hardware specific stuff, snapshots, etc... 
-
-Another relevant example is setting latin keymaps for Grub in case of using password/rescue shell/editing launch lines. I've included this in [Grub2_Utils](https://github.com/h8d13/Vase/tree/master/vase_os/hade_box/archinstall/grub2_utils)
-
-#### Debug
-
-You can extract install logs using `curl -F'file=@/root/Vase/vase_os/hade_box/logs/install.log' https://0x0.st` adapt the path to be relative to where you are. This will return a logfile you can consult an another device if needed.
