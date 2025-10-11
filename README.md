@@ -155,7 +155,7 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ## Artix compat layer 🥶
 
-<a href="https://github.com/h8d13/Vase/.github/docs/klar_tix.md><img src="https://img.shields.io/badge/Artix_Linux-v6.16.10-blue" alt="Artix_Linux"></a>
+<a href="https://github.com/h8d13/Vase/.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.16.10-blue" alt="Artix_Linux"></a>
 
 Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
 > Made specially for my friend Klagan who likes runit and minimalist installs with little bandwidth <3
