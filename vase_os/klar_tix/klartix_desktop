@@ -19,6 +19,10 @@ pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plas
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire-jack #wireplumber
 
+ln -sf /etc/runit/sv/pipewire /run/runit/service/
+ln -sf /etc/runit/sv/pipewire-pulse /run/runit/service/
+ln -sf /etc/runit/sv/wireplumber /run/runit/service/
+
 #echo "=== Installing Bluetooth support ==="
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil
 # ln -sf /etc/runit/sv/bluetoothd /run/runit/service/
@@ -30,3 +34,4 @@ echo "=== Installation complete! ==="
 
 echo "=== Enabling services! ==="
 ln -sf /etc/runit/sv/sddm /run/runit/service/
+
