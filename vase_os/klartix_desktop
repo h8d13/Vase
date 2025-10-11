@@ -1,11 +1,13 @@
 #!/bin/bash
 set -e  # Exit on error
 
+#klagan_mode="-desktop" # saves 1gb by not downloading as many plasma stuff
+
 echo "=== Updating system ==="
 pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
-pacman -S --noconfirm --needed plasma wayland sddm plasma-nm
+pacman -S --noconfirm --needed plasma${klagan_mode} wayland sddm plasma-nm
 
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
