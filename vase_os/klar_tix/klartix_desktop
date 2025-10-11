@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e  # Exit on error
 
-############## DESKTOP THINGS
-
-# Exmaple of what i'd install on an Intel/Intel PC
+############## DESKTOP CFG
 #KLAGAN_MODE="-desktop" # saves 1gb by not downloading as many plasma stuff
+#plasma contains flatpak for example while plasma-desktop doesn't. so discover will be useless
 
 echo "=== Updating system ==="
 pacman -Syu --noconfirm
