@@ -2,7 +2,7 @@
 set -e  # Exit on error
 
 echo "=== Updating system ==="
-acman -Syu --noconfirm
+pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
 pacman -S --noconfirm --needed plasma plasma-wayland-session sddm networkmanager networkmanager-runit plasma-nm
