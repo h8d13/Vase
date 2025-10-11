@@ -173,6 +173,18 @@ fi
 if exec_args "UPDATE"; then
     check_updates && rcw true && exit
 fi
+if exec_args "GRUB"; then
+    grub_args="$(get_grub_cmd)"
+    # Extract first arg after -g flag
+    grub_flag=$(echo "$grub_args" | awk '{print $2}')
+    # Get remaining args
+    grub_rest=$(echo "$grub_args" | cut -d' ' -f3-)
+    if [ -z "$grub_flag" ]; then
+        "./${gl_d}/grome_lum" -h && rcw true && exit
+    else
+        "./${gl_d}/grome_lum" "$grub_flag" $grub_rest && rcw true && exit
+    fi
+fi
 if exec_args "BENCH"; then
     bench_type="$(get_bench_cmd)"
     case "$bench_type" in
