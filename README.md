@@ -149,9 +149,9 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
 
-### For the elitists and purists.
+## Artix compat layer
 
 Added a script to bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
-> Here `vase_os/klartix`
+> Here `vase_os/klartix` `vase_os/klartix.conf` and `vase_os/klartix_desktop`
 
 Made specially for my friend Klagan <3
