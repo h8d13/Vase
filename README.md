@@ -143,9 +143,10 @@ Or better yet, fork all the repos and send me patches.
 | Component | Desc | Docs |
 |:----------|:------------|:--------------|
 | **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](./vase_os/hade_box/README.md) |
+| **grome_lum** | Grub2 utils - setting keymaps, passwords, or custom entries | [README](./vase_os/grome_lum/README.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
-| **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
 | **zazulago_vms** | Testing suite - VM menu QEMU/KVM testing environment | [README](./vase_os/zazulago_vms/README.md) |
+| **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
 
 [QEMU Docs](https://www.qemu.org/documentation/)
 

@@ -10,8 +10,6 @@ Thanks to this blog post [FitzBlog](https://fitzcarraldoblog.wordpress.com/2019/
 
 Basically when running `grub-mklayout` to generate the layout file: get error: `ckbcomp` not found on arch. So you just need to make sure to have it from the AUR (hopefully becomes a core package). This is a large perl script that just maps/converts keys to a grub compatible format `.gkb` I've included it directly in the repo here as it's unlikely to change that much. 
 
-Then follow the steps from the guide on Fitz's blog or the script [here](https://github.com/h8d13/SYMAN-GRUB2/blob/master/grub_keymaps). 
-
 ```
 KB_LAYOUT="fr"
 KB_VARIANT="azerty"
@@ -30,8 +28,6 @@ This part does assume you have an install with existing `/usr/share/X11/xkb/symb
 Included a second script that can generate the hash append it to the same file we just modified.
 
 But this already covers a large vector that nobody can edit your launch lines (common exploit of adding rw and spawing a shell) or use the rescue shell without your user/pw.
-
-Script [here](https://github.com/h8d13/SYMAN-GRUB2/blob/master/grub_passw). 
 
 By default I've set that root + sudo user invoker can use the password you have set. 
 
@@ -87,5 +83,4 @@ Then `sudo grub-mkconfig -o /boot/grub/grub.cfg`
 
 ## Grub2 Rescue
 
-Basically let's say you `rm -rf /usr/bin` this provides a utility script to have a rescue env (copied from a USB to a physical partition) in your grub entries. To then mount and perform required maintenance. This is also useful for testing installations . Find script [here](https://github.com/h8d13/SYMAN-GRUB2/blob/master/grub_rescue). 
-
+Basically let's say you `rm -rf /usr/bin` this provides a utility script to have a rescue env (copied from a USB to a physical partition) in your grub entries. To then mount and perform required maintenance. This is also useful for testing installations . 
