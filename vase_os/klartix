@@ -74,14 +74,20 @@ cleanup_disk() {
     sleep 1
 }
 
-# Configuration variables
+# Configuration consts
 # Init system selection (openrc, runit, s6, dinit)
-INIT_SYSTEM="openrc"
-TARGET_DISK="/dev/sdm" # Pleqse chqnge me and will erase data.
+INIT_SYSTEM="runit"
+TARGET_FS="ext4" # Filesystem: ext4, btrfs, xfs, f2fs
+EFI_SIZE="1GiB" # Default
+SEPARATE_BOOT=1 # 0=no separate boot, 1=separate boot partition
+BOOT_SIZE="4GiB" # Only used if SEPARATE_BOOT=1
 SWAP_SIZE="4GiB"
 KB_LAYOUT="us"
 TARGET_TIMEZONE="Europe/Paris"
 TARGET_HOSTNAME="klartix"
+
+# Vars
+TARGET_DISK="" # Will be prompted
 TARGET_USER="" # Will be prompted
 USER_PASSWORD="" # Will be prompted
 ROOT_PASSWORD="" # Will be prompted
@@ -92,17 +98,65 @@ PKG_MAN_W="-S"
 ARG1="--noconfirm --needed"
 
 # Prerequisites (need wget to fetch artix-bootstrap)
+# Add filesystem tools based on selected filesystem
 PKGS="wget parted"
+case "$TARGET_FS" in
+    btrfs)
+        PKGS="$PKGS btrfs-progs"
+        ;;
+    xfs)
+        PKGS="$PKGS xfsprogs"
+        ;;
+    f2fs)
+        PKGS="$PKGS f2fs-tools"
+        ;;
+esac
 
 obanner "Klartix - Artix Linux Bootstrap Installer"
 nlp
 
-# Prompt for username and password
-read -p "Enter username for the new system: " TARGET_USER
-if [ -z "$TARGET_USER" ]; then
-    die "Username cannot be empty."
+# Show available disks first
+info "Current block devices:"
+lsblk
+nlp
+
+# Prompt for target disk
+read -p "Enter target disk (e.g., /dev/sda): " TARGET_DISK
+if [ -z "$TARGET_DISK" ]; then
+    die "Target disk cannot be empty."
 fi
 
+if [ ! -b "$TARGET_DISK" ]; then
+    die "Device $TARGET_DISK does not exist or is not a block device."
+fi
+
+nlp
+info "Partitioning layout:"
+echo "  Init system:  $INIT_SYSTEM"
+echo "  Filesystem:   $TARGET_FS"
+echo "  Target disk:  $TARGET_DISK"
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    echo "  Boot size:    $BOOT_SIZE (separate partition)"
+else
+    echo "  EFI size:     $EFI_SIZE"
+    echo "  Boot:         Combined with root"
+fi
+echo "  Swap size:    $SWAP_SIZE"
+nlp
+warn "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
+nlp
+
+read -p "Continue with this disk? [y/N]: " confirm
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    warn "Installation cancelled."
+    exit 0
+fi
+
+nlp
+cbanner "Klartix - Artix Linux Bootstrap Installer"
+nlp
+
+# Now prompt for passwords and user after disk confirmation
 read -sp "Enter password for root: " ROOT_PASSWORD
 echo ""
 read -sp "Confirm root password: " ROOT_PASSWORD_CONFIRM
@@ -114,6 +168,12 @@ fi
 
 if [ -z "$ROOT_PASSWORD" ]; then
     die "Root password cannot be empty."
+fi
+
+# Prompt for username and password
+read -p "Enter a username: " TARGET_USER
+if [ -z "$TARGET_USER" ]; then
+    die "Username cannot be empty."
 fi
 
 read -sp "Enter password for $TARGET_USER: " USER_PASSWORD
@@ -130,22 +190,14 @@ if [ -z "$USER_PASSWORD" ]; then
 fi
 
 nlp
-info "Current block devices:"
-lsblk
-nlp
-info "Configuration:"
-echo "  Init system:  $INIT_SYSTEM"
-echo "  Target disk:  $TARGET_DISK"
-echo "  Swap size:    $SWAP_SIZE"
+info "Final configuration:"
 echo "  Hostname:     $TARGET_HOSTNAME"
 echo "  User:         $TARGET_USER"
 echo "  Timezone:     $TARGET_TIMEZONE"
 nlp
-warn "WARNING: This will ERASE ALL DATA on $TARGET_DISK!"
-nlp
 cbanner "Klartix - Artix Linux Bootstrap Installer"
 
-read -p "Continue with installation? [y/N]: " confirm
+read -p "Begin installation? [y/N]: " confirm
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     warn "Installation cancelled."
     exit 0
@@ -169,13 +221,41 @@ mkdir -p "$TARGET_MOUNT"
 # Clean the disk before starting
 cleanup_disk
 
-# Partitioning with three partitions: EFI, swap, and root
+# Partitioning
 show_progress "Partitioning $TARGET_DISK..."
-parted -s -a optimal "$TARGET_DISK" -- mklabel gpt \
-    mkpart primary fat32 0% 512MiB \
-    set 1 esp on \
-    mkpart primary linux-swap 512MiB 4608MiB \
-    mkpart primary ext4 4608MiB 100%
+PARTED_OUTPUT=$(mktemp)
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    # Four partitions: EFI, Boot, Swap, Root
+    # Use cylinder alignment for optimal performance
+    parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
+        mkpart primary fat32 1MiB "$EFI_SIZE" \
+        set 1 esp on \
+        mkpart primary $TARGET_FS "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" \
+        mkpart primary linux-swap "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
+        mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
+else
+    # Three partitions: EFI, Swap, Root (boot inside root)
+    parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
+        mkpart primary fat32 1MiB "$EFI_SIZE" \
+        set 1 esp on \
+        mkpart primary linux-swap "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
+        mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
+fi
+
+# Check if kernel couldn't be informed about partition changes
+if grep -q "unable to inform the kernel" "$PARTED_OUTPUT"; then
+    rm -f "$PARTED_OUTPUT"
+    warn "Partitions are in use by the kernel!"
+    warn "This usually happens after a failed installation attempt."
+    echo ""
+    info "Please do ONE of the following:"
+    echo "  1. Unplug and replug the USB/disk"
+    echo "  2. Reboot the system"
+    echo "  3. Run: sudo partprobe $TARGET_DISK && sudo blockdev --rereadpt $TARGET_DISK"
+    echo ""
+    die "Cannot continue with stale partition table. Fix the issue above and try again."
+fi
+rm -f "$PARTED_OUTPUT"
 
 # Force kernel to re-read partition table
 show_progress "Updating kernel partition table..."
@@ -184,24 +264,84 @@ sleep 2
 
 # Format partitions
 show_progress "Formatting partitions..."
-if [ "$VERBOSE" = "1" ]; then
-    mkfs.fat -F32 "${TARGET_DISK}1"
-    mkswap "${TARGET_DISK}2"
-    swapon "${TARGET_DISK}2"
-    mkfs.ext4 -F "${TARGET_DISK}3"
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    # Four partitions: EFI(1), Boot(2), Swap(3), Root(4)
+    if [ "$VERBOSE" = "1" ]; then
+        mkfs.fat -F32 "${TARGET_DISK}1"
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F "${TARGET_DISK}2" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}2" ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}2" ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}2" ;;
+        esac
+        mkswap "${TARGET_DISK}3"
+        swapon "${TARGET_DISK}3"
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F "${TARGET_DISK}4" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}4" ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}4" ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}4" ;;
+        esac
+    else
+        mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F -q "${TARGET_DISK}2" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}2" > /dev/null 2>&1 ;;
+        esac
+        mkswap "${TARGET_DISK}3" > /dev/null 2>&1
+        swapon "${TARGET_DISK}3"
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F -q "${TARGET_DISK}4" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}4" > /dev/null 2>&1 ;;
+        esac
+    fi
 else
-    mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
-    mkswap "${TARGET_DISK}2" > /dev/null 2>&1
-    swapon "${TARGET_DISK}2"
-    mkfs.ext4 -F -q "${TARGET_DISK}3"
+    # Three partitions: EFI(1), Swap(2), Root(3)
+    if [ "$VERBOSE" = "1" ]; then
+        mkfs.fat -F32 "${TARGET_DISK}1"
+        mkswap "${TARGET_DISK}2"
+        swapon "${TARGET_DISK}2"
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F "${TARGET_DISK}3" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}3" ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}3" ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}3" ;;
+        esac
+    else
+        mkfs.fat -F32 "${TARGET_DISK}1" > /dev/null 2>&1
+        mkswap "${TARGET_DISK}2" > /dev/null 2>&1
+        swapon "${TARGET_DISK}2"
+        case "$TARGET_FS" in
+            ext4) mkfs.ext4 -F -q "${TARGET_DISK}3" ;;
+            btrfs) mkfs.btrfs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
+            xfs) mkfs.xfs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
+            f2fs) mkfs.f2fs -f "${TARGET_DISK}3" > /dev/null 2>&1 ;;
+        esac
+    fi
 fi
 
 # Mount filesystems
 show_progress "Mounting filesystems..."
-mount "${TARGET_DISK}3" "$TARGET_MOUNT"       # Mount root
-
-mkdir -p "$TARGET_MOUNT/boot/efi"
-mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"  # Mount EFI
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    # Mount root (partition 4)
+    mount "${TARGET_DISK}4" "$TARGET_MOUNT"
+    # Mount boot (partition 2)
+    mkdir -p "$TARGET_MOUNT/boot"
+    mount "${TARGET_DISK}2" "$TARGET_MOUNT/boot"
+    # Mount EFI (partition 1)
+    mkdir -p "$TARGET_MOUNT/boot/efi"
+    mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"
+else
+    # Mount root (partition 3)
+    mount "${TARGET_DISK}3" "$TARGET_MOUNT"
+    # Mount EFI (partition 1)
+    mkdir -p "$TARGET_MOUNT/boot/efi"
+    mount "${TARGET_DISK}1" "$TARGET_MOUNT/boot/efi"
+fi
 
 # Download and extract Artix bootstrap using official artix-bootstrap tool
 show_progress "Downloading Artix bootstrap tool..."
@@ -244,9 +384,18 @@ if command -v fstabgen >/dev/null 2>&1; then
 else
     # Fallback: manual fstab generation
     echo "# Generated fstab" > "$TARGET_MOUNT/etc/fstab"
-    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) / ext4 defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-    echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        # Four partitions layout
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}4) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+    else
+        # Three partitions layout
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
+    fi
 fi
 
 # Create configuration script for chroot
@@ -343,12 +492,19 @@ sync
 sleep 2
 
 show_progress "Unmounting filesystems..."
-swapoff "${TARGET_DISK}2" || true
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    swapoff "${TARGET_DISK}3" || true
+else
+    swapoff "${TARGET_DISK}2" || true
+fi
 umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/proc" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/sys" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/boot/efi" 2>/dev/null || true
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    umount -l "$TARGET_MOUNT/boot" 2>/dev/null || true
+fi
 umount -l "$TARGET_MOUNT" 2>/dev/null || true
 
 echo ""
