@@ -114,6 +114,8 @@ See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 --isomod                # Create iso default `iso_profiles/fat.conf`
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>     # Complete workflow
+--dev                   # Development mode flag entry script
+--grub <args>           # GRUB utilities -h for help
 ```
 
 ## Components
