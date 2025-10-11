@@ -68,7 +68,9 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 > Follow the prompts here: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
-Go grab some coffee during installation (it'll be done when you come back).
+Go grab some coffee during installation (it'll be done when you come back). 
+
+CURRENT BEST TIME: **1m54s**
 
 After initial install pick `Reboot` and switch to hard disk.
 
@@ -152,6 +154,7 @@ Making it all open so people can edit anything they desire from the flow, while 
 ## Artix compat layer
 
 Added a script to bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
+
 > Here `vase_os/klartix` `vase_os/klartix.conf` and `vase_os/klartix_desktop`
 
-Made specially for my friend Klagan <3
+Made specially for my friend Klagan who likes runit and minimalist installs <3
