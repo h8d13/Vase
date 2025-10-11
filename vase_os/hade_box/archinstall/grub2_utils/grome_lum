@@ -1,0 +1,232 @@
+#!/bin/bash
+
+if [[ "$1" == "-h" ]] cat << EOF
+# -l        - List all GRUB menu entries
+# -fb       - Find boot partition info
+# -fc       - Find custom GRUB scripts
+# -fc 40    - View specific script content (with password hiding)
+# -p        - Check os-prober status
+# -p -a     - Toggle os-prober state
+# -a        - Regenerate GRUB config
+EOF
+
+# Define system/default GRUB vs what people usually edit
+default_stuff="^(00_header|10_linux|20_linux_xen|30_os-prober|30_uefi-firmware|41_custom|README)$"
+
+if [[ "$1" == "-p" ]] || [[ "$1" == "--prober" ]]; then
+    echo "=== OS Prober Status ==="
+    if ! command -v os-prober &>/dev/null; then
+        echo "os-prober not installed"
+        echo "Install with: sudo pacman -S os-prober"
+    else
+        echo "os-prober installed: $(which os-prober)"
+
+        # Check if enabled in GRUB config
+        prober_line=$(grep "GRUB_DISABLE_OS_PROBER=" /etc/default/grub)
+        if [[ "$prober_line" == "#"* ]]; then
+            echo "Status: DISABLED (line commented)"
+            echo "Current: $prober_line"
+        elif [[ "$prober_line" == *"=true" ]]; then
+            echo "Status: DISABLED (set to true)"
+            echo "Current: $prober_line"
+        elif [[ "$prober_line" == *"=false" ]]; then
+            echo "Status: ENABLED"
+        else
+            echo "Status: NOT CONFIGURED"
+        fi
+        echo "Toggle: Use -p -a to enable/disable"
+
+        # Handle -a flag to toggle os-prober state
+        if [[ "$2" == "-a" ]] || [[ "$2" == "--apply" ]]; then
+            if [[ $EUID -ne 0 ]]; then
+                echo -e "\nError: Apply requires root privileges. Run with sudo."
+                exit 1
+            fi
+
+            echo -e "\n=== Toggling OS Prober Configuration ==="
+
+            # Toggle os-prober state
+            if [[ "$prober_line" == "#"* ]] || [[ "$prober_line" == *"=true" ]] || [[ -z "$prober_line" ]]; then
+                # Currently disabled - enable it
+                if [[ "$prober_line" == "#"* ]]; then
+                    sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+                    echo "Enabled: Uncommented GRUB_DISABLE_OS_PROBER=false"
+                elif [[ "$prober_line" == *"=true" ]]; then
+                    sed -i 's/GRUB_DISABLE_OS_PROBER=true/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+                    echo "Enabled: Changed GRUB_DISABLE_OS_PROBER to false"
+                else
+                    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+                    echo "Enabled: Added GRUB_DISABLE_OS_PROBER=false to config"
+                fi
+            elif [[ "$prober_line" == *"=false" ]]; then
+                # Currently enabled - disable it
+                sed -i 's/GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=true/' /etc/default/grub
+                echo "Disabled: Changed GRUB_DISABLE_OS_PROBER to true"
+            fi
+
+            # Regenerate GRUB config
+            echo -e "\nRegenerating GRUB configuration..."
+            grub-mkconfig -o /boot/grub/grub.cfg
+            echo "GRUB configuration updated successfully"
+            exit 0
+        fi
+
+        # Try running os-prober to see what it finds
+        echo -e "\n=== Detected Operating Systems ==="
+        if [[ $EUID -eq 0 ]]; then
+            os_found=$(os-prober 2>/dev/null)
+            if [[ -n "$os_found" ]]; then
+                echo "$os_found" | while read line; do
+                    device=$(echo $line | cut -d: -f1)
+                    os_name=$(echo $line | cut -d: -f2)
+                    echo "  - $os_name (on $device)"
+                done
+            else
+                echo "  No other operating systems detected"
+            fi
+        else
+            echo "  Run with sudo to scan for other operating systems"
+        fi
+    fi
+    exit 0
+fi
+
+# List all GRUB menu entries
+if [[ "$1" == "-l" ]] || [[ "$1" == "--list" ]]; then
+    echo "=== GRUB Menu Entries ==="
+    # Extract all menuentry and submenu lines with proper formatting
+    # Handle both single and double quoted entries
+    grep -E "^(menuentry |submenu )" /boot/grub/grub.cfg | \
+    sed -e "s/^menuentry ['\"]\\([^'\"]*\\).*/• \\1/" \
+        -e "s/^submenu ['\"]\\([^'\"]*\\).*/▸ \\1 (submenu)/"
+
+elif [[ "$1" == "-fb" ]] || [[ "$1" == "--findboot" ]]; then
+    echo "=== Boot Partition Information ==="
+    # Find /boot mount point from lsblk
+    boot_info=$(lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,UUID -r | grep "/boot$")
+
+    if [[ -n "$boot_info" ]]; then
+        # Parse the boot partition info
+        IFS=' ' read -r name size fstype mountpoint uuid <<< "$boot_info"
+        echo "Boot partition: /dev/$name"
+        echo "Size: $size"
+        echo "Filesystem: $fstype"
+        echo "Mounted at: $mountpoint"
+        echo "UUID: $uuid"
+
+        # Show disk usage
+        echo -e "\nDisk usage:"
+        df -h /boot | tail -1 | awk '{printf "  Used: %s / %s (%s)\n", $3, $2, $5}'
+
+        # Count kernels
+        kernel_count=$(ls /boot/vmlinuz-* 2>/dev/null | wc -l)
+        echo -e "\nKernels installed: $kernel_count"
+        if [[ $kernel_count -gt 0 ]]; then
+            echo "Kernels:"
+            ls /boot/vmlinuz-* 2>/dev/null | sed 's/.*vmlinuz-/  • /'
+        fi
+    else
+        echo "No separate /boot partition found"
+        echo "Boot files on root partition"
+
+        # Get root partition info
+        root_info=$(lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,UUID -r | grep " /$")
+        if [[ -n "$root_info" ]]; then
+            IFS=' ' read -r name size fstype mountpoint uuid <<< "$root_info"
+            echo -e "\nRoot partition: /dev/$name"
+            echo "Size: $size"
+            echo "Filesystem: $fstype"
+            echo "UUID: $uuid"
+        fi
+
+        # Check if /boot exists on root
+        if [[ -d /boot ]]; then
+            echo -e "\n/boot directory info:"
+            boot_size=$(du -sh /boot 2>/dev/null | cut -f1)
+            echo "  Size of /boot: $boot_size"
+
+            # Show space usage
+            df -h / | tail -1 | awk '{printf "  Partition usage: %s / %s (%s free: %s)\n", $3, $2, $5, $4}'
+
+            # Count kernels
+            kernel_count=$(ls /boot/vmlinuz-* 2>/dev/null | wc -l)
+            initrd_count=$(ls /boot/initramfs-*.img 2>/dev/null | wc -l)
+
+            echo -e "\nBoot contents:"
+            echo "  Kernels: $kernel_count"
+            if [[ $kernel_count -gt 0 ]]; then
+                ls /boot/vmlinuz-* 2>/dev/null | sed 's/.*vmlinuz-/    • /'
+            fi
+
+            echo "  Initramfs images: $initrd_count"
+            if [[ $initrd_count -gt 0 ]]; then
+                ls /boot/initramfs-*.img 2>/dev/null | sed 's/.*initramfs-/    • /' | sed 's/\.img$//'
+            fi
+
+            # Check for GRUB
+            if [[ -d /boot/grub ]]; then
+                grub_size=$(du -sh /boot/grub 2>/dev/null | cut -f1)
+                echo -e "\n  GRUB directory: $grub_size"
+            fi
+
+            # Check for EFI
+            if [[ -d /boot/EFI ]] || [[ -d /boot/efi ]]; then
+                efi_dir=$(ls -d /boot/[Ee][Ff][Ii] 2>/dev/null | head -1)
+                efi_size=$(du -sh $efi_dir 2>/dev/null | cut -f1)
+                echo "  EFI directory: $efi_size"
+            fi
+        fi
+    fi
+
+elif [[ "$1" == "-a" ]] || [[ "$1" == "--apply" ]]; then
+    # Standalone -a just regenerates GRUB config
+    if [[ $EUID -ne 0 ]]; then
+        echo "Error: Regenerating GRUB requires root privileges. Run with sudo."
+        exit 1
+    fi
+
+    echo "=== Regenerating GRUB Configuration ==="
+    grub-mkconfig -o /boot/grub/grub.cfg
+    echo "GRUB configuration updated successfully"
+    exit 0
+
+elif [[ "$1" == "-fc" ]] || [[ "$1" == "--findcustom" ]]; then
+    if [[ -n "$2" ]]; then
+        # View specific custom script
+        script_name="$2"
+        # Add wildcards if just a number is provided
+        if [[ "$script_name" =~ ^[0-9]+$ ]]; then
+            script_name="${script_name}_*"
+        fi
+
+        # Find and display the script
+        for file in /etc/grub.d/$script_name*; do
+            if [[ -f "$file" ]]; then
+                echo "=== Content of $(basename $file) ==="
+                # Stop at password line to avoid exposing sensitive data
+                sed '/^password_pbkdf2/,$d' "$file"
+                # Check if password was truncated
+                if grep -q "^password_pbkdf2" "$file"; then
+                    echo -e "\n[... password section hidden for security ...]"
+                fi
+                break
+            fi
+        done
+    else
+        echo "=== Custom GRUB Scripts & Entries ==="
+        echo "Custom/non-standard scripts in /etc/grub.d/:"
+        # List non-standard executable scripts (exclude default ones, but keep 40_custom since users edit it)
+        for file in /etc/grub.d/*; do
+            if [[ -x "$file" ]] && [[ ! "$(basename $file)" =~ $system_stuff ]]; then
+                echo "  • $(basename $file)"
+                # Try to extract menuentry names from the script
+                grep -h "menuentry\|echo.*menuentry" "$file" 2>/dev/null | \
+                grep -oE "(menuentry ['\"][^'\"]+|echo.*['\"]menuentry [^'\"]+)" | \
+                sed "s/.*menuentry ['\"]\\([^'\"]*\\).*/      - \\1/" | head -5
+            fi
+        done
+    fi
+else
+    # Default: show raw grep output
+    grep -E "^menuentry|^submenu" /boot/grub/grub.cfg
+fi
