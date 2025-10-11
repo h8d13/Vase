@@ -176,11 +176,11 @@ show_menu() {
     echo " std     : Run (standard VGA)"
     echo " cupkd   : Boot w ${target}"
     echo " cupk    : Run w ${target}"
+    echo " conkd   : Boot w ${target} and disk"
+    echo " conk    : Run w ${target} and disk"
     echo " taild   : Headless w logs"
     echo " bootk   : Boot headless w/ logs"
     echo " macg    : Generate MAC + run"
-    echo " conkd   : Boot w ${target} and disk"
-    echo " conk    : Run w ${target} and disk"
     echo " exit    : Exit"
     echo "########################################"
 }

@@ -28,7 +28,7 @@ vm_ext="qcow2" #raw, bin
 
 
 ## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
-target_p="sdb"
+target_p="sdf"
 target_t="/dev/"
 target="${target_t}${target_p}"
 ## This can also be a mounted fs
