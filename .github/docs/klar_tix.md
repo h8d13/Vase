@@ -29,30 +29,7 @@ sudo vase_os/klar_tix/klartix_desktop
 
 ## Configuration
 
-**`klartix.conf` essentials:**
-Please edit this. 
-
-## Desktop Installation
-
-**`klartix_desktop` options:**
-
-```bash
-# Minimal Plasma (saves ~1GB)
-KLAGAN_MODE="-desktop"
-
-# Full Plasma (default)
-#KLAGAN_MODE=""
-
-# Optional additions (uncomment in script)
-# konsole ark dolphin        # Individual apps
-# kde-applications           # Full KDE suite (Much heavier)
-```
-
-**What gets installed:**
-- Plasma desktop (minimal or full via `KLAGAN_MODE`)
-- Wayland + SDDM (runit service)
-- Pipewire audio stack
-- NetworkManager applet
+Please edit this: `klartix.conf` is essential
 
 ## Encryption Options
 
@@ -64,24 +41,39 @@ KLAGAN_MODE="-desktop"
 
 **⚠️ LUKS passwords:** GRUB uses US keyboard layout at boot. See `vase_os/grome_lum/grub_keymaps` Avoid special characters.
 
+Also make sure to check which drive you are overwriting.
+
+## Desktop Installation
+
+**`klartix_desktop` options:**
+
+```bash
+# Minimal Plasma (saves ~1GB)
+KLAGAN_MODE="-desktop"
+
+# Full Plasma (default about 2,5gb)
+#KLAGAN_MODE=""
+
+# Optional additions (uncomment in script)
+# konsole ark dolphin        # Individual apps
+# kde-applications           # Full KDE suite (Much heavier)
+```
+
+**What gets installed:**
+- Plasma desktop (minimal or full)
+- Wayland + SDDM (runit service)
+- Pipewire audio stack
+- NetworkManager applet
+
 ## Hardware Example (Intel GPU)
 
 ```bash
 # Enable lib32 in /etc/pacman.conf
 sudo vim /etc/pacman.conf  # Uncomment [lib32]
 
-# Install drivers
+# Install drivers example Intel/Intel
 sudo pacman -S lib32-mesa lib32-libgl vulkan-intel lib32-vulkan-intel intel-media-driver
 ```
-
-## Init System Support
-
-Services auto-configured per init system:
-
-- **runit:** `ln -sf /etc/runit/sv/sddm /run/runit/service/`
-- **OpenRC:** `rc-update add NetworkManager default`
-- **s6:** `s6-rc-bundle-update add default NetworkManager`
-- **dinit:** `dinitctl enable NetworkManager`
 
 ## VaseOS Compatibility
 
