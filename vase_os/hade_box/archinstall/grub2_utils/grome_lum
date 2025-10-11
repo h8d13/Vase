@@ -14,7 +14,7 @@ EOF
 fi
 
 # Check if commands requiring sudo are used without it
-if [[ "$1" == "-a" ]] || ([[ "$1" == "-p" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])); then
+if [[ "$1" == "-a" ]] || ([[ "$1" == "-p" ]] && [[ -n "$2" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])); then
     if [[ $EUID -ne 0 ]]; then
         echo "Error: This command requires root privileges."
         exit 1
@@ -94,23 +94,6 @@ if [[ "$1" == "-p" ]] || [[ "$1" == "--prober" ]]; then
             grub-mkconfig -o /boot/grub/grub.cfg
             echo "GRUB configuration updated successfully"
             exit 0
-        fi
-
-        # Try running os-prober to see what it finds
-        echo -e "\n=== Detected Operating Systems ==="
-        if [[ $EUID -eq 0 ]]; then
-            os_found=$(os-prober 2>/dev/null)
-            if [[ -n "$os_found" ]]; then
-                echo "$os_found" | while read line; do
-                    device=$(echo $line | cut -d: -f1)
-                    os_name=$(echo $line | cut -d: -f2)
-                    echo "  - $os_name (on $device)"
-                done
-            else
-                echo "  No other operating systems detected"
-            fi
-        else
-            echo "  Run with sudo to scan for other operating systems"
         fi
     fi
     exit 0
