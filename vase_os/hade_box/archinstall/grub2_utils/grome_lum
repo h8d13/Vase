@@ -9,6 +9,8 @@ if [[ "$1" == "-h" ]]; then cat << EOF
 # -p -a     - Toggle os-prober state
 # -a        - Regenerate GRUB config
 EOF
+    exit 0
+fi 
 
 # Define system/default GRUB vs what people usually edit
 default_stuff="^(00_header|10_linux|20_linux_xen|30_os-prober|30_uefi-firmware|41_custom|README)$"
