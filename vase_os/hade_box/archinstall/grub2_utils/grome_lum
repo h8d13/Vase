@@ -1,24 +1,20 @@
 #!/bin/bash
 
+. "$(dirname "$0")/grub_toggle"
+
 if [[ "$1" == "-h" ]]; then cat << EOF
 # -l        - List all GRUB menu entries
 # -fb       - Find boot partition info
 # -fc       - Find custom GRUB scripts
 # -fc 40    - View specific script content
 # -p        - Check os-prober status
-# -p -p     - Run os-prober scan 
+# -p -p     - Run os-prober scan
 # -p -a     - Toggle os-prober state
+# -s        - Toggle submenu display
+# -r        - Toggle remember last selection
 # -a        - Regenerate GRUB config
 EOF
     exit 0
-fi
-
-# Check if commands requiring sudo are used without it
-if [[ "$1" == "-a" ]] || ([[ "$1" == "-p" ]] && [[ -n "$2" ]] && ([[ "$2" == "-a" ]] || [[ "$2" == "-p" ]])); then
-    if [[ $EUID -ne 0 ]]; then
-        echo "Error: This command requires root privileges."
-        exit 1
-    fi
 fi
 
 # Define system/default GRUB vs what people usually edit
@@ -68,45 +64,97 @@ if [[ "$1" == "-p" ]] || [[ "$1" == "--prober" ]]; then
 
         # Handle -a flag to toggle os-prober state
         if [[ "$2" == "-a" ]] || [[ "$2" == "--apply" ]]; then
-            echo -e "\n=== Toggling OS Prober Configuration ==="
-
-            # Toggle os-prober state
-            if [[ "$prober_line" == "#"* ]] || [[ "$prober_line" == *"=true" ]] || [[ -z "$prober_line" ]]; then
-                # Currently disabled - enable it
-                if [[ "$prober_line" == "#"* ]]; then
-                    sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-                    echo "Enabled: Uncommented GRUB_DISABLE_OS_PROBER=false"
-                elif [[ "$prober_line" == *"=true" ]]; then
-                    sed -i 's/GRUB_DISABLE_OS_PROBER=true/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-                    echo "Enabled: Changed GRUB_DISABLE_OS_PROBER to false"
-                else
-                    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
-                    echo "Enabled: Added GRUB_DISABLE_OS_PROBER=false to config"
-                fi
-            elif [[ "$prober_line" == *"=false" ]]; then
-                # Currently enabled - disable it
-                sed -i 's/GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=true/' /etc/default/grub
-                echo "Disabled: Changed GRUB_DISABLE_OS_PROBER to true"
-            fi
-
-            # Regenerate GRUB config
-            echo -e "\nRegenerating GRUB configuration..."
-            grub-mkconfig -o /boot/grub/grub.cfg
-            echo "GRUB configuration updated successfully"
+            grub_toggle "GRUB_DISABLE_OS_PROBER" "false" "true" "Toggling OS Prober Configuration"
             exit 0
         fi
     fi
     exit 0
 fi
 
+# Toggle submenu display
+if [[ "$1" == "-s" ]] || [[ "$1" == "--submenu" ]]; then
+    grub_toggle "GRUB_DISABLE_SUBMENU" "y" "" "GRUB Submenu Configuration"
+    exit 0
+fi
+
+# Toggle remember last selection
+if [[ "$1" == "-r" ]] || [[ "$1" == "--remember" ]]; then
+    echo "=== GRUB Remember Last Selection ==="
+
+    # Check if both settings are enabled
+    default_line=$(grep "^GRUB_DEFAULT=" /etc/default/grub)
+    savedefault_line=$(grep "^GRUB_SAVEDEFAULT=" /etc/default/grub)
+
+    if [[ "$default_line" == "GRUB_DEFAULT=saved" ]] && [[ "$savedefault_line" == "GRUB_SAVEDEFAULT=true" ]]; then
+        # Currently enabled - disable both
+        echo "Current status: ENABLED (remembers last selection)"
+        grub_toggle "GRUB_DEFAULT" "0" "" ""
+        grub_toggle "GRUB_SAVEDEFAULT" "false" "" ""
+        echo "Remember last selection DISABLED"
+    else
+        # Currently disabled - enable both
+        echo "Current status: DISABLED (always boots first entry)"
+        grub_toggle "GRUB_DEFAULT" "saved" "" ""
+        grub_toggle "GRUB_SAVEDEFAULT" "true" "" ""
+        echo "Remember last selection ENABLED"
+    fi
+
+    exit 0
+fi
+
 # List all GRUB menu entries
 if [[ "$1" == "-l" ]] || [[ "$1" == "--list" ]]; then
     echo "=== GRUB Menu Entries ==="
-    # Extract all menuentry and submenu lines with proper formatting
-    # Handle both single and double quoted entries
-    grep -E "^(menuentry |submenu )" /boot/grub/grub.cfg | \
-    sed -e "s/^menuentry ['\"]\\([^'\"]*\\).*/• \\1/" \
-        -e "s/^submenu ['\"]\\([^'\"]*\\).*/▸ \\1 (submenu)/"
+
+    # Check submenu setting
+    submenu_line=$(grep "GRUB_DISABLE_SUBMENU=" /etc/default/grub)
+    submenu_disabled=false
+
+    # Check if line is commented out (submenus enabled by default)
+    if [[ "$submenu_line" == "#"* ]] || [[ -z "$submenu_line" ]]; then
+        submenu_disabled=false
+        echo "(Submenus enabled - showing hierarchical structure)"
+    elif [[ "$submenu_line" == *"=y"* ]] || [[ "$submenu_line" == *"=true"* ]]; then
+        submenu_disabled=true
+        echo "(Submenus disabled - showing flat list)"
+    else
+        submenu_disabled=false
+        echo "(Submenus enabled - showing hierarchical structure)"
+    fi
+    echo
+
+    if [[ "$submenu_disabled" == "true" ]]; then
+        # Flat list - show all menuentry items directly as GRUB displays them
+        grep -E "menuentry " /boot/grub/grub.cfg | \
+        sed -e "s/.*menuentry ['\"]\\([^'\"]*\\).*/• \\1/"
+    else
+        # Hierarchical - show submenus and indent their contents with logical grouping
+        grep -E "menuentry " /boot/grub/grub.cfg | \
+        sed -e "s/.*menuentry ['\"]\\([^'\"]*\\).*/\\1/" | \
+        awk '
+        {
+            # Extract OS name and check if it is a fallback/advanced entry
+            if ($0 ~ /fallback|advanced/) {
+                # This is a sub-entry, indent it
+                print "    • " $0
+            } else {
+                # Check if this is a duplicate main entry (like "Artix Linux (on /dev/sda3)")
+                base_name = $0
+                gsub(/\(on \/dev\/[^)]+\)/, "", base_name)  # Remove (on /dev/xxx) part
+                gsub(/,.*/, "", base_name)  # Remove everything after comma
+                gsub(/^ +| +$/, "", base_name)  # Trim spaces
+
+                if (base_name in seen_base) {
+                    # This is a duplicate base entry, treat as sub-entry
+                    print "    • " $0
+                } else {
+                    # This is a new main entry
+                    seen_base[base_name] = 1
+                    print "• " $0
+                }
+            }
+        }'
+    fi
 
 elif [[ "$1" == "-fb" ]] || [[ "$1" == "--findboot" ]]; then
     echo "=== Boot Partition Information ==="
