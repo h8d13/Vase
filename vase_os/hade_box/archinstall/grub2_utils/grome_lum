@@ -4,7 +4,7 @@ if [[ "$1" == "-h" ]]; then cat << EOF
 # -l        - List all GRUB menu entries
 # -fb       - Find boot partition info
 # -fc       - Find custom GRUB scripts
-# -fc 40    - View specific script content (with password hiding)
+# -fc 40    - View specific script content
 # -p        - Check os-prober status
 # -p -a     - Toggle os-prober state
 # -a        - Regenerate GRUB config
