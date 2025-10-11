@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$1" == "-h" ]] cat << EOF
+if [[ "$1" == "-h" ]]; then cat << EOF
 # -l        - List all GRUB menu entries
 # -fb       - Find boot partition info
 # -fc       - Find custom GRUB scripts
