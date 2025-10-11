@@ -95,19 +95,11 @@ If this helped you earn you some time to touch grass (or you even just learned t
 `$ ./main -t (*args)` : Launch TUI forked KDE install
 > This will check system subdeps for Arch to Arch installs.
 
-[![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
-
-See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
-
-> Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
-> Mostly tooling for devs... More readmes included. 
-
 **Long form commands:**
 
 ```
 --reset                 # Resets logs
 --update                # Checks git for updates
---tuimenu               # Launch modified TUI
 --start                 # Start VM menu
 --quick <command>       # Launch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
@@ -117,6 +109,13 @@ See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 --dev                   # Development mode flag entry script
 --grub <args>           # GRUB utilities -h for help
 ```
+
+[![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
+
+See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
+
+> Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
+> Mostly tooling for devs... More readmes included. 
 
 ## Components
 
@@ -157,8 +156,9 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Artix_Linux-v6.16.10-blue" alt="Artix_Linux"></a>
 
-Added a script to bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
+Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. 
 
 > Here `vase_os/klartix` `vase_os/klartix.conf` and `vase_os/klartix_desktop`
+> Skips TUI but compatible with pacman GUI, and post-install  script
 
 Made specially for my friend Klagan who likes runit and minimalist installs <3
