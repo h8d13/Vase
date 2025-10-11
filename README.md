@@ -57,11 +57,11 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 ### From USB/ISO
 
-> By default you are already root in the ISO env. 
+> By default you are already root in the ISO env. And in our builds git is already included. 
 
-`$ pacman-key --init && pacman -Sy git`
+`$ pacman-key --init  # && pacman -Sy git`
 
-`$ git clone https://github.com/h8d13/Vase.git && cd Vase`
+`$ git clone https://github.com/h8d13/Vase && cd Vase`
 
 `$ ./main -t` : Launch TUI forked KDE install
 
