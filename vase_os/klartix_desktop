@@ -5,7 +5,7 @@ echo "=== Updating system ==="
 pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
-pacman -S --noconfirm --needed plasma plasma-wayland-session sddm networkmanager networkmanager-runit plasma-nm
+pacman -S --noconfirm --needed plasma wayland sddm plasma-nm
 
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
