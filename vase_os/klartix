@@ -82,8 +82,9 @@ SWAP_SIZE="4GiB"
 KB_LAYOUT="us"
 TARGET_TIMEZONE="Europe/Paris"
 TARGET_HOSTNAME="klartix"
-TARGET_USER="klagan"
-ROOT_PASSWORD="Everest" # Please change me
+TARGET_USER="" # Will be prompted
+USER_PASSWORD="" # Will be prompted
+ROOT_PASSWORD="" # Will be prompted
 
 # Host package manager for prerequisites
 PKG_MAN="pacman"
@@ -94,6 +95,40 @@ ARG1="--noconfirm --needed"
 PKGS="wget parted"
 
 obanner "Klartix - Artix Linux Bootstrap Installer"
+nlp
+
+# Prompt for username and password
+read -p "Enter username for the new system: " TARGET_USER
+if [ -z "$TARGET_USER" ]; then
+    die "Username cannot be empty."
+fi
+
+read -sp "Enter password for root: " ROOT_PASSWORD
+echo ""
+read -sp "Confirm root password: " ROOT_PASSWORD_CONFIRM
+echo ""
+
+if [ "$ROOT_PASSWORD" != "$ROOT_PASSWORD_CONFIRM" ]; then
+    die "Root passwords do not match."
+fi
+
+if [ -z "$ROOT_PASSWORD" ]; then
+    die "Root password cannot be empty."
+fi
+
+read -sp "Enter password for $TARGET_USER: " USER_PASSWORD
+echo ""
+read -sp "Confirm user password: " USER_PASSWORD_CONFIRM
+echo ""
+
+if [ "$USER_PASSWORD" != "$USER_PASSWORD_CONFIRM" ]; then
+    die "User passwords do not match."
+fi
+
+if [ -z "$USER_PASSWORD" ]; then
+    die "User password cannot be empty."
+fi
+
 nlp
 info "Current block devices:"
 lsblk
@@ -261,7 +296,7 @@ pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo
 
 # Create user
 useradd -m -s /bin/bash -G wheel $TARGET_USER
-echo "$TARGET_USER:$ROOT_PASSWORD" | chpasswd
+echo "$TARGET_USER:$USER_PASSWORD" | chpasswd
 
 # Enable sudo for wheel group
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
