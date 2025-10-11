@@ -1,13 +1,19 @@
 #!/bin/bash
 set -e  # Exit on error
 
-#klagan_mode="-desktop" # saves 1gb by not downloading as many plasma stuff
+############## DESKTOP THINGS
+
+# Exmaple of what i'd install on an Intel/Intel PC
+#KLAGAN_MODE="-desktop" # saves 1gb by not downloading as many plasma stuff
 
 echo "=== Updating system ==="
 pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
-pacman -S --noconfirm --needed plasma${klagan_mode} wayland sddm plasma-nm
+pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plasma-nm
+
+# nice to haves
+#pacman -S --noconfirm --needed konsole ark dolphin
 
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
@@ -16,10 +22,11 @@ pacman -S --noconfirm --needed pipewire pipewire-alsa pipewire-pulse pipewire-ja
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil
 # ln -sf /etc/runit/sv/bluetoothd /run/runit/service/
 
+# hardware
+# pacman -S ${HW_GROUP_INTELINTEL}
+
 echo "=== Installation complete! ==="
 
 echo "=== Enabling services! ==="
 ln -sf /etc/runit/sv/sddm /run/runit/service/
-ln -sf /etc/runit/sv/networkmanager /run/runit/service/
-
 
