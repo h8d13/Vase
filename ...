@@ -75,6 +75,7 @@ cli_a="cli_art"
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazulago_vms"
+gl_d="$vase_d/grome_lum"
 vase_p_env="$vase_d/env"
 
 

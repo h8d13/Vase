@@ -59,6 +59,13 @@ parse_args() {
                 DEV=1
                 shift
                 ;;
+            -g|--grub)
+                GRUB=1
+                # Capture all remaining args for grome_lum
+                GRUB_CMD="$*"
+                shift
+                break
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -78,6 +85,7 @@ exec_args() {
         FLASH) [ "${FLASH}" = "1" ] ;;
         WORKFLOW) [ "${WORKFLOW}" = "1" ] ;;
         DEV) [ "${DEV}" = "1" ] ;;
+        GRUB) [ "${GRUB}" = "1" ] ;;
         *) return 1 ;;
     esac
 }
@@ -95,6 +103,9 @@ get_flash_device() {
 }
 get_workflow_device() {
     echo "${WORKFLOW_DEVICE}"
+}
+get_grub_cmd() {
+    echo "${GRUB_CMD}"
 }
 preop() {
     echo "[+] $1"
