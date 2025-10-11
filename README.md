@@ -52,6 +52,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
+---
 
 ## Installation/Usage
 
@@ -92,24 +93,6 @@ If this helped you earn you some time to touch grass (or you even just learned t
 `$ ./main -t (*args)` : Launch TUI forked KDE install
 > This will check system subdeps for Arch to Arch installs.
 
-`$ ./main`              : Check envir deps for QEMU/KVM
-
-`$ ./main -s`           : Start VMs testing suite menu
-
-`$ ./main -q help`      : Skip menu pass directly
-
-`$ ./main -i`           : Create ISO overlays w RELENG
-
-`$ ./main -r`           : Reset logs, log settings and rcw
-
-`$ ./main -u`           : Check for updates from GitHub
-
-`$ ./main -b <type>`    : Run benchmarks (io/cpu/gpu)
-
-`$ ./main -f /dev/sdX`  : Flash ISO to USB device
-
-`$ ./main -w /dev/sdX`  : Complete workflow
-
 [![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
 
 See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
@@ -117,16 +100,16 @@ See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... More readmes included. 
 
-### All long-form commands:
+**Long form commands:**
 
 ```
 --reset                 # Resets logs
 --update                # Checks git for updates
 --tuimenu               # Launch modified TUI
---isomod                # Create iso default `iso_profiles/fat.conf`
 --start                 # Start VM menu
 --quick <command>       # Launch VM "help" to see options
 --bench <type>          # Run benchmarks: io, cpu, gpu
+--isomod                # Create iso default `iso_profiles/fat.conf`
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>     # Complete workflow
 ```
@@ -158,7 +141,7 @@ For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
 ### Turning Konqi in Konqzilla.
 
-We believe builds should receive almost daily updates, proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way.
+We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
 
 Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
 
