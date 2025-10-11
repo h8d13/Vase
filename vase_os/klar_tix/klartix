@@ -6,9 +6,9 @@
 # Has many clean up steps to not pollute host device
 # Source utilities and colors
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "${SCRIPT_DIR}/../util_f"
-if file_ex "${SCRIPT_DIR}/../.vase.d/rcw"; then
-    . "${SCRIPT_DIR}/../.vase.d/rcw"
+. "${SCRIPT_DIR}/../../util_f"
+if file_ex "${SCRIPT_DIR}/../../.vase.d/rcw"; then
+    . "${SCRIPT_DIR}/../../.vase.d/rcw"
 fi
 # Source cfg file
 . "${SCRIPT_DIR}/klartix.conf"
@@ -107,10 +107,7 @@ TARGET_USER="" # Will be prompted
 USER_PASSWORD="" # Will be prompted
 ROOT_PASSWORD="" # Will be prompted
 LUKS_PASSWORD="" # Will be prompted if ENABLE_LUKS=1
-# Host package manager for prerequisites
-PKG_MAN="pacman"
-PKG_MAN_W="-S"
-ARG1="--noconfirm --needed"
+
 # Prerequisites (need wget to fetch artix-bootstrap)
 # Add filesystem tools based on selected filesystem
 PKGS="wget parted"
