@@ -37,6 +37,7 @@ run_vm() {
 run_headless() {
     local cmd="$1"
     preop "Starting headless VM (serial on stdio)..."
+    clear
     $cmd
     local exit_code=$?
     if [ $exit_code -eq 0 ]; then
