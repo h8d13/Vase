@@ -165,4 +165,4 @@ Bootstrap Artix Linux with desired init system. From any existing Linux install 
 
 [![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=N1Uy02KVnXU "Vase Installation Demo")
 
-See an example QEMU install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
+See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
