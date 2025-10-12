@@ -212,6 +212,7 @@ fi
 # DEV mode entry
 if exec_args "DEV"; then
     pacman-key --init
+    git submodule init && git submodule update
     chmod +x main
     chmod +x "./${hb_d}/install"
     "./${hb_d}/install" && rcw true && exit
