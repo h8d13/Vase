@@ -23,7 +23,7 @@ vim vase_os/klar_tix/klartix.conf
 # 2. Install base system
 sudo vase_os/klar_tix/klartix
 
-# 3. Reboot, then install desktop
+# 3. Reboot, clone inside the target then install desktop
 sudo vase_os/klar_tix/klartix_desktop
 ```
 
@@ -77,16 +77,13 @@ sudo pacman -S lib32-mesa lib32-libgl vulkan-intel lib32-vulkan-intel intel-medi
 
 ## VaseOS Compatibility
 
-- ✅ **PacToPac** - GUI package manager 
-- ✅ **KAES-ARCH** - Post-install script
+- ✅ **pacto_pac** - GUI package manager 
+- ✅ **kaes_arch** - Post-install script
 - ⚠️ **hade_box** - Not used (Arch TUI only)
 
 ## Technical Notes
 
 - Uses official `artix-bootstrap.sh` tool
 - GPT/UEFI x86_64 only (no legacy BIOS)
-- LUKS2 with PBKDF2 (GRUB) or argon2id (kernel)
-- Keyfile for auto-unlock (combined boot+root only)
-- Extensive cleanup prevents host pollution
 
 Made for **Klagan** - minimalism and systemd-free systems.
