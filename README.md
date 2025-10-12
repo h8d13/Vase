@@ -107,7 +107,7 @@ If this helped you earn you some time to touch grass (or you even just learned t
 --reset                 # Resets logs
 --update                # Checks git for updates & pull submodules
 --start                 # Start VM menu
---quick <command>       # Launch VM "help" to see options
+--quick <command>       # Pass direct VM options "help"
 --bench <type>          # Run benchmarks: io, cpu, gpu
 --isomod                # Create iso default `iso_profiles/fat.conf`
 --flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
