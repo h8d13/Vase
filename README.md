@@ -68,9 +68,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 ### From our built ISO
 
-> Instructions included in the ISO itself and up arrow once for initial clone then up arrow twice to run the installer.
-
-Or follow the prompts.
+Instructions included in the ISO itself and up arrow once for initial clone then up arrow twice to run the installer. Or follow the prompts.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
