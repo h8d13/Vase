@@ -76,8 +76,6 @@ Instructions included in the ISO itself and up arrow once for initial clone then
 
 Go grab some coffee during installation (it'll be done when you come back). 
 
-CURRENT BEST TIME: **1m54s**
-
 After initial install pick `Reboot` and switch to hard disk.
 
 Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
@@ -87,6 +85,8 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 [![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
 
 See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
+
+CURRENT BEST TIME: **1m54s**
 
 If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, open a pull request, or even just a star ⭐. 
 
