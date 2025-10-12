@@ -66,7 +66,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 `$ ./main -t` : Launch TUI forked KDE install
 
-### From our built ISO
+### From our builds
 
 Instructions included in the ISO itself and up arrow once for initial clone then up arrow twice to run the installer. Or follow the prompts.
 
