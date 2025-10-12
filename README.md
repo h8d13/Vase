@@ -127,7 +127,7 @@ See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
 
 > Tools used: mainly archinstall, mkarchiso, arch-install-scripts, dd, jq. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
 
-Run in project root: `git submodule init && git submodule update` 
+Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
 
 Or better yet, fork all the repos and send me patches.
 
