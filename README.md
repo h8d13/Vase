@@ -163,6 +163,6 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. Should be appreciated by purists and elitists of the community. 
 
-[![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=T-N1Uy02KVnXU "Vase Installation Demo")
+[![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=N1Uy02KVnXU "Vase Installation Demo")
 
-See an example QEMU install [here.](https://www.youtube.com/watch?v=T-N1Uy02KVnXU)
+See an example QEMU install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
