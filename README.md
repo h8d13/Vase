@@ -78,7 +78,7 @@ Go grab some coffee during installation (it'll be done when you come back).
 
 After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
-Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
+After login in with your user > Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
 
 Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
