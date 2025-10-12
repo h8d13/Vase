@@ -2,8 +2,9 @@
 set -e  # Exit on error
 
 ############## DESKTOP CFG
-#KLAGAN_MODE="-desktop" # saves 1gb by not downloading as many plasma stuff
-#plasma contains flatpak for example while plasma-desktop doesn't. so discover will be useless
+#KLAGAN_MODE="-desktop" 
+# Uncomment saves 1gb by not downloading as many plasma stuff
+# plasma contains flatpak for example while plasma-desktop doesn't. so discover will be useless
 
 echo "=== Updating system ==="
 pacman -Syu --noconfirm
@@ -19,10 +20,12 @@ pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plas
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire-jack #wireplumber
 
-### Once again klagan will have to fix sound
-#ln -sf /etc/runit/sv/pipewire /run/runit/service/
-#ln -sf /etc/runit/sv/pipewire-pulse /run/runit/service/
-#ln -sf /etc/runit/sv/wireplumber /run/runit/service/
+#mkdir -p /etc/pipewire
+#cp /usr/share/pipewire/pipewire* /etc/pipewire
+# edit final lines of 
+#/etc/pipewire/pipewire.conf just before closing ]
+# { path = "/usr/bin/wireplumber" args = ""}
+# { path = "/usr/bin/pipewire" args= "-c pipewire-pulse.conf"}
 
 #echo "=== Installing Bluetooth support ==="
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil
