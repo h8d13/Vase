@@ -1,4 +1,4 @@
-# Contribs
+# Contribs 🫂
 
 ## Get started helping out !
 
@@ -109,6 +109,14 @@ Create ISO if I modified there or use previous one. Using `dev_mode=1` & script 
 
 I also have a few neat options to test in VM with attached storage if I'm lazy (install from VM test on real hardware.)
 
+Common git operations:
+  - `git checkout -b dot01`                               # Create test branch (dotXX format)
+  - `git clone -b dot01 https://github.com/h8d13/Vase`    # Clone the branch
+If tests pass (on artix + arch):
+  - `git checkout master`
+  - `git merge --no-ff test.01 `                          # Merge to master
+  - `git branch -d test.01 `                              # Delete test branch
+  
 Then once I'm happy with how everything works out: `sudo ./main -a /dev/sdX` this being a good USB stick.
 
 And then try it:
@@ -116,3 +124,9 @@ And then try it:
 - on first a horrible laptop from 2015 (Hybrid Nvidia/Intel) 
 - on Entreprise more recent Dell laptop to compare.
 - on my main desktop set-up (have several disks). Where I also code and game :D
+
+If you've found something interesting please do open a pull request.
+
+## Discussions
+
+Feel free also for more general purpose to use discussions tab. 
