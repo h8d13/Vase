@@ -88,7 +88,7 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 
 See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
 
-If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, opening pull requests, or even just a star ⭐. 
+If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, open a pull request, or even just a star ⭐. 
 
 > We also have a discussions tab for any general purposes questions, ideas, etc...
 
