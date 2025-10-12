@@ -170,6 +170,10 @@ if file_ex "${rel}${p_lib}/${rcw_file}"; then
     . "${rel}${p_lib}/${rcw_file}"
     info "Loaded ${rcw_file} from ${rel}${p_lib}"
 fi
+# Skip logging for TUI mode (breaks curses) otherwise start log
+if ! exec_args "TUI"; then
+    init_log "${rel}${p_lib}/${log_n}.${log_ext}"
+fi
 if exec_args "UPDATE"; then
     git submodule init && git submodule update
     check_updates && rcw true && exit
@@ -205,10 +209,6 @@ if exec_args "BENCH"; then
             die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
             ;;
     esac
-fi
-# Skip logging for TUI mode (breaks curses)
-if ! exec_args "TUI"; then
-    init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
 # DEV mode entry
 if exec_args "DEV"; then
