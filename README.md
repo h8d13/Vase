@@ -116,10 +116,6 @@ If this helped you earn you some time to touch grass (or you even just learned t
 --grub <args>           # GRUB utilities -h for help
 ```
 
-[![VaseOSinOS](http://img.youtube.com/vi/T-g_V_WIOt0/0.jpg)](http://www.youtube.com/watch?v=T-g_V_WIOt0 "Vase Installation Demo")
-
-See an example QEMU install [here.](https://www.youtube.com/watch?v=T-g_V_WIOt0)
-
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... More readmes included. 
 
@@ -167,3 +163,6 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. Should be appreciated by purists and elitists of the community. 
 
+[![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=T-N1Uy02KVnXU "Vase Installation Demo")
+
+See an example QEMU install [here.](https://www.youtube.com/watch?v=T-N1Uy02KVnXU)
