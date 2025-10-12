@@ -172,7 +172,7 @@ qemu_cmd() {
 
 show_menu() {
     echo "########################################"
-    echo "Zazulago VM Tooling: rdisk, then brick."
+    echo "Zazu_lago VM Tooling: rdisk, then brick."
     echo "Display: ${qemu_display} | GL: ${qemu_gl}"
     echo "########################################"
     echo " rdisk   : Reset ${vm_name} ${size}"

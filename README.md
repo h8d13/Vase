@@ -56,17 +56,23 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 ## Installation/Usage
 
-### From USB/ISO
+### From the official ISO
 
-> By default you are already root in the ISO env. And in our builds git is already included. 
+> By default you are already root in the ISO env.
 
-`$ pacman-key --init  # && pacman -Sy git`
+`$ pacman-key --init && pacman -Sy git`
 
 `$ git clone https://github.com/h8d13/Vase && cd Vase`
 
 `$ ./main -t` : Launch TUI forked KDE install
 
-> Follow the prompts here: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
+### From our built ISO
+
+> Instructions included in the ISO itself and up arrow once for initial clone then up arrow twice to run the installer.
+
+Or follow the prompts.
+
+> In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
 Go grab some coffee during installation (it'll be done when you come back). 
 
@@ -131,8 +137,8 @@ Or better yet, fork all the repos and send me patches.
 | **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./.github/docs/grom_lum.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
-| **zazulago_vms** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazulago_vms.md) |
-| **klartix** | Artix bootstrap - Init system compatible installer | [README](./.github/docs/klar_tix.md) |
+| **zazu_lago** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazu_lago_.md) |
+| **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](./.github/docs/klar_tix.md) |
 
 [QEMU Docs](https://www.qemu.org/documentation/)
 

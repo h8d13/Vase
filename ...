@@ -19,7 +19,7 @@ size="60G"
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
-iso_n="VASE-2025.10.10-x86_64"
+iso_n="VASE-2025.10.12-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
@@ -73,7 +73,7 @@ cli_a="cli_art"
 #### More paths
 vase_d="vase_os"
 hb_d="$vase_d/hade_box"
-zl_d="$vase_d/zazulago_vms"
+zl_d="$vase_d/zazu_lago"
 gl_d="$vase_d/grome_lum"
 vase_p_env="$vase_d/env"
 

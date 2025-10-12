@@ -2,7 +2,7 @@
 
 1. hade_box = Installer fork for Arch
 2. grom_lun = Grub2 utils
-3. zazulago_vms = Testing suite
+3. zazu_lago = Testing suite
 4. kaes_arch = Post-install script
 5. pacto_pac = Pacman GUI
 
@@ -14,7 +14,7 @@ Main program contains ISO building scripts and more ways to interact with all th
 
 > Assumes KVM availability Intel/AMD.
 
-Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
+Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
 ---
@@ -23,7 +23,7 @@ Inside `vase_os/zazulago_vms/vm_start` to modify VM behaviours/options.
 
 - Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
 
-- Inside `vase_os/zazulago_vms/setup_vms` for needed packages for QEMU/KVM.
+- Inside `vase_os/zazu_lago/setup_vms` for needed packages for QEMU/KVM.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
@@ -41,7 +41,7 @@ New: Reduced to <200s (+ configuration in TUI) using custom ISO overlay (caching
 
 I'm aiming for the installer to be the fastest way to install KDE + a good base system and lightest compared to same env on diffrent distros thanks to Archlinux tools/compression.
 
-Storage is inexpensive while **time on the other hand is the only real currency.** If you are wondering what I'm talking about Inside `vase_os/zazulago_vms/iso_mod` to create overlay custom ISOs. 
+Storage is inexpensive while **time on the other hand is the only real currency.** If you are wondering what I'm talking about Inside `vase_os/zazu_lago/iso_mod` to create overlay custom ISOs. 
 
 ### Weight
 

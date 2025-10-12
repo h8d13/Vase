@@ -2,12 +2,11 @@
 .zed/
 .vscode/
 
-vase_os/zazulago_vms/a/
-vase_os/zazulago_vms/c/
-vase_os/zazulago_vms/d/
-vase_os/zazulago_vms/.vmkey.local
-vase_os/zazulago_vms/archiso_work/
-vase_os/zazulago_vms/archiso_profile
+vase_os/zazu_lago/a/
+vase_os/zazu_lago/c/
+vase_os/zazu_lago/d/
+vase_os/zazu_lago/archiso_work/
+vase_os/zazu_lago/archiso_profile
 
 logs/*
 user_*.json
