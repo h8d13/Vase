@@ -11,9 +11,9 @@ pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
 pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plasma-nm
+pacman -S --noconfirm --needed konsole ark dolphin
 
 # nice to haves
-#pacman -S --noconfirm --needed konsole ark dolphin
 # or full apps (heavy)
 #pacman -S kde-applications
 
