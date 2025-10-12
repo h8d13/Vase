@@ -68,13 +68,8 @@ Then we can create a simple test script. For this I use qemu with a rollback mec
 
 ## Some useful things
 
-KDE has neat built-in stuff for programmers: `kbuildsycoca6` rebuild system cached files .
+KDE has neat built-in stuff for programmers: `kbuildsycoca6` and `kwriteconfig6` rebuild system cached files .
 
-```
-kwriteconfig6 --file plasma-org.kde.plasma.desktop-appletsrc \
-    --group "Containments" --group "2" --group "Applets" --group "5" --group "Configuration" --group "General" \
-    --key "launchers" "applications:org.kde.konsole.desktop"
-``` 
 They can be a bit inconsistent sometimes. Perhaps of my wrong usage.
 
 ## Special thanks
@@ -116,7 +111,7 @@ If tests pass (on artix + arch):
   - `git checkout master`
   - `git merge --no-ff test.01 `                          # Merge to master
   - `git branch -d test.01 `                              # Delete test branch
-  
+
 Then once I'm happy with how everything works out: `sudo ./main -a /dev/sdX` this being a good USB stick.
 
 And then try it:
