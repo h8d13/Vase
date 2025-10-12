@@ -21,7 +21,7 @@ echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire-jack #wireplumber
 
 #mkdir -p /etc/pipewire
-#cp /usr/share/pipewire/pipewire* /etc/pipewire
+#sudo cp -r /usr/share/pipewire/pipewire* /etc/pipewire
 # edit final lines of 
 #/etc/pipewire/pipewire.conf just before closing ]
 # { path = "/usr/bin/wireplumber" args = "" }
