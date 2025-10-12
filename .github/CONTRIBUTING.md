@@ -102,7 +102,7 @@ Being downstream from most things and interaction with system files as so can be
 - Branch code for today using format `dotXX` version
 - Modify stuff
 
-Create ISO if I modified there or use previous one. Using dev_mode=1 & script dev_entry (copies local vs remote).
+Create ISO if I modified there or use previous one. Using `dev_mode=1` & script `dev_entry` once inside the ISO (copies local vs remote).
 
 - Test in VM: `sudo ./main -q rdisk` resets the disk, then `sudo ./main -q brick` boot off ISO.
 - Then `sudo ./main -q std` to test everything looks good in the env. 
