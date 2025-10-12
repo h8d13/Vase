@@ -74,6 +74,8 @@ Or follow the prompts.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
+<img width="1110" height="728" alt="Screenshot_20251010_162828" src="https://github.com/user-attachments/assets/fdfcf278-fc4f-4494-9f23-19128e021ecc" />
+
 Go grab some coffee during installation (it'll be done when you come back). 
 
 CURRENT BEST TIME: **1m54s**
