@@ -70,7 +70,7 @@ info "Adding git clone to zsh history..."
 mkdir -p "$PROFILE_DIR/airootfs/root"
 cat > "$PROFILE_DIR/airootfs/root/.zsh_history" << 'HISTEOF'
 : 1728000000:0;cd Vase && ./main -t
-: 1728000001:0; pacman-key --init && git clone https://github.com/h8d13/Vase
+: 1728000001:0;pacman-key --init && git clone https://github.com/h8d13/Vase
 HISTEOF
 
 # Append custom MOTD
