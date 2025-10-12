@@ -61,8 +61,8 @@ if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
 fi
 
 # Sync package database before launching TUI to prevent hangs
-preop "Syncing package database..."
-pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
+preop "Syncing package database... & Checking up to date."
+pacman -Sy --noconfirm && pacman -S --needed pythonarchlinux-keyring python-pydantic python-pyparted python-cryptography || postop "Database sync failed (continuing anyway)"
 
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
