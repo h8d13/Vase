@@ -27,6 +27,13 @@ pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire
 # { path = "/usr/bin/wireplumber" args = ""}
 # { path = "/usr/bin/pipewire" args= "-c pipewire-pulse.conf"}
 
+# create in /home/usr/.config/autostart
+#[Desktop Entry]
+#Type=Application
+#Name=Pipewire
+#Exec=/usr/bin/pipewire
+#X-KDE-autostart-phase=1
+
 #echo "=== Installing Bluetooth support ==="
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil
 # ln -sf /etc/runit/sv/bluetoothd /run/runit/service/
