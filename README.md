@@ -88,11 +88,17 @@ See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j
 
 CURRENT BEST TIME: **1m54s**
 
-If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, open a pull request, or even just a star ⭐. 
+If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, open a pull request, or even just a star ⭐.
 
 > We also have a discussions tab for any general purposes questions, ideas, etc...
 
 ---
+
+## Hardware Compatibility
+
+VaseOS automatically detects hardware and installs appropriate drivers based on modified archinstall `hardware.py` detection logic.
+
+See a full table of supported stuff here: [README](./.github/docs/hard_ware.md)
 
 ### From an existing arch installation (For devs)
 
