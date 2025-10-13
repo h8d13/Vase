@@ -12,7 +12,7 @@
   | **Nvidia (Proprietary)** | nvidia-dkms, dkms, libva-nvidia-driver | GTX 900+ / RTX 20-50 series |
   | **Nvidia (Open Kernel)** | nvidia-open-dkms, dkms, libva-nvidia-driver | Turing+ and newer |
   | **Nvidia (Nouveau)** | mesa, xf86-video-nouveau, libva-mesa-driver, vulkan-nouveau | For legacy/unsupported cards |
-  | **Intel + Nvidia Hybrid** | libva-intel-driver, intel-media-driver, vulkan-intel, nvidia-dkms, dkms, libva-nvidia-driver, nvidia-prime | Optimus for laptops |
+  | **Intel/Nvidia Hybrid** | libva-intel-driver, intel-media-driver, vulkan-intel, nvidia-dkms, dkms, libva-nvidia-driver, nvidia-prime | Optimus for laptops w/ iGPU and dGPU |
   | **QEMU/KVM VM** | mesa, vulkan-virtio, qemu-guest-agent, vulkan-swrast, libva-mesa-driver | VM optimized |
   | **VirtualBox VM** | mesa, vulkan-swrast, virtualbox-guest-utils, libva-mesa-driver | VBox guest |
   | **AMD/Intel CPU** | amd-ucode, intel-ucode | Microcode Auto-detected |
