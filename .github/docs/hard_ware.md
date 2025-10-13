@@ -27,6 +27,9 @@
 
 > For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
 
+### NVIDIA Table :) 
+> Refer back to top table.
+
 - Maxwell = GTX 900 series (GTX 950, 960, 970, 980)
 - Pascal = GTX 10 series (GTX 1050, 1060, 1070, 1080)
 - Turing = RTX 20 series & GTX 16 series (RTX 2060, 2070, 2080, GTX 1650, 1660)
