@@ -134,13 +134,6 @@ class Installer:
 			# Return None to propagate the exception
 			return None
 
-		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
-		info('Upgrading all packages to latest versions...')
-		try:
-			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed')
-		except Exception as e:
-			warn(f'Package upgrade failed: {e}')
-
 		self.sync()
 
 		if not (missing_steps := self.post_install_check()):
@@ -1289,6 +1282,13 @@ class Installer:
 
 		# Clone KAES-ARCH for sudo users after all users are created
 		self._clone_kaesarch(users)
+
+		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
+		info('Upgrading all packages to latest versions...')
+		try:
+			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed')
+		except Exception as e:
+			warn(f'Package upgrade failed: {e}')
 
 	def _clone_kaesarch(self, users: list[User]) -> None:
 		"""Clone KAES-ARCH repository for sudo users"""
