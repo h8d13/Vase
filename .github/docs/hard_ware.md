@@ -67,3 +67,11 @@ The easiet way if you are intrested in digging a bit deeper (and you should):
 
 Can paste the model and manufacturer into a search engine. 
 
+`
+Manufacturer: Micro-Star International Co., Ltd.
+Product Name: GP72 6QE
+`
+
+Here is me getting 350 fps on this 200$ laptop from eBay.
+
+<img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
