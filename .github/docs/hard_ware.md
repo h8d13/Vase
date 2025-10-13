@@ -56,3 +56,14 @@ prime-run kdenlive        # Video editor
 ```
 
 This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful for power management and performance. 
+
+---
+
+## System info: 
+
+The easiet way if you are intrested in digging a bit deeper (and you should): 
+
+`sudo dmidecode -t system`
+
+Can paste the model and manufacturer into a search engine. 
+
