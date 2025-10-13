@@ -19,3 +19,7 @@
 - Setting up Grub passwords for laptops see `grome_lum`
 
 - Can go deeper into it by looking into `apparmor` & `firejail/fail2ban/bubblewrap` & `flatseal`
+
+## Daily builds !
+
+We have two types of releases `STDs` when it's only smaller changes and `ISOs` when is a major release. 
