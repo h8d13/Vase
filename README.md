@@ -45,7 +45,7 @@ A testing suite to run VMs and development platform to perform Archlinux system 
 Written in bash and python. 
 
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed onto the ISO. 
-> And also due to tools made by the release engineering teams at Arch. 
+> And also due to tools made by the release engineering teams at Arch. CURRENT BEST TIME: **1m54s**
 
 This works from official arch [ISO](https://archlinux.org/download/) (using mirrors slower, depending on internet speed) or the one built [here](https://github.com/h8d13/Vase/releases) (faster, using cached files).
 
@@ -85,8 +85,6 @@ Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 [![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
 
 See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
-
-CURRENT BEST TIME: **1m54s**
 
 If this helped you earn you some time to touch grass (or you even just learned things), please consider sharing the project, open a pull request, or even just a star ⭐.
 
