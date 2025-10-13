@@ -1286,7 +1286,7 @@ class Installer:
 		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
 		info('Upgrading all packages to latest versions...')
 		try:
-			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed')
+			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed', peek_output=True)
 		except Exception as e:
 			warn(f'Package upgrade failed: {e}')
 
