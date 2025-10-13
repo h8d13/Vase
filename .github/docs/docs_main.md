@@ -27,8 +27,6 @@ Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
-- Inside `vase_os/bench_io`, `vase_os/bench_cpu`, `vase_os/bench_gpu` for system benchmarks (outputs to `vase.log`).
-
 ---
 
 ## Info for nerds / Benchmarks

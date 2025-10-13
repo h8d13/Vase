@@ -74,8 +74,9 @@ vase_d="vase_os"
 hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazu_lago"
 gl_d="$vase_d/grome_lum"
-vase_p_env="$vase_d/env"
+chp_d="$vase_d/chap_pie"
 
+vase_p_env="$vase_d/env"
 
 #### Future alpine imp 
 # Privilege escalation (ex: doas alternative)

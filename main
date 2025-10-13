@@ -195,15 +195,15 @@ if exec_args "BENCH"; then
     case "$bench_type" in
         io)
             preop "Starting I/O benchmark..."
-            "./${vase_d}/bench_io" && rcw true && exit
+            "./${chp_d}/bench_io" && rcw true && exit
             ;;
         cpu)
             preop "Starting CPU benchmark..."
-            "./${vase_d}/bench_cpu" && rcw true && exit
+            "./${chp_d}/bench_cpu" && rcw true && exit
             ;;
         gpu)
             preop "Starting GPU benchmark..."
-            "./${vase_d}/bench_gpu" && rcw true && exit
+            "./${chp_d}/bench_gpu" && rcw true && exit
             ;;
         *)
             die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
