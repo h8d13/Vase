@@ -96,9 +96,8 @@ If this helped you earn you some time to touch grass (or you even just learned t
 
 ## Hardware Compatibility
 
-VaseOS automatically detects hardware and installs appropriate drivers based on modified archinstall `hardware.py` detection logic.
-
-See a full table of supported stuff here: [README](./.github/docs/hard_ware.md)
+VaseOS automatically detects hardware and installs appropriate drivers based on modified archinstall `hardware.py` detection logic, but is only a recommendation.
+You are free to select the drivers you want to try. See a full table of supported stuff here: [README](./.github/docs/hard_ware.md)
 
 ### From an existing arch installation (For devs)
 
