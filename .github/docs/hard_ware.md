@@ -15,8 +15,8 @@
   | **QEMU/KVM VM** | mesa, vulkan-virtio, qemu-guest-agent, vulkan-swrast, libva-mesa-driver | VM optimized |
   | **VirtualBox VM** | mesa, vulkan-swrast, virtualbox-guest-utils, libva-mesa-driver | VBox guest |
   | **AMD/Intel CPU** | amd-ucode, intel-ucode | Microcode Auto-detected |
-  | **SOF Audio** | sof-firmware |  Always installed |
-  | **ALSA Audio** | alsa-firmware | Auto-detected |
+  | **SOF Audio** | sof-firmware | Auto-detected (modern Intel audio) |
+  | **ALSA Audio** | alsa-firmware | Auto-detected (legacy cards) |
 
 ### NVIDIA Table :(
 

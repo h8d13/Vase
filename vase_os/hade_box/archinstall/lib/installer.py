@@ -47,7 +47,7 @@ from .pacman.config import PacmanConfig
 from .storage import storage
 
 # Any package that the Installer() is responsible for (optional and the default ones)
-__packages__ = ['base', 'base-devel', 'linux-firmware', 'sof-firmware', 'linux', 'linux-lts', 'linux-zen', 'linux-hardened']
+__packages__ = ['base', 'base-devel', 'linux-firmware', 'linux', 'linux-lts', 'linux-zen', 'linux-hardened']
 
 # Additional packages that are installed if the user is running the Live ISO with accessibility tools enabled
 __accessibility_packages__ = ['brltty', 'espeakup', 'alsa-utils']
@@ -64,8 +64,8 @@ class Installer:
 		`Installer()` is the wrapper for most basic installation steps.
 		It also wraps :py:func:`~archinstall.Installer.pacstrap` among other things.
 		"""
-		
-		self._base_packages = base_packages or __packages__[:4] # Added sof-firmare :4 to default
+
+		self._base_packages = base_packages or __packages__[:3]
 		self.kernels = kernels or ['linux']
 		self._disk_config = disk_config
 
