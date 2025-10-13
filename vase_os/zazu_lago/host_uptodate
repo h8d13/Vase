@@ -25,13 +25,4 @@ if [ -n "$updates" ]; then
     die "Pkgs: $count available. Please update system first."
 else
     info "System up to date"
-
-    # Log KDE/Qt versions to tests.status
-    script_dir="$(dirname "$0")"
-    if file_ex "${script_dir}/kde_versions"; then
-        kde_info=$("${script_dir}/kde_versions")
-        test_date=$(date '+%Y-%m-%d %H:%M:%S')
-        echo "${test_date} | Host KDE/Qt: ${kde_info}" >> tests.status
-        info "Logged KDE/Qt versions: ${kde_info}"
-    fi
 fi

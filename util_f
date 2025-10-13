@@ -49,6 +49,7 @@ parse_args() {
             -w|--workflow)
                 WORKFLOW=1
                 if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                    lsblk
                     echo "Error: -w requires a device argument (e.g., /dev/sdd)"
                     exit 1
                 fi

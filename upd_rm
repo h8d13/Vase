@@ -32,18 +32,15 @@ iso_size=$(echo "$latest_entry" | cut -d'|' -f4 | cut -d':' -f2 | xargs)
 
 kernel_version=$(uname -r | cut -d'-' -f1)
 
-# Get KDE/Qt versions from latest Host KDE/Qt entry in tests.status
-kde_entry=$(grep "Host KDE/Qt" tests.status 2>/dev/null | tail -1)
-if [ -n "$kde_entry" ]; then
-    plasma_ver=$(echo "$kde_entry" | grep -oP 'Plasma: \K[0-9.]+' || echo "N/A")
-    frameworks_ver=$(echo "$kde_entry" | grep -oP 'Frameworks: \K[0-9.]+' || echo "N/A")
-    qt_ver=$(echo "$kde_entry" | grep -oP 'Qt: \K[0-9.]+' || echo "N/A")
-else
-    plasma_ver="N/A"
-    frameworks_ver="N/A"
-    qt_ver="N/A"
-fi
+# Get KDE/Qt versions
+plasma_ver=$(pacman -Q plasma-desktop 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
+frameworks_ver=$(pacman -Q karchive 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
+qt_ver=$(pacman -Q qt6-base 2>/dev/null | awk '{print $2}' | cut -d'-' -f1 || echo "N/A")
+kde_info="Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
 
+# Log to tests.status
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Host KDE/Qt: ${kde_info}" >> tests.status
+info "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
 # Read traffic data from traffic.json (use latest entry)
 if file_ex "traffic.json"; then
     clone_count=$(jq '.[-1].count // 0' traffic.json)
