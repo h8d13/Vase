@@ -18,15 +18,6 @@
   | **SOF Audio** | sof-firmware | Auto-detected (modern Intel audio) |
   | **ALSA Audio** | alsa-firmware | Auto-detected (legacy cards) |
 
-### NVIDIA Table :(
-
-- GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
-- GTX 400/500 (Fermi) → needs nvidia-390xx-dkms (AUR)
-- GTX 200/8800 (Tesla) → needs nvidia-340xx-dkms (AUR)
-- Older than GTX 200 → No longer supported.
-
-> For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
-
 ### NVIDIA Table :) 
 > Refer back to top table.
 
@@ -77,3 +68,12 @@ Here is me getting 350 fps on this 200$ laptop from eBay.
 <img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
 
 With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Laptop/GP72-6QE-Leopard-Pro/Specification)
+
+### NVIDIA Table :(
+
+- GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
+- GTX 400/500 (Fermi) → needs nvidia-390xx-dkms (AUR)
+- GTX 200/8800 (Tesla) → needs nvidia-340xx-dkms (AUR)
+- Older than GTX 200 → No longer supported.
+
+> For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
