@@ -76,7 +76,8 @@ Instructions included in the ISO itself and up arrow once for initial clone then
 
 Go grab some coffee during installation (it'll be done when you come back). 
 
-After initial install pick `Reboot` and **switch to hard disk** in BIOS.
+After initial install pick `Reboot` and **switch to hard disk** in BIOS. 
+> Note: I recommend only plugging-in one screen at this step. you can then add as many as you want later.
 
 After login in with your user > Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
 
