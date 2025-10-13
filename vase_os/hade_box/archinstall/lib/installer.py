@@ -134,6 +134,13 @@ class Installer:
 			# Return None to propagate the exception
 			return None
 
+		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
+		info('Upgrading all packages to latest versions...')
+		try:
+			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed')
+		except Exception as e:
+			warn(f'Package upgrade failed: {e}')
+
 		self.sync()
 
 		if not (missing_steps := self.post_install_check()):
