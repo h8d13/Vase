@@ -50,8 +50,9 @@ prime-run <intensiveapp>
 
 Example:
 ```bash
-prime-run steam
-prime-run blender
+prime-run steam           # Steam
+prime-run prismlauncher   # Minecraft
+prime-run kdenlive        # Video editor
 ```
 
 This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful for power management and performance. 
