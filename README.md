@@ -135,6 +135,7 @@ Or better yet, fork all the repos and send me patches.
 | **pacto_pac** | GUI - Pacman commons operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
 | **zazu_lago** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazu_lago_.md) |
 | **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](./.github/docs/klar_tix.md) |
+| **chap_pie** | System utils - Benchmarking and testing tools for new installs | [README](./.github/docs/chap_pie.md) |
 
 [QEMU Docs](https://www.qemu.org/documentation/)
 
