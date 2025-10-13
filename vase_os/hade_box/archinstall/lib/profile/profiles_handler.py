@@ -171,7 +171,7 @@ class ProfileHandler:
 		# Set the graphics driver in the installer to configure kernel parameters
 		install_session.set_graphics_driver(driver)
 
-		if driver in [GfxDriver.NvidiaOpenKernel, GfxDriver.NvidiaProprietary, GfxDriver.IntelNvidiaHybrid]:
+		if driver in [GfxDriver.NvidiaOpenKernel, GfxDriver.NvidiaProprietary]:
 			headers = [f'{kernel}-headers' for kernel in install_session.kernels]
 			# Fixes https://github.com/archlinux/archinstall/issues/585
 			install_session.add_additional_packages(headers)

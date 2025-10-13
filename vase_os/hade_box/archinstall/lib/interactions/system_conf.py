@@ -417,7 +417,7 @@ def select_driver(options: list[GfxDriver] = [], preset: GfxDriver | None = None
 	else:
 		# Check for hybrid graphics first
 		if SysInfo.has_intel_graphics() and SysInfo.has_nvidia_graphics():
-			header += ('Hybrid graphics detected (Intel + Nvidia). For laptop power management and GPU switching, consider the Intel + Nvidia (hybrid) option.\n')
+			header += ('Hybrid graphics detected (Intel + Nvidia). Select any Nvidia driver for GPU switching with nvidia-prime (automatically included). Use: prime-run <intensiveapp>\n')
 		elif SysInfo.has_amd_graphics() and SysInfo.has_nvidia_graphics():
 			header += ('Multiple GPUs detected (AMD + Nvidia). You may want to choose based on your primary use case.\n')
 		else:

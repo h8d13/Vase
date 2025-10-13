@@ -68,13 +68,12 @@ class GfxDriver(Enum):
 	NvidiaOpenKernel = 'Nvidia (open kernel module for newer GPUs, Turing+)'
 	NvidiaOpenSource = 'Nvidia (open-source nouveau driver)'
 	NvidiaProprietary = 'Nvidia (proprietary)'
-	IntelNvidiaHybrid = 'Intel + Nvidia (open + proprietary hybrid)'
 	VMOpenSource = 'Virtual Machine (QEMU/KVM)'
 	VirtualBox = 'VirtualBox Guest'
 
 	def is_nvidia(self) -> bool:
 		match self:
-			case GfxDriver.NvidiaProprietary | GfxDriver.NvidiaOpenSource | GfxDriver.NvidiaOpenKernel | GfxDriver.IntelNvidiaHybrid:
+			case GfxDriver.NvidiaProprietary | GfxDriver.NvidiaOpenSource | GfxDriver.NvidiaOpenKernel:
 				return True
 			case _:
 				return False
@@ -139,16 +138,6 @@ class GfxDriver(Enum):
 					GfxPackage.Dkms,
 					GfxPackage.LibvaNvidiaDriver,
 				]
-			case GfxDriver.IntelNvidiaHybrid:
-				packages += [
-					GfxPackage.LibvaIntelDriver,
-					GfxPackage.IntelMediaDriver,
-					GfxPackage.VulkanIntel,
-					GfxPackage.NvidiaDkms,
-					GfxPackage.Dkms,
-					GfxPackage.LibvaNvidiaDriver,
-					GfxPackage.NvidiaPrime,
-				]
 			case GfxDriver.VMOpenSource:
 				packages += [
 					GfxPackage.Mesa,
@@ -173,8 +162,12 @@ class GfxDriver(Enum):
 				#       packages += [
 				#           GfxPackage.Mesa,
 				#       ]
-				# This minimal setup caused Mesa errors because of missing libs. 
+				# This minimal setup caused Mesa errors because of missing libs.
 				# Now split into separate QEMU/KVM and VirtualBox drivers with proper packages.
+
+		# Add nvidia-prime if hybrid graphics detected (Intel + Nvidia)
+		if self.is_nvidia() and SysInfo.has_intel_graphics():
+			packages.append(GfxPackage.NvidiaPrime)
 
 		return packages
 
