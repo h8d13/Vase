@@ -848,11 +848,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 show_progress "Making configuration script executable..."
 chmod +x "$TARGET_MOUNT/configure.sh"
-# Copy klartix.conf and klartix_desktop into the target system
-show_progress "Copying klartix configuration files..."
-cp "${SCRIPT_DIR}/klartix.conf" "$TARGET_MOUNT/root/klartix.conf"
-cp "${SCRIPT_DIR}/klartix_desktop" "$TARGET_MOUNT/root/klartix_desktop"
-chmod +x "$TARGET_MOUNT/root/klartix_desktop"
+
 # Execute configuration in chroot
 show_progress "Configuring system in chroot..."
 chroot "$TARGET_MOUNT" /bin/bash /configure.sh
