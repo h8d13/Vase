@@ -113,3 +113,5 @@ echo "=== Installation complete! ==="
 echo "=== Enabling services! ==="
 ln -sf /etc/runit/sv/sddm /run/runit/service/
 
+echo "=== Reboot! ==="
+reboot
