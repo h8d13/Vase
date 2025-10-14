@@ -771,39 +771,17 @@ if [ "$ENABLE_LUKS" = "1" ]; then
     sleep 2
     dmsetup remove_all --force 2>/dev/null || true
 fi
-# Reset USB device to prevent host shutdown issues
-info "Resetting USB device to prevent host shutdown issues..."
-# Force sync multiple times for USB devices
+# Final cleanup to prevent host shutdown issues
+show_progress "Final device cleanup..."
 sync && sync && sync
 sleep 2
-# Get the USB device's sysfs path
-if [ -b "$TARGET_DISK" ]; then
-    # Find the USB device in sysfs
-    DISK_NAME=$(basename "$TARGET_DISK")
-    USB_PATH="/sys/block/${DISK_NAME}/device"
-    
-    if [ -d "$USB_PATH" ]; then
-        # Try to unbind and rebind the USB device
-        if [ -f "${USB_PATH}/../../authorized" ]; then
-            echo 0 > "${USB_PATH}/../../authorized" 2>/dev/null || true
-            sleep 1
-            echo 1 > "${USB_PATH}/../../authorized" 2>/dev/null || true
-        fi
-        
-        # Alternative: use the delete method if available
-        if [ -f "${USB_PATH}/../delete" ]; then
-            echo 1 > "${USB_PATH}/../delete" 2>/dev/null || true
-            sleep 1
-            # Trigger rescan
-            echo "- - -" > /sys/class/scsi_host/host*/scan 2>/dev/null || true
-        fi
-    fi
-fi
-# Force remove any remaining device mapper entries
-dmsetup remove_all --force 2>/dev/null || true
-# Force kernel to re-read partition table one more time
-partprobe "$TARGET_DISK" 2>/dev/null || true
+
+# Flush block device buffers
 blockdev --flushbufs "$TARGET_DISK" 2>/dev/null || true
+
+# Re-read partition table to clear any stale references
+partprobe "$TARGET_DISK" 2>/dev/null || true
+
 # Final sync
 sync
 sleep 1
