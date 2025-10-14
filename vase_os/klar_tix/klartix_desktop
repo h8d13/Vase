@@ -75,6 +75,13 @@ chmod +x "/home/$SUDO_USER/.config/autostart/pipewire.desktop"
 
 # pacman -S --noconfirm --needed ${HW_INTEL_OPENSOURCE}
 
+
+################### NVIDIA GARBOYLE
+echo "=== Installing kernel headers ==="
+
+## Edit me to the kernel you picked (eg. linux-zen-headers)
+#pacman -S --noconfirm --needed linux-headers
+
 # Nvidia proprietary 
 
 # pacman -S --noconfirm --needed ${HW_NVIDIA_PROPRIETARY}
