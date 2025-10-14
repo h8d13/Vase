@@ -722,26 +722,54 @@ show_progress "Syncing data to disk..."
 sync
 sleep 2
 show_progress "Unmounting filesystems..."
+# Kill any processes that might be accessing the mount
+fuser -km "$TARGET_MOUNT" 2>/dev/null || true
+sleep 1
+
+# Turn off swap first
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    swapoff "${TARGET_DISK}${PART_PREFIX}3" || true
+    swapoff "${TARGET_DISK}${PART_PREFIX}3" 2>/dev/null || true
 else
-    swapoff "${TARGET_DISK}${PART_PREFIX}2" || true
+    swapoff "${TARGET_DISK}${PART_PREFIX}2" 2>/dev/null || true
 fi
-umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
-umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
-umount -l "$TARGET_MOUNT/proc" 2>/dev/null || true
-umount -l "$TARGET_MOUNT/sys" 2>/dev/null || true
-umount -l "$TARGET_MOUNT/boot/efi" 2>/dev/null || true
+
+# Unmount in reverse order (use regular umount, not lazy)
+umount "$TARGET_MOUNT/dev/pts" 2>/dev/null || umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
+umount "$TARGET_MOUNT/dev" 2>/dev/null || umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
+umount "$TARGET_MOUNT/proc" 2>/dev/null || umount -l "$TARGET_MOUNT/proc" 2>/dev/null || true
+umount "$TARGET_MOUNT/sys" 2>/dev/null || umount -l "$TARGET_MOUNT/sys" 2>/dev/null || true
+umount "$TARGET_MOUNT/boot/efi" 2>/dev/null || umount -l "$TARGET_MOUNT/boot/efi" 2>/dev/null || true
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    umount -l "$TARGET_MOUNT/boot" 2>/dev/null || true
+    umount "$TARGET_MOUNT/boot" 2>/dev/null || umount -l "$TARGET_MOUNT/boot" 2>/dev/null || true
 fi
-umount -l "$TARGET_MOUNT" 2>/dev/null || true
-# Close LUKS devices if they exist
+umount "$TARGET_MOUNT" 2>/dev/null || umount -l "$TARGET_MOUNT" 2>/dev/null || true
+
+# Wait for unmounts to settle
+sleep 2
+
+# Close LUKS devices if they exist (CRITICAL - must wait for clean close)
 if [ "$ENABLE_LUKS" = "1" ]; then
-    cryptsetup close cryptroot 2>/dev/null || true
-    if [ "$SEPARATE_BOOT" = "1" ]; then
-        cryptsetup close cryptboot 2>/dev/null || true
+    show_progress "Closing LUKS devices..."
+    # Sync again before closing LUKS
+    sync && sync && sync
+    sleep 2
+
+    # Try graceful close first, then force if needed
+    if ! cryptsetup close cryptroot 2>/dev/null; then
+        warn "Forcing cryptroot closure..."
+        dmsetup remove --force cryptroot 2>/dev/null || true
     fi
+
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        if ! cryptsetup close cryptboot 2>/dev/null; then
+            warn "Forcing cryptboot closure..."
+            dmsetup remove --force cryptboot 2>/dev/null || true
+        fi
+    fi
+
+    # Ensure all device mapper devices are gone
+    sleep 2
+    dmsetup remove_all --force 2>/dev/null || true
 fi
 # Reset USB device to prevent host shutdown issues
 info "Resetting USB device to prevent host shutdown issues..."

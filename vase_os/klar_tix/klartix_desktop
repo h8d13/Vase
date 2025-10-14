@@ -15,9 +15,10 @@ pacman -Syu --noconfirm
 
 echo "=== Installing KDE Plasma ==="
 pacman -S --noconfirm --needed plasma${KLAGAN_MODE} wayland sddm sddm-runit plasma-nm
-pacman -S --noconfirm --needed konsole ark dolphin
 
 # nice to haves
+pacman -S --noconfirm --needed konsole ark dolphin
+
 # or full apps (heavy)
 #pacman -S kde-applications
 
@@ -55,40 +56,55 @@ chmod +x "/home/$SUDO_USER/.config/autostart/pipewire.desktop"
 
 # Hardware detection examples - uncomment and customize based on your system
 
+## Install kernel headers (required for DKMS modules like Nvidia drivers)
+
+# pacman -S --noconfirm --needed ${HW_KERNEL_HEADERS}
+
 # CPU Microcode (choose one)
+
 # pacman -S --noconfirm --needed ${HW_CPU_INTEL}
 # pacman -S --noconfirm --needed ${HW_CPU_AMD}
 
-# Graphics drivers (choose one based on your GPU)
+## Graphics drivers (choose one based on your GPU)
 
-# All open-source (auto-detects AMD/Intel/Nvidia)
+# All open-source FALLBACK
+
 # pacman -S --noconfirm --needed ${HW_ALL_OPENSOURCE}
 
 # AMD/ATI only
+
 # pacman -S --noconfirm --needed ${HW_AMD_OPENSOURCE}
 
 # Intel only
+
 # pacman -S --noconfirm --needed ${HW_INTEL_OPENSOURCE}
 
-# Nvidia proprietary (legacy/older GPUs)
+# Nvidia proprietary 
+
 # pacman -S --noconfirm --needed ${HW_NVIDIA_PROPRIETARY}
 
 # Nvidia open kernel (Turing+ / newer GPUs)
+
 # pacman -S --noconfirm --needed ${HW_NVIDIA_OPEN_KERNEL}
 
 # Nvidia open-source nouveau (limited 3D performance)
+
 # pacman -S --noconfirm --needed ${HW_NVIDIA_OPENSOURCE}
 
 # Hybrid graphics (Intel iGPU + Nvidia dGPU) - add after nvidia driver (Optional)
+
 # pacman -S --noconfirm --needed ${HW_NVIDIA_PRIME}
 
 # Virtual Machine QEMU/KVM
+
 # pacman -S --noconfirm --needed ${HW_VM_QEMU}
 
 # Virtual Machine VirtualBox
+
 # pacman -S --noconfirm --needed ${HW_VM_VIRTUALBOX}
 
 # Audio firmware (uncomment if needed - detected by loaded kernel modules)
+
 # pacman -S --noconfirm --needed ${HW_AUDIO_SOF}
 # pacman -S --noconfirm --needed ${HW_AUDIO_ALSA}
 
