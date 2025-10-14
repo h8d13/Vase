@@ -23,12 +23,28 @@ vim vase_os/klar_tix/klartix.conf
 sudo vase_os/klar_tix/klartix
 
 # 3. Reboot, clone inside the target then install desktop
-sudo vase_os/klar_tix/klartix_desktop
+
+sudo pacman -S git vim
+git clone https://github.com/h8d13/Vase && cd Vase/vase_os/klar_tix
+
+sudo vim klartix_desktop # Please edit these values according to hardware.
+
+sudo ./klartix_desktop
+
+## This will trigger another reboot.
+
+cd Vase && ./main -u
+
+cd vase_os/kaes_arch/
+
+sudo vim post # Edit more
+sudo ./post
+
 ```
 
 ## Configuration
 
-Please edit this: `klartix.conf` is essential
+Please edit this: `klartix.conf` is essential (Pre-install conf)
 
 ## Encryption Options
 
@@ -56,6 +72,8 @@ KLAGAN_MODE="-desktop"
 # Optional additions (uncomment in script)
 # konsole ark dolphin        # Individual apps
 # kde-applications           # Full KDE suite (Much heavier)
+
+# Hardware choices please configure !! 
 ```
 
 **What gets installed:**

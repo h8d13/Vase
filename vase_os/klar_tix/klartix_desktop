@@ -99,10 +99,13 @@ chmod +x "/home/$SUDO_USER/.config/autostart/pipewire.desktop"
 
 # pacman -S --noconfirm --needed ${HW_VM_VIRTUALBOX}
 
-# Audio firmware (uncomment if needed - detected by loaded kernel modules)
+# Audio firmware
 
 # pacman -S --noconfirm --needed ${HW_AUDIO_SOF}
+## Modern intel audio
+
 # pacman -S --noconfirm --needed ${HW_AUDIO_ALSA}
+## Older cards
 
 echo "=== Installation complete! ==="
 
