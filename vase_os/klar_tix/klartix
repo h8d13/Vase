@@ -631,9 +631,9 @@ echo "Installing kernel and base packages..."
 # Automatically determine kernel headers package
 KERNEL_HEADERS="${KERNEL}-headers"
 if [ "$ENABLE_LUKS" = "1" ]; then
-    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo cryptsetup
+    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo cryptsetup git vim
 else
-    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo
+    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo git vim
 fi
 # Create user
 useradd -m -s /bin/bash -G wheel $TARGET_USER

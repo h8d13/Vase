@@ -22,24 +22,20 @@ vim vase_os/klar_tix/klartix.conf
 # 2. Install base system (-v for verbose outputs)
 sudo vase_os/klar_tix/klartix
 
-# 3. Reboot, clone inside the target then install desktop
-
-sudo pacman -S git vim
+# 3. Reboot to hard disk, clone inside the target then install desktop
 git clone https://github.com/h8d13/Vase && cd Vase/vase_os/klar_tix
 
 sudo vim klartix_desktop # Please edit these values according to hardware.
 
 sudo ./klartix_desktop
-
 ## This will trigger another reboot.
-
+## Login again with user in SDDM screen
 cd Vase && ./main -u
 
 cd vase_os/kaes_arch/
 
 sudo vim post # Edit more
 sudo ./post
-
 ```
 
 ## Configuration
