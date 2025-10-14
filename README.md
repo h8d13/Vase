@@ -20,7 +20,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-874🤖-blue" alt="Git_Clones"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-927-blue" alt="Git_Clones"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Frameworks-6.19.0-blue" alt="Frameworks"></a>
@@ -29,7 +29,7 @@
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.09 | <strong>Tested:</strong> 2025-10-13 10:19:45 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.10 | <strong>Tested:</strong> 2025-10-14 10:51:06 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 

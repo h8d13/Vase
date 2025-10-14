@@ -2,7 +2,7 @@
 . ./util_f
 . ./...
 
-latest_entry=$(tail -n 1 tests.status 2>/dev/null)
+latest_entry=$(grep "Status: OK\|Status: FAIL" tests.status 2>/dev/null | tail -n 1)
 
 if [ -z "$latest_entry" ]; then
     echo "No entries found in tests.status"
@@ -40,7 +40,7 @@ kde_info="Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
 
 # Log to tests.status
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Host KDE/Qt: ${kde_info}" >> tests.status
-info "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
+echo "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
 # Read traffic data from traffic.json (use latest entry)
 if file_ex "traffic.json"; then
     clone_count=$(jq '.[-1].count // 0' traffic.json)
