@@ -14,9 +14,9 @@ fi
 . "${SCRIPT_DIR}/klartix.conf"
 # Adjust total steps based on LUKS configuration
 if [ "$ENABLE_LUKS" = "1" ]; then
-    TOTAL_STEPS=18  # With LUKS encryption
+    TOTAL_STEPS=17  # With LUKS encryption
 else
-    TOTAL_STEPS=17  # Without LUKS encryption
+    TOTAL_STEPS=16  # Without LUKS encryption
 fi
 CURRENT_STEP=0
 # Progress bar function
@@ -66,7 +66,7 @@ cleanup_disk() {
     sleep 2
     
     # Only turn off swap on the target disk partitions (not all swap with -a)
-    if [ -n "$TARGET_DISK" ] && [ "$SWAP_TYPE" = "partition" ]; then
+    if [ -n "$TARGET_DISK" ]; then
         if [ "$SEPARATE_BOOT" = "1" ]; then
             swapoff "${TARGET_DISK}${PART_PREFIX}3" 2>/dev/null || true
         else
@@ -87,10 +87,9 @@ cleanup_disk() {
     # Close LUKS devices if they exist (always try, not just if ENABLE_LUKS=1)
     cryptsetup close cryptroot 2>/dev/null || true
     cryptsetup close cryptboot 2>/dev/null || true
-
-    # Force remove only our specific device mapper entries (NOT remove_all - that's destructive to host)
-    dmsetup remove cryptroot 2>/dev/null || true
-    dmsetup remove cryptboot 2>/dev/null || true
+    
+    # Force remove all device mapper entries
+    dmsetup remove_all --force 2>/dev/null || true
     
     # Wait for device removal
     sleep 1
@@ -152,13 +151,7 @@ else
     echo "  EFI size:     $EFI_SIZE"
     echo "  Boot:         Combined with root"
 fi
-if [ "$SWAP_TYPE" = "partition" ]; then
-    echo "  Swap:         Partition ($SWAP_SIZE)"
-elif [ "$SWAP_TYPE" = "zram" ]; then
-    echo "  Swap:         zram ($ZRAM_SIZE, $ZRAM_ALGORITHM)"
-else
-    echo "  Swap:         Disabled"
-fi
+echo "  Swap size:    $SWAP_SIZE"
 if [ "$ENABLE_LUKS" = "1" ]; then
     if [ "$SEPARATE_BOOT" = "1" ] && [ "$ENCRYPT_BOOT" = "0" ]; then
         echo "  Encryption:   LUKS2 enabled (root only, boot unencrypted)"
@@ -280,37 +273,21 @@ cleanup_disk
 show_progress "Partitioning $TARGET_DISK..."
 PARTED_OUTPUT=$(mktemp)
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    if [ "$SWAP_TYPE" = "partition" ]; then
-        # Four partitions: EFI, Boot, Swap, Root
-        parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
-            mkpart primary fat32 1MiB "$EFI_SIZE" \
-            set 1 esp on \
-            mkpart primary $TARGET_FS "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" \
-            mkpart primary linux-swap "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
-            mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
-    else
-        # Three partitions: EFI, Boot, Root (no swap partition - using zram or none)
-        parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
-            mkpart primary fat32 1MiB "$EFI_SIZE" \
-            set 1 esp on \
-            mkpart primary $TARGET_FS "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" \
-            mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
-    fi
+    # Four partitions: EFI, Boot, Swap, Root
+    # Use cylinder alignment for optimal performance
+    parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
+        mkpart primary fat32 1MiB "$EFI_SIZE" \
+        set 1 esp on \
+        mkpart primary $TARGET_FS "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" \
+        mkpart primary linux-swap "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB}))GiB" "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
+        mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${BOOT_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
 else
-    if [ "$SWAP_TYPE" = "partition" ]; then
-        # Three partitions: EFI, Swap, Root (boot inside root)
-        parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
-            mkpart primary fat32 1MiB "$EFI_SIZE" \
-            set 1 esp on \
-            mkpart primary linux-swap "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
-            mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
-    else
-        # Two partitions: EFI, Root (no swap partition - using zram or none)
-        parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
-            mkpart primary fat32 1MiB "$EFI_SIZE" \
-            set 1 esp on \
-            mkpart primary $TARGET_FS "$EFI_SIZE" 100% 2>&1 | tee "$PARTED_OUTPUT"
-    fi
+    # Three partitions: EFI, Swap, Root (boot inside root)
+    parted -s -a cylinder "$TARGET_DISK" -- mklabel gpt \
+        mkpart primary fat32 1MiB "$EFI_SIZE" \
+        set 1 esp on \
+        mkpart primary linux-swap "$EFI_SIZE" "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" \
+        mkpart primary $TARGET_FS "$((${EFI_SIZE%GiB} + ${SWAP_SIZE%GiB}))GiB" 100% 2>&1 | tee "$PARTED_OUTPUT"
 fi
 # Check if kernel couldn't be informed about partition changes
 if grep -q "unable to inform the kernel" "$PARTED_OUTPUT"; then
@@ -339,35 +316,22 @@ fi
 # Setup LUKS encryption if enabled
 if [ "$ENABLE_LUKS" = "1" ]; then
     show_progress "Setting up LUKS2 encryption..."
-    # Close any existing LUKS mappings from previous attempts
+    # Close any existing LUKS mappings from previous attempts (ignore if they don't exist)
     cryptsetup close cryptroot 2>/dev/null || true
     cryptsetup close cryptboot 2>/dev/null || true
+    # Also try with full device mapper paths
     dmsetup remove cryptroot 2>/dev/null || true
     dmsetup remove cryptboot 2>/dev/null || true
+    # Wait for device removal to complete
     sleep 2
-    # Determine root partition number based on layout
-    if [ "$SEPARATE_BOOT" = "1" ]; then
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_PART_NUM=4
-        else
-            ROOT_PART_NUM=3
-        fi
-    else
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_PART_NUM=3
-        else
-            ROOT_PART_NUM=2
-        fi
-    fi
-
     # Wipe any existing LUKS signatures
     if [ "$SEPARATE_BOOT" = "1" ]; then
         if [ "$ENCRYPT_BOOT" = "1" ]; then
             wipefs -af "${TARGET_DISK}${PART_PREFIX}2" 2>/dev/null || true
         fi
-        wipefs -af "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" 2>/dev/null || true
+        wipefs -af "${TARGET_DISK}${PART_PREFIX}4" 2>/dev/null || true
     else
-        wipefs -af "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" 2>/dev/null || true
+        wipefs -af "${TARGET_DISK}${PART_PREFIX}3" 2>/dev/null || true
     fi
     # Force partition table re-read
     partprobe "${TARGET_DISK}" 2>/dev/null || true
@@ -387,24 +351,24 @@ if [ "$ENABLE_LUKS" = "1" ]; then
                 printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" cryptboot > /dev/null 2>&1 || die "Failed to open encrypted boot partition"
             fi
         fi
-        # Encrypt root partition - Can use argon2id since kernel handles this
+        # Encrypt root partition (partition 4) - Can use argon2id since kernel handles this
         # Use --iter-time 2000 for reasonable security/speed balance on USB
         if [ "$VERBOSE" = "1" ]; then
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" || die "Failed to encrypt root partition"
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" cryptroot || die "Failed to open encrypted root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot || die "Failed to open encrypted root partition"
         else
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" > /dev/null 2>&1 || die "Failed to encrypt root partition"
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf argon2id --iter-time 2000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" > /dev/null 2>&1 || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
         fi
     else
-        # Encrypt root partition only - GRUB needs to unlock this, use PBKDF2
+        # Encrypt root partition only (partition 3) - GRUB needs to unlock this, use PBKDF2
         # Use --iter-time 1000 for faster unlock on USB devices
         if [ "$VERBOSE" = "1" ]; then
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" || die "Failed to encrypt root partition"
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" cryptroot || die "Failed to open encrypted root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot || die "Failed to open encrypted root partition"
         else
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" > /dev/null 2>&1 || die "Failed to encrypt root partition"
-            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup luksFormat --batch-mode --type luks2 --pbkdf pbkdf2 --iter-time 1000 --sector-size 512 --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" > /dev/null 2>&1 || die "Failed to encrypt root partition"
+            printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot > /dev/null 2>&1 || die "Failed to open encrypted root partition"
         fi
     fi
     # Verify the password works by testing it
@@ -414,7 +378,11 @@ if [ "$ENABLE_LUKS" = "1" ]; then
         printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}2" cryptboot || die "LUKS password verification failed for boot partition"
     fi
     cryptsetup close cryptroot || true
-    printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}${ROOT_PART_NUM}" cryptroot || die "LUKS password verification failed for root partition"
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}4" cryptroot || die "LUKS password verification failed for root partition"
+    else
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup open --key-file=- --keyfile-size="$PASS_LEN" "${TARGET_DISK}${PART_PREFIX}3" cryptroot || die "LUKS password verification failed for root partition"
+    fi
     reop "LUKS password verified successfully!"
     # Save password length for debugging
     echo "$PASS_LEN" > /tmp/luks_pass_len.txt
@@ -422,7 +390,8 @@ fi
 # Format partitions
 show_progress "Formatting partitions..."
 if [ "$SEPARATE_BOOT" = "1" ]; then
-    # Determine boot and root devices based on encryption and swap type
+    # Four partitions: EFI(1), Boot(2), Swap(3), Root(4)
+    # Determine boot and root devices based on encryption
     if [ "$ENABLE_LUKS" = "1" ]; then
         if [ "$ENCRYPT_BOOT" = "1" ]; then
             BOOT_DEV="/dev/mapper/cryptboot"
@@ -432,11 +401,7 @@ if [ "$SEPARATE_BOOT" = "1" ]; then
         ROOT_DEV="/dev/mapper/cryptroot"
     else
         BOOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_DEV="${TARGET_DISK}${PART_PREFIX}4"
-        else
-            ROOT_DEV="${TARGET_DISK}${PART_PREFIX}3"
-        fi
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}4"
     fi
     if [ "$VERBOSE" = "1" ]; then
         mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1"
@@ -446,10 +411,8 @@ if [ "$SEPARATE_BOOT" = "1" ]; then
             xfs) mkfs.xfs -f "$BOOT_DEV" ;;
             f2fs) mkfs.f2fs -f "$BOOT_DEV" ;;
         esac
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            mkswap "${TARGET_DISK}${PART_PREFIX}3"
-            swapon "${TARGET_DISK}${PART_PREFIX}3"
-        fi
+        mkswap "${TARGET_DISK}${PART_PREFIX}3"
+        swapon "${TARGET_DISK}${PART_PREFIX}3"
         case "$TARGET_FS" in
             ext4) mkfs.ext4 -F "$ROOT_DEV" ;;
             btrfs) mkfs.btrfs -f "$ROOT_DEV" ;;
@@ -464,10 +427,8 @@ if [ "$SEPARATE_BOOT" = "1" ]; then
             xfs) mkfs.xfs -f "$BOOT_DEV" > /dev/null 2>&1 ;;
             f2fs) mkfs.f2fs -f "$BOOT_DEV" > /dev/null 2>&1 ;;
         esac
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            mkswap "${TARGET_DISK}${PART_PREFIX}3" > /dev/null 2>&1
-            swapon "${TARGET_DISK}${PART_PREFIX}3"
-        fi
+        mkswap "${TARGET_DISK}${PART_PREFIX}3" > /dev/null 2>&1
+        swapon "${TARGET_DISK}${PART_PREFIX}3"
         case "$TARGET_FS" in
             ext4) mkfs.ext4 -F -q "$ROOT_DEV" ;;
             btrfs) mkfs.btrfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
@@ -476,22 +437,17 @@ if [ "$SEPARATE_BOOT" = "1" ]; then
         esac
     fi
 else
-    # Determine root device based on encryption and swap type
+    # Three partitions: EFI(1), Swap(2), Root(3)
+    # Determine root device based on encryption
     if [ "$ENABLE_LUKS" = "1" ]; then
         ROOT_DEV="/dev/mapper/cryptroot"
     else
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_DEV="${TARGET_DISK}${PART_PREFIX}3"
-        else
-            ROOT_DEV="${TARGET_DISK}${PART_PREFIX}2"
-        fi
+        ROOT_DEV="${TARGET_DISK}${PART_PREFIX}3"
     fi
     if [ "$VERBOSE" = "1" ]; then
         mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1"
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            mkswap "${TARGET_DISK}${PART_PREFIX}2"
-            swapon "${TARGET_DISK}${PART_PREFIX}2"
-        fi
+        mkswap "${TARGET_DISK}${PART_PREFIX}2"
+        swapon "${TARGET_DISK}${PART_PREFIX}2"
         case "$TARGET_FS" in
             ext4) mkfs.ext4 -F "$ROOT_DEV" ;;
             btrfs) mkfs.btrfs -f "$ROOT_DEV" ;;
@@ -500,10 +456,8 @@ else
         esac
     else
         mkfs.fat -F32 "${TARGET_DISK}${PART_PREFIX}1" > /dev/null 2>&1
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            mkswap "${TARGET_DISK}${PART_PREFIX}2" > /dev/null 2>&1
-            swapon "${TARGET_DISK}${PART_PREFIX}2"
-        fi
+        mkswap "${TARGET_DISK}${PART_PREFIX}2" > /dev/null 2>&1
+        swapon "${TARGET_DISK}${PART_PREFIX}2"
         case "$TARGET_FS" in
             ext4) mkfs.ext4 -F -q "$ROOT_DEV" ;;
             btrfs) mkfs.btrfs -f "$ROOT_DEV" > /dev/null 2>&1 ;;
@@ -585,6 +539,7 @@ else
     # Fallback: manual fstab generation
     echo "# Generated fstab" > "$TARGET_MOUNT/etc/fstab"
     if [ "$SEPARATE_BOOT" = "1" ]; then
+        # Four partitions layout
         if [ "$ENABLE_LUKS" = "1" ]; then
             # For LUKS, use /dev/mapper paths for encrypted partitions
             echo "/dev/mapper/cryptroot / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
@@ -594,32 +549,21 @@ else
                 echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
             fi
         else
-            if [ "$SWAP_TYPE" = "partition" ]; then
-                echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}4) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-            else
-                echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-            fi
+            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}4) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
             echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) /boot $TARGET_FS defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
         fi
         echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
-        fi
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
     else
+        # Three partitions layout
         if [ "$ENABLE_LUKS" = "1" ]; then
             # For LUKS, use /dev/mapper path
             echo "/dev/mapper/cryptroot / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
         else
-            if [ "$SWAP_TYPE" = "partition" ]; then
-                echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-            else
-                echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
-            fi
+            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}3) / $TARGET_FS defaults 0 1" >> "$TARGET_MOUNT/etc/fstab"
         fi
         echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}1) /boot/efi vfat defaults 0 2" >> "$TARGET_MOUNT/etc/fstab"
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
-        fi
+        echo "UUID=$(blkid -s UUID -o value ${TARGET_DISK}${PART_PREFIX}2) none swap defaults 0 0" >> "$TARGET_MOUNT/etc/fstab"
     fi
 fi
 # Create keyfile for LUKS if combined boot+root (must be done BEFORE chroot)
@@ -630,36 +574,25 @@ if [ "$ENABLE_LUKS" = "1" ] && [ "$SEPARATE_BOOT" = "0" ]; then
     chmod 000 "$TARGET_MOUNT/crypto_keyfile.bin"
     # Get password length
     PASS_LEN=${#LUKS_PASSWORD}
-    # Determine root partition number based on swap type
-    if [ "$SWAP_TYPE" = "partition" ]; then
-        KEYFILE_ROOT_PART=3
-    else
-        KEYFILE_ROOT_PART=2
-    fi
     # Add keyfile to LUKS (this must happen on the host, not in chroot)
-    printf "%s" "$LUKS_PASSWORD" | cryptsetup luksAddKey "${TARGET_DISK}${PART_PREFIX}${KEYFILE_ROOT_PART}" "$TARGET_MOUNT/crypto_keyfile.bin" --key-file=- --keyfile-size="$PASS_LEN" || die "Failed to add keyfile to LUKS"
+    if [ "$SEPARATE_BOOT" = "1" ]; then
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup luksAddKey "${TARGET_DISK}${PART_PREFIX}4" "$TARGET_MOUNT/crypto_keyfile.bin" --key-file=- --keyfile-size="$PASS_LEN" || die "Failed to add keyfile to LUKS"
+    else
+        printf "%s" "$LUKS_PASSWORD" | cryptsetup luksAddKey "${TARGET_DISK}${PART_PREFIX}3" "$TARGET_MOUNT/crypto_keyfile.bin" --key-file=- --keyfile-size="$PASS_LEN" || die "Failed to add keyfile to LUKS"
+    fi
     reop "LUKS keyfile created and added successfully"
 fi
 # Create configuration script for chroot
 show_progress "Creating chroot configuration script..."
 # Get UUIDs before creating the script
 if [ "$ENABLE_LUKS" = "1" ]; then
-    # Determine root partition number (already calculated earlier)
     if [ "$SEPARATE_BOOT" = "1" ]; then
         if [ "$ENCRYPT_BOOT" = "1" ]; then
             BOOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}2")
         fi
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}4")
-        else
-            ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}3")
-        fi
+        ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}4")
     else
-        if [ "$SWAP_TYPE" = "partition" ]; then
-            ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}3")
-        else
-            ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}2")
-        fi
+        ROOT_UUID=$(blkid -s UUID -o value "${TARGET_DISK}${PART_PREFIX}3")
     fi
 fi
 cat > "$TARGET_MOUNT/configure.sh" << EOF
@@ -723,75 +656,6 @@ case "$INIT_SYSTEM" in
         dinitctl enable NetworkManager
         ;;
 esac
-# Configure zram swap if enabled
-if [ "$SWAP_TYPE" = "zram" ]; then
-    echo "Configuring zram swap..."
-    # Create modules-load config (module will load on boot, NOT during chroot)
-    mkdir -p /etc/modules-load.d
-    echo "zram" > /etc/modules-load.d/zram.conf
-
-    # Create init-specific startup script
-    case "$INIT_SYSTEM" in
-        openrc)
-            cat > /etc/local.d/zram.start << 'ZRAM_EOF'
-#!/bin/sh
-# Load zram module
-modprobe zram
-# Set compression algorithm
-echo $ZRAM_ALGORITHM > /sys/block/zram0/comp_algorithm
-# Set zram size
-echo $ZRAM_SIZE > /sys/block/zram0/disksize
-# Initialize swap
-mkswap /dev/zram0
-swapon /dev/zram0 -p 100
-ZRAM_EOF
-            chmod +x /etc/local.d/zram.start
-            ;;
-        runit)
-            mkdir -p /etc/runit/sv/zram
-            cat > /etc/runit/sv/zram/run << 'ZRAM_EOF'
-#!/bin/sh
-exec 2>&1
-# Load zram module
-modprobe zram
-# Set compression algorithm
-echo $ZRAM_ALGORITHM > /sys/block/zram0/comp_algorithm
-# Set zram size
-echo $ZRAM_SIZE > /sys/block/zram0/disksize
-# Initialize swap
-mkswap /dev/zram0
-swapon /dev/zram0 -p 100
-# Keep service running
-exec chpst -b zram pause
-ZRAM_EOF
-            chmod +x /etc/runit/sv/zram/run
-            ln -s /etc/runit/sv/zram /etc/runit/runsvdir/default/
-            ;;
-        s6|dinit)
-            # Generic script for s6/dinit
-            cat > /usr/local/bin/zram-init << 'ZRAM_EOF'
-#!/bin/sh
-modprobe zram
-echo $ZRAM_ALGORITHM > /sys/block/zram0/comp_algorithm
-echo $ZRAM_SIZE > /sys/block/zram0/disksize
-mkswap /dev/zram0
-swapon /dev/zram0 -p 100
-ZRAM_EOF
-            chmod +x /usr/local/bin/zram-init
-            echo "Note: Manual zram init script created at /usr/local/bin/zram-init"
-            ;;
-    esac
-
-    # Replace variables in the scripts
-    sed -i "s/\\\$ZRAM_SIZE/$ZRAM_SIZE/g" /etc/local.d/zram.start 2>/dev/null || true
-    sed -i "s/\\\$ZRAM_ALGORITHM/$ZRAM_ALGORITHM/g" /etc/local.d/zram.start 2>/dev/null || true
-    sed -i "s/\\\$ZRAM_SIZE/$ZRAM_SIZE/g" /etc/runit/sv/zram/run 2>/dev/null || true
-    sed -i "s/\\\$ZRAM_ALGORITHM/$ZRAM_ALGORITHM/g" /etc/runit/sv/zram/run 2>/dev/null || true
-    sed -i "s/\\\$ZRAM_SIZE/$ZRAM_SIZE/g" /usr/local/bin/zram-init 2>/dev/null || true
-    sed -i "s/\\\$ZRAM_ALGORITHM/$ZRAM_ALGORITHM/g" /usr/local/bin/zram-init 2>/dev/null || true
-
-    echo "zram swap configured with size $ZRAM_SIZE and algorithm $ZRAM_ALGORITHM"
-fi
 # Configure LUKS if enabled
 if [ "$ENABLE_LUKS" = "1" ]; then
     echo "Configuring LUKS encryption..."
@@ -848,7 +712,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 show_progress "Making configuration script executable..."
 chmod +x "$TARGET_MOUNT/configure.sh"
-
 # Execute configuration in chroot
 show_progress "Configuring system in chroot..."
 chroot "$TARGET_MOUNT" /bin/bash /configure.sh
@@ -859,12 +722,10 @@ show_progress "Syncing data to disk..."
 sync
 sleep 2
 show_progress "Unmounting filesystems..."
-if [ "$SWAP_TYPE" = "partition" ]; then
-    if [ "$SEPARATE_BOOT" = "1" ]; then
-        swapoff "${TARGET_DISK}${PART_PREFIX}3" || true
-    else
-        swapoff "${TARGET_DISK}${PART_PREFIX}2" || true
-    fi
+if [ "$SEPARATE_BOOT" = "1" ]; then
+    swapoff "${TARGET_DISK}${PART_PREFIX}3" || true
+else
+    swapoff "${TARGET_DISK}${PART_PREFIX}2" || true
 fi
 umount -l "$TARGET_MOUNT/dev/pts" 2>/dev/null || true
 umount -l "$TARGET_MOUNT/dev" 2>/dev/null || true
