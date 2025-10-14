@@ -1,6 +1,9 @@
 # Security - VaseOS Arch KDE 🛡️
 
 - All ISOs are signed using `gpg` default `1M - 4096b` with valid email.
+
+> They can be verified using `gpg --verify VASE-*.iso.asc VASE-*.iso`
+
 - They can be mounted and explored and other than what is in `iso_mod` have not been altered otherwise.
     - Cached KDE files, motd and added git to packages.
     - Local package repo in ISO - Uses `TrustAll` sig level (live environment only, doesn't persist on installed system)

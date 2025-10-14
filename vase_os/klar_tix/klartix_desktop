@@ -39,13 +39,15 @@ tac /etc/pipewire/pipewire.conf | \
   mv /tmp/pipewire.conf.tmp /etc/pipewire/pipewire.conf
 
 mkdir -p "/home/$SUDO_USER/.config/autostart/"
-cat > "/home/$SUDO_USER/.config/autostart/" <<'EOF'
+cat > "/home/$SUDO_USER/.config/autostart/pipewire.desktop" <<'EOF'
 [Desktop Entry]
 Type=Application
 Name=Pipewire
 Exec=/usr/bin/pipewire
 X-KDE-autostart-phase=1
 EOF
+
+chmod +x "/home/$SUDO_USER/.config/autostart/pipewire.desktop"
 
 #echo "=== Installing Bluetooth support ==="
 #pacman -S --noconfirm bluez bluez-runit bluez-utils bluedevil

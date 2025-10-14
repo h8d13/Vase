@@ -19,7 +19,7 @@ Handles partitioning, encryption, bootloader, and base system configuration for 
 # 1. Configure
 vim vase_os/klar_tix/klartix.conf
 
-# 2. Install base system
+# 2. Install base system (-v for verbose outputs)
 sudo vase_os/klar_tix/klartix
 
 # 3. Reboot, clone inside the target then install desktop
@@ -63,16 +63,6 @@ KLAGAN_MODE="-desktop"
 - Wayland + SDDM (runit service)
 - Pipewire audio stack
 - NetworkManager applet
-
-## Hardware Example (Intel GPU)
-
-```bash
-# Enable lib32 in /etc/pacman.conf
-sudo vim /etc/pacman.conf  # Uncomment [lib32]
-
-# Install drivers example Intel/Intel
-sudo pacman -S lib32-mesa lib32-libgl vulkan-intel lib32-vulkan-intel intel-media-driver
-```
 
 ## VaseOS Compatibility
 
