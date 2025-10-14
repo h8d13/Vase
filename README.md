@@ -107,19 +107,19 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 `$ ./main -t (*args)` : Launch TUI forked KDE install
 > This will check system subdeps for Arch to Arch installs.
 
-**Long form commands:**
+#### Commands
 
 ```
---reset                 # Resets logs
---update                # Checks git for updates & pull submodules
---start                 # Start VM menu
---quick <command>       # Pass direct VM options "help"
---bench <type>          # Run benchmarks: io, cpu, gpu
---isomod                # Create iso default `iso_profiles/fat.conf`
---flash <device>        # Flash ISO to USB device (e.g., /dev/sdd)
---workflow <device>     # Complete workflow
---dev                   # Development mode flag entry script
---grub <args>           # GRUB utilities -h for help
+--reset                    # -r # Resets logs
+--update                   # -u # Checks git for updates & pull submodules
+--start                    # -s # Start VM menu
+--quick <command>          # -q # Pass direct VM options "help"
+--bench <type>             # -b # Run benchmarks: io, cpu, gpu
+--isomod                   # -i # Create iso default `iso_profiles/fat.conf`
+--flash <device>           # -f # Flash ISO to USB device (e.g., /dev/sdd)
+--workflow <device>        # -w # Complete workflow
+--dev                      # -d # Development mode flag entry script
+--grub <args>              # -g # GRUB utilities -h for help
 ```
 
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
