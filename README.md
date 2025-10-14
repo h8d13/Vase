@@ -109,7 +109,6 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 #### Commands
 
 ```
---reset                    # -r # Resets logs
 --update                   # -u # Checks git for updates & pull submodules
 --start                    # -s # Start VM menu
 --quick <command>          # -q # Pass direct VM options "help"
@@ -119,6 +118,7 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 --workflow <device>        # -w # Complete workflow
 --dev                      # -d # Development mode flag entry script
 --grub <args>              # -g # GRUB utilities -h for help
+--reset                    # -r # Resets logs and rcw
 ```
 
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
