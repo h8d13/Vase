@@ -102,10 +102,9 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 
 ### From existing arch system (For devs)
 
-> On an existing install use sudo.  
-
 `$ ./main -t (*args)` : Launch TUI forked KDE install
-> This will check system subdeps for Arch to Arch installs.
+
+> This will check system subdeps for Arch to Arch installs. On an existing install use sudo.  
 
 #### Commands
 
