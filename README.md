@@ -93,14 +93,14 @@ If this helped you earn you some time to touch grass (or you even just learned t
 
 ---
 
-## Hardware Compatibility [README](./.github/docs/hard_ware.md)
+## Hardware Compat [README](./.github/docs/hard_ware.md)
 
 VaseOS automatically detects hardware and recommends appropriate drivers based on modified archinstall `hardware.py` detection logic, but is only a recommendation. You are free to **select the drivers** you want to try. See a full table of supported stuff in the link above. 
 > Generally AMD/Intel stuff will be straight-forward.
 
 ---
 
-### From an existing arch installation (For devs)
+### From existing arch system (For devs)
 
 > On an existing install use sudo.  
 
