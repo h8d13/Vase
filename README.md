@@ -125,6 +125,28 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... More readmes included. 
 
+### Turning Konqi in Konqzilla.
+
+We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
+
+Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
+
+> Idea was simple: Faster testing/installs, fixing host to target installs, **saving mirror providers TBs in bandwith** and less choices to break something in TUI (kind of work for all scenario) testing on weird/old hardware like Hybrid Nvidia/Intel setups or more recent desktops too.
+
+![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
+
+## Artix compat layer 🥶
+
+<a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
+
+> Made specially for my friend Klagan who likes runit and minimalist installs with little bandwidth <3 
+
+Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. Should be appreciated by purists and elitists of the community. 
+
+[![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=N1Uy02KVnXU "Vase Installation Demo")
+
+See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
+
 ## Components
 
 > Tools used: mainly archinstall, mkarchiso, arch-install-scripts, dd, jq. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
@@ -151,25 +173,3 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
-
-### Turning Konqi in Konqzilla.
-
-We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
-
-Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
-
-> Idea was simple: Faster testing/installs, fixing host to target installs, **saving mirror providers TBs in bandwith** and less choices to break something in TUI (kind of work for all scenario) testing on weird/old hardware like Hybrid Nvidia/Intel setups or more recent desktops too.
-
-![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
-
-## Artix compat layer 🥶
-
-<a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
-
-> Made specially for my friend Klagan who likes runit and minimalist installs with little bandwidth <3 
-
-Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. Should be appreciated by purists and elitists of the community. 
-
-[![VaseOSinOS](http://img.youtube.com/vi/N1Uy02KVnXU/0.jpg)](http://www.youtube.com/watch?v=N1Uy02KVnXU "Vase Installation Demo")
-
-See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
