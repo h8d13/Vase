@@ -56,10 +56,6 @@ chmod +x "/home/$SUDO_USER/.config/autostart/pipewire.desktop"
 
 # Hardware detection examples - uncomment and customize based on your system
 
-## Install kernel headers (required for DKMS modules like Nvidia drivers)
-
-# pacman -S --noconfirm --needed ${HW_KERNEL_HEADERS}
-
 # CPU Microcode (choose one)
 
 # pacman -S --noconfirm --needed ${HW_CPU_INTEL}

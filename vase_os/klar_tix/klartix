@@ -143,6 +143,7 @@ fi
 nlp
 info "Partitioning layout:"
 echo "  Init system:  $INIT_SYSTEM"
+echo "  Kernel:       $KERNEL"
 echo "  Filesystem:   $TARGET_FS"
 echo "  Target disk:  $TARGET_DISK"
 if [ "$SEPARATE_BOOT" = "1" ]; then
@@ -627,10 +628,12 @@ echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 echo "root:$ROOT_PASSWORD" | chpasswd
 # Install essential packages first
 echo "Installing kernel and base packages..."
+# Automatically determine kernel headers package
+KERNEL_HEADERS="${KERNEL}-headers"
 if [ "$ENABLE_LUKS" = "1" ]; then
-    pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo cryptsetup
+    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo cryptsetup
 else
-    pacman -S --noconfirm linux linux-firmware grub efibootmgr base-devel sudo
+    pacman -S --noconfirm $KERNEL $KERNEL_HEADERS linux-firmware grub efibootmgr base-devel sudo
 fi
 # Create user
 useradd -m -s /bin/bash -G wheel $TARGET_USER
