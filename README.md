@@ -134,7 +134,7 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
 
-## Artix compat layer 🥶
+## Artix Compat Layer 🥶
 
 <a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
 
