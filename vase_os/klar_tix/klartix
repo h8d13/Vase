@@ -14,9 +14,9 @@ fi
 . "${SCRIPT_DIR}/klartix.conf"
 # Adjust total steps based on LUKS configuration
 if [ "$ENABLE_LUKS" = "1" ]; then
-    TOTAL_STEPS=17  # With LUKS encryption
+    TOTAL_STEPS=20  # With LUKS encryption
 else
-    TOTAL_STEPS=16  # Without LUKS encryption
+    TOTAL_STEPS=18  # Without LUKS encryption
 fi
 CURRENT_STEP=0
 # Progress bar function
@@ -261,9 +261,10 @@ nlp
 # Set up cleanup trap now that user confirmed
 trap cleanup_disk EXIT INT TERM
 # Install required packages
-preop "Installing required packages on host..."
+show_progress "Installing required packages on host..."
 $PKG_MAN $PKG_MAN_W $PKGS $ARG1
 # Clean up previous files if canceled/failed install
+show_progress "Cleaning up previous installation attempts..."
 rm -rf /tmp/artix-bootstrap*
 # Ensure target mount point exists
 TARGET_MOUNT="/mnt/artix"
@@ -511,6 +512,7 @@ if [ "$VERBOSE" = "1" ]; then
 else
     wget -q https://gitea.artixlinux.org/artix/artix-bootstrap/raw/branch/master/artix-bootstrap.sh
 fi
+show_progress "Setting bootstrap tool permissions..."
 chmod +x artix-bootstrap.sh
 show_progress "Bootstrapping Artix Linux with $INIT_SYSTEM..."
 if [ "$VERBOSE" = "1" ]; then
@@ -716,9 +718,9 @@ EOF
 show_progress "Making configuration script executable..."
 chmod +x "$TARGET_MOUNT/configure.sh"
 # Execute configuration in chroot
-show_progress "Configuring system in chroot..."
+show_progress "Executing system configuration in chroot..."
 chroot "$TARGET_MOUNT" /bin/bash /configure.sh
-show_progress "Removing configuration script..."
+show_progress "Cleaning up configuration script..."
 rm "$TARGET_MOUNT/configure.sh"
 # Cleanup
 show_progress "Syncing data to disk..."
