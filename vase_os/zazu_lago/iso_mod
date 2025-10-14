@@ -14,6 +14,21 @@ PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
 WORK_DIR="$SCRIPT_DIR/archiso_work"
 OUTPUT_DIR="$SCRIPT_DIR/a"
 
+# Cleanup function for trap
+cleanup() {
+    if dir_ex "$PROFILE_DIR"; then
+        info "Cleaning up build directories..."
+        rm -rf "$PROFILE_DIR"
+    fi
+    if dir_ex "$WORK_DIR"; then
+        rm -rf "$WORK_DIR"
+    fi
+}
+
+# Register cleanup on exit/interrupt
+trap cleanup EXIT INT TERM
+
+# If the was still remenants
 if dir_ex "$PROFILE_DIR"; then
     info "Cleaning up previous run..."
     rm -rf "$PROFILE_DIR"
@@ -211,9 +226,6 @@ else
     taskset -c 0-$((cores-1)) mkarchiso -v -w "$WORK_DIR" -o "$OUTPUT_DIR" -L "$ISO_LABEL" "$PROFILE_DIR"
 fi
 # To use all available (this is VERY intese on CPU and can look frozen but always still succeeds)
-info "Cleaning up..."
-rm -rf "$PROFILE_DIR"
-rm -rf "$WORK_DIR"
-chown_all "$SUDO_USER" "$OUTPUT_DIR" 
+chown_all "$SUDO_USER" "$OUTPUT_DIR"
 
 reop "Done! New ISO created in: $OUTPUT_DIR"
