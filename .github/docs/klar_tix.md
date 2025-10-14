@@ -12,7 +12,6 @@ Handles partitioning, encryption, bootloader, and base system configuration for 
 - **`klartix`** - Main installer (disk setup, LUKS, bootloader, users)
 - **`klartix.conf`** - Configuration file (init system, partitions, encryption)
 - **`klartix_desktop`** - KDE Plasma installer with Wayland/SDDM/Pipewire
-- **`klartix_hw`** - Hardware driver definitions (Intel/Intel system example)
 
 ## Quick Start
 

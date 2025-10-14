@@ -6,6 +6,9 @@ set -e  # Exit on error
 # Uncomment saves 1gb by not downloading as many plasma stuff
 # plasma contains flatpak for example while plasma-desktop doesn't. so discover will be useless
 
+#HW_GROUP_INTELINTEL="vulkan-intel intel-media-driver"
+
+
 echo "=== Updating system ==="
 pacman -Syu --noconfirm
 
@@ -19,7 +22,6 @@ pacman -S --noconfirm --needed konsole ark dolphin
 
 echo "=== Installing audio support ==="
 pacman -S --noconfirm --needed pipewire-alsa #pipewire #pipewire-pulse #pipewire-jack #wireplumber
-
 
 echo "=== Setting up audio support ==="
 mkdir -p /etc/pipewire
