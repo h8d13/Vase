@@ -99,6 +99,15 @@ If this helped you earn you some time to touch grass (or you even just learned t
 VaseOS automatically detects hardware and recommends appropriate drivers based on modified archinstall `hardware.py` detection logic, but is only a recommendation. You are free to **select the drivers** you want to try. See a full table of supported stuff in the link above. 
 > Generally AMD/Intel stuff will be straight-forward.
 
+## Languages Compat 🌐
+
+Before running the post install script you can uncomment any of these lines for extended support:
+```
+#LG_PACKS+=" noto-fonts-cjk"         # Chinese, Japanese, Korean
+#LG_PACKS+=" noto-fonts-extra"       # Arabic, Hebrew, Greek, Cyrillic, Thai extended symbols
+#LG_PACKS+=" noto-fonts-devanagari"  # Hindi/Devanagari
+```
+
 ---
 
 ### From existing arch system (For devs)
