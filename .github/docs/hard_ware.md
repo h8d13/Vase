@@ -77,3 +77,17 @@ With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Lapt
 - Older than GTX 200 → No longer supported.
 
 > For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
+
+
+### Kernels
+
+During install you pick one or several kernels, that can be found in your Grub boot screen: (Zen, hardened, lts or default)
+
+Depending on hardware again, performance might differ from one mainline to another variant. 
+
+Mainline standard balanced.
+Zen for desktop/gaming.
+Hardened for dev systems.
+LTS more stable version. (6.12.x)
+
+For example when you build nvidia drivers they are built against your curretn kernel-headers making this just as important as the drivers selection part.
