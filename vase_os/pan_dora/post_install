@@ -41,14 +41,7 @@ if command -v grub-mkconfig &>/dev/null; then
     echo "[PAN_DORA] ✓ GRUB config regenerated"
 fi
 
-# 3. Disable swap in fstab (if any exists)
-echo "[PAN_DORA] Disabling swap entries..."
-if [ -f /etc/fstab ]; then
-    sed -i '/swap/d' /etc/fstab
-    echo "[PAN_DORA] ✓ Swap entries removed from fstab"
-fi
-
-# 4. Configure systemd journal to RAM (reduce writes)
+# #. Configure systemd journal to RAM (reduce writes)
 echo "[PAN_DORA] Configuring systemd journal for volatile storage..."
 mkdir -p /etc/systemd/journald.conf.d/
 cat > /etc/systemd/journald.conf.d/usbstick.conf << 'EOF'
@@ -58,7 +51,7 @@ RuntimeMaxUse=30M
 EOF
 echo "[PAN_DORA] ✓ Journal configured for RAM storage (volatile)"
 
-# 5. Optimize ext4 filesystem (disable journal if mounted)
+# 4. Optimize ext4 filesystem (disable journal if mounted)
 echo "[PAN_DORA] Checking ext4 journal status..."
 # Note: Journal can only be disabled when filesystem is unmounted
 # This is informational - user must do this from live USB if desired
@@ -70,21 +63,7 @@ if [[ "$ROOT_DEV" =~ ext4 ]]; then
     echo "              e2fsck -f $ROOT_DEV"
 fi
 
-# 6. Install additional packages for hardware compatibility
-echo "[PAN_DORA] Installing generic drivers for hardware portability..."
-EXTRA_PACKAGES=(
-    "xf86-video-vesa"    # Generic VESA video driver
-)
-
-for pkg in "${EXTRA_PACKAGES[@]}"; do
-    if ! pacman -Q "$pkg" &>/dev/null; then
-        pacman -S --noconfirm "$pkg" 2>/dev/null && echo "[PAN_DORA] ✓ Installed $pkg" || echo "[PAN_DORA] ✗ Failed to install $pkg"
-    else
-        echo "[PAN_DORA] ✓ $pkg already installed"
-    fi
-done
-
-# 7. Set BFQ scheduler for better USB performance
+# 5. Set BFQ scheduler for better USB performance
 echo "[PAN_DORA] Configuring BFQ I/O scheduler..."
 cat > /etc/udev/rules.d/60-ioschedulers.rules << 'EOF'
 # Set BFQ scheduler for better performance on removable media
@@ -92,34 +71,10 @@ ACTION=="add|change", KERNEL=="sd[a-z]|mmcblk[0-9]*", ATTR{queue/rotational}=="0
 EOF
 echo "[PAN_DORA] ✓ BFQ scheduler configured for SSDs/USB"
 
-# 8. Create info file
-cat > /etc/pandora-info << EOF
-# This system was installed using PAN_DORA (Vase removable media installer)
-# Installation date: $(date)
-#
-# Optimizations applied:
-# - ext4 filesystem (journal present - disable manually for fewer writes)
-# - Portable mkinitcpio hooks (block/keyboard before autodetect)
-# - GRUB with --removable flag (UEFI) or standard BIOS install
-# - Systemd journal in RAM (volatile storage)
-# - No swap partition
-# - Generic video drivers (xf86-video-vesa)
-# - BFQ I/O scheduler for USB performance
-# - UUID-based fstab entries
-#
-# For maximum flash longevity, consider:
-#   1. Disable ext4 journal: tune2fs -O ^has_journal /dev/sdXN
-#   2. Add noatime to fstab mount options
-#   3. Use eatmydata for non-critical package operations
-EOF
-
-echo "[PAN_DORA] ✓ Created /etc/pandora-info"
-
 echo ""
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║  PAN_DORA Post-Install Complete!                          ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 echo "Your removable media is now optimized for portable use."
-echo "See /etc/pandora-info for details and additional optimization tips."
 echo ""
