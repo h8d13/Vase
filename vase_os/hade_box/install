@@ -60,18 +60,8 @@ python -B -m archinstall "$@"
 # All available archinstall command line options:
 #
 # -h, --help            show this help message and exit
-# --config [CONFIG]     JSON configuration file
-# --config-url [CONFIG_URL]
-#                       Url to a JSON configuration file
-# --creds [CREDS]       JSON credentials configuration file
-# --creds-url [CREDS_URL]
-#                       Url to a JSON credentials configuration file
-# --creds-decryption-key [CREDS_DECRYPTION_KEY]
-#                       Decryption key for credentials file
-# --silent              WARNING: Disables all prompts for input and
-#                       confirmation. If no configuration is provided, this is
-#                       ignored
-# --script [SCRIPT]     Script to run for installation ## Last line of installer
+# --live # --pandora    apply live install optimizations
+
 ####################### Could be super useful (ckbcomp and grub keymaps)
 # --mountpoint [/mnt]   Define an alternate mount point for installation
 # --skip-ntp            Disables NTP checks during installation
@@ -85,3 +75,17 @@ python -B -m archinstall "$@"
 ####################### Test fully local if possible see how fast it can be
 # --verbose             Enabled verbose options
 # --debug               Adds debug info into the log
+
+# --config [CONFIG]     JSON configuration file
+# --config-url [CONFIG_URL]
+#                       Url to a JSON configuration file
+# --creds [CREDS]       JSON credentials configuration file
+# --creds-url [CREDS_URL]
+#                       Url to a JSON credentials configuration file
+# --creds-decryption-key [CREDS_DECRYPTION_KEY]
+#                       Decryption key for credentials file
+# --silent              WARNING: Disables all prompts for input and
+#                       confirmation. If no configuration is provided, this is
+#                       ignored
+# --script [SCRIPT]     Script to run for installation ## Last line of installer
+
