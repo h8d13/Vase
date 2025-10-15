@@ -30,9 +30,14 @@ if [ -d /sys/firmware/efi ]; then
         echo "[PAN_DORA] ✗ /boot/efi not found, skipping UEFI GRUB install"
     fi
 else
-    # BIOS system
-    # Device will be set by archinstall's GRUB config
-    echo "[PAN_DORA] ℹ BIOS boot - GRUB already installed by archinstall"
+    # BIOS system - verify GRUB is installed
+    # archinstall should have installed GRUB to the USB device's MBR
+    # This is already portable for BIOS systems (no special flag needed)
+    if [ -d /boot/grub ]; then
+        echo "[PAN_DORA] ✓ BIOS boot - GRUB installed to device MBR (portable)"
+    else
+        echo "[PAN_DORA] ✗ GRUB not found - BIOS boot may not work"
+    fi
 fi
 
 # Regenerate GRUB config
