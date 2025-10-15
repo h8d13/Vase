@@ -111,7 +111,7 @@ Before running the post install script you can uncomment any of these lines for 
 
 You can also use `./main -t --live` for installs in place/removable media (For installing with only one USB: min 8GiB, use newer ones or it will take ages)
 
-> This works because everything is loaded in RAM so you can safely install directly onto the same drive where you put the ISO.
+> This works because everything is loaded in RAM so you can safely install directly onto the same drive where you put the ISO. Careful that if you do fail the install for some reason you'll have to flash it again...
 
 ---
 
