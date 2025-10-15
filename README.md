@@ -122,6 +122,10 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ![konqzilla](https://github.com/user-attachments/assets/8c7d7050-f58a-4dbc-aa69-2d9ee9716edc)
 
+---
+
+## From an existing install for Devs [README](./.github/docs/docs_main.md)
+
 ## Artix Compat Layer 🥶
 
 <a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
@@ -135,8 +139,6 @@ Bootstrap Artix Linux with desired init system. From any existing Linux install 
 See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
 
 ## Components
-
-> Tools used: mainly archinstall, mkarchiso, arch-install-scripts, dd, jq. Compression: squashfs (xz), .tar.zst (pkgs) and tar.gz (db of pkgs) pacman confs. 
 
 Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
 
@@ -160,5 +162,3 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
-
-### From an existing install for Devs [README](./.github/docs/docs_main.md)
