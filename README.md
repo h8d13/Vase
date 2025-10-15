@@ -52,6 +52,11 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
+## Prep
+
+You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://apps.kde.org/isoimagewriter/) from Linux (or dd)
+> Select mbr/gpt according to your hardware (ususally gpt) And then when pressing "start" use dd mode for full copy.
+
 ---
 
 ## Installation/Usage
