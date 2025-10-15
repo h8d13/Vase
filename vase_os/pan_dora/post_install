@@ -41,7 +41,7 @@ if command -v grub-mkconfig &>/dev/null; then
     echo "[PAN_DORA] ✓ GRUB config regenerated"
 fi
 
-# #. Configure systemd journal to RAM (reduce writes)
+# 3. Configure systemd journal to RAM (reduce writes)
 echo "[PAN_DORA] Configuring systemd journal for volatile storage..."
 mkdir -p /etc/systemd/journald.conf.d/
 cat > /etc/systemd/journald.conf.d/usbstick.conf << 'EOF'
@@ -51,19 +51,7 @@ RuntimeMaxUse=30M
 EOF
 echo "[PAN_DORA] ✓ Journal configured for RAM storage (volatile)"
 
-# 4. Optimize ext4 filesystem (disable journal if mounted)
-echo "[PAN_DORA] Checking ext4 journal status..."
-# Note: Journal can only be disabled when filesystem is unmounted
-# This is informational - user must do this from live USB if desired
-ROOT_DEV=$(findmnt -n -o SOURCE /)
-if [[ "$ROOT_DEV" =~ ext4 ]]; then
-    echo "[PAN_DORA] ℹ Root filesystem is ext4"
-    echo "[PAN_DORA] ℹ To disable journal (reduces writes), boot from live USB and run:"
-    echo "              tune2fs -O ^has_journal $ROOT_DEV"
-    echo "              e2fsck -f $ROOT_DEV"
-fi
-
-# 5. Set BFQ scheduler for better USB performance
+# 4. Set BFQ scheduler for better USB performance
 echo "[PAN_DORA] Configuring BFQ I/O scheduler..."
 cat > /etc/udev/rules.d/60-ioschedulers.rules << 'EOF'
 # Set BFQ scheduler for better performance on removable media
