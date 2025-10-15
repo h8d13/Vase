@@ -11,9 +11,10 @@ This version is for users who know they want KDE and it's dependencies **(Networ
 
 ## Installation
 
-**Pre-req:** 1 USB (minimum 2GB), 1 target Drive (minimum 16GB).
+**Pre-req:** 1 USB (minimum 2GB), 1 target Drive (minimum 8GB). 
+Or: One USB (minimum 8GB) using `./main -t --live` or `./main -t --pandora`
 
-Boot Arch Linux Live ISO (using f10, f12 or del)
+Boot Arch Linux Live ISO or our builds (using f10, f12 or del)
 
 Get internet access; `iwctl station wlan0 connect "SSID"` SSID being the name of your WiFi (case sensitive) and it should prompt you for password.
 Ethernet works out of the box. Plug a cable and go.
@@ -54,7 +55,7 @@ After running the script it will restart one last time. **And you are done!**
 
 ---
 
-For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
+For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 
 ### Modifications
 
@@ -98,15 +99,6 @@ For more info see main repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
     - mount > format filesystem > create new paritions (swap) > set mirrors and base settings > base install > audio > video > KDE plasma > bootloader
     - /etc/environment variables > network manager > users > final tz, ntp, services, fstab
 
-- The idea was to create a declerative flow that can be easy to reproduce/modify but also to benchmark from scratch each time and having hardware specific bootloader entries (and env vars) without having to think.
-
-- These are widely *debated/changing* and can result in performance enhancements/or correcting non-functional hardware.
-
-Here is the exact code block in question: [Here](https://github.com/h8d13/Vase/blob/2247002707d68fb5b92542aae27d1fbfd18ed978/vase_os/hade_box/archinstall/lib/installer.py#L871C1-L875C10) This could be expanded upon to build hardware-aware and optimized presets considering hardware detection modules.
-
-And the reference for why: [Wiki-KernelParameters](https://wiki.archlinux.org/title/Kernel_parameters) and [Wiki-Env](https://wiki.archlinux.org/title/Environment_variables)
-
-This code is mostly commented out for now until I start benchmarking.
 
 ## Hade_box Explained
 
@@ -120,12 +112,3 @@ This code is mostly commented out for now until I start benchmarking.
 
 > This set-up with a rolling release is ideal because we have single sources of truth for each critical aspect. Keep my work on the side and be able to brick an install if needed in 15 minutes. We can also easily allow for self-upgrades by simply running `git pull` in the right location.
 
----
-
-## DEVS
-
-### GRUB2 Utility scripts
-
-For further grub configuration:
-
-[SYMAN](https://github.com/h8d13/Vase/tree/master/vase_os/hade_box/archinstall/grub2_utils)

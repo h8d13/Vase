@@ -92,6 +92,8 @@ If this helped you earn you some time to touch grass (or you even just learned t
 
 > We also have a discussions tab for any general purposes questions, ideas, etc...
 
+__EXPERIMENTAL__: You can also use `./main -t --live` for installs in place/removable media (Only one USB min 8GiB, use newer ones or it will take ages)
+
 ---
 
 ## Hardware Compat [README](./.github/docs/hard_ware.md)
