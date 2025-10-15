@@ -61,6 +61,7 @@ class GlobalMenu(AbstractMenu[None]):
 			'parallel_downloads', # 0
 			'timezone',      # 'UTC'
 			'ntp',          # True
+			'removable_media', # False
 		]
 		
 		for key in items_with_defaults:
@@ -181,6 +182,12 @@ class GlobalMenu(AbstractMenu[None]):
 				preview_action=self._prev_mirror_config,
 				mandatory=True,
 				key='mirror_config',
+			),
+			MenuItem(
+				text=('Removable media optimizations'),
+				value=self._arch_config.removable_media,
+				preview_action=self._prev_removable_media,
+				key='removable_media',
 			),
 			MenuItem(
 				text='',
@@ -580,6 +587,22 @@ class GlobalMenu(AbstractMenu[None]):
 			output += f'{title}:\n\n{table}'
 
 		return output.strip()
+
+	def _prev_removable_media(self, item: MenuItem) -> str | None:
+		if item.value is not None:
+			status = 'Enabled' if item.value else 'Disabled'
+			output = f'Removable media optimizations: {status}\n\n'
+			if item.value:
+				output += 'The following optimizations will be applied:\n'
+				output += '• mkinitcpio hooks reordered for hardware portability\n'
+				output += '• Systemd journal to RAM (volatile, 30MB max)\n'
+				output += '• BFQ I/O scheduler for USB/SSD performance\n'
+				output += '• GRUB with --removable flag for UEFI portability\n\n'
+				output += 'Recommended for USB/SD card installations.'
+			else:
+				output += 'Standard installation for fixed internal drives.'
+			return output
+		return None
 
 	def _handle_abort(self, preset: None) -> None:
 		"""Handle abort with option to save selections"""
