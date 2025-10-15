@@ -184,7 +184,7 @@ class GlobalMenu(AbstractMenu[None]):
 				key='mirror_config',
 			),
 			MenuItem(
-				text=('Removable media optimizations'),
+				text=('Live medium'),
 				value=self._arch_config.removable_media,
 				preview_action=self._prev_removable_media,
 				key='removable_media',
@@ -591,16 +591,14 @@ class GlobalMenu(AbstractMenu[None]):
 	def _prev_removable_media(self, item: MenuItem) -> str | None:
 		if item.value is not None:
 			status = 'Enabled' if item.value else 'Disabled'
-			output = f'Removable media optimizations: {status}\n\n'
+			output = f'Live medium: {status}\n\n'
 			if item.value:
-				output += 'The following optimizations will be applied:\n'
-				output += '• mkinitcpio hooks reordered for hardware portability\n'
-				output += '• Systemd journal to RAM (volatile, 30MB max)\n'
-				output += '• BFQ I/O scheduler for USB/SSD performance\n'
-				output += '• GRUB with --removable flag for UEFI portability\n\n'
-				output += 'Recommended for USB/SD card installations.'
+				output += 'Portable USB/SD installation with:\n'
+				output += '• Hardware-agnostic boot\n'
+				output += '• Reduced flash writes\n'
+				output += '• Optimized I/O scheduler'
 			else:
-				output += 'Standard installation for fixed internal drives.'
+				output += 'Standard fixed drive installation'
 			return output
 		return None
 
