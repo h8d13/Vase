@@ -4,7 +4,7 @@
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.1-darkgreen" alt="Arch_Linux"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.2-darkgreen" alt="Arch_Linux"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Plasma-6.4.5-darkgreen" alt="Plasma"></a>
@@ -20,7 +20,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-927-blue" alt="Git_Clones"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-959-blue" alt="Git_Clones"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Frameworks-6.19.0-blue" alt="Frameworks"></a>
@@ -106,10 +106,14 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 
 > This will check system subdeps for Arch to Arch installs. On an existing install use sudo.  
 
-#### Commands
+#### Main Commands
+
+When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/Check Vase is built okay
 
 ```
 --update                   # -u # Checks git for updates & pull submodules
+--check-deps               # -c # Check build deps 
+
 --start                    # -s # Start VM menu
 --quick <command>          # -q # Pass direct VM options "help"
 --bench <type>             # -b # Run benchmarks: io, cpu, gpu
@@ -118,6 +122,7 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 --workflow <device>        # -w # Complete workflow
 --dev                      # -d # Development mode flag entry script
 --grub <args>              # -g # GRUB utilities -h for help
+
 --reset                    # -r # Resets logs and rcw
 ```
 

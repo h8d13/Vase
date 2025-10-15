@@ -178,6 +178,9 @@ if exec_args "UPDATE"; then
     git submodule init && git submodule update
     check_updates && rcw true && exit
 fi
+if exec_args "DEPS"; then
+    "./${vase_d}/mindeps" check && rcw true && exit
+fi
 if exec_args "GRUB"; then
     grub_args="$(get_grub_cmd)"
     # Extract first arg after -g flag

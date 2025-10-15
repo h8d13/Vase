@@ -1,0 +1,71 @@
+#!/bin/bash
+# VaseOS Internal Dependencies Documentation
+# This file documents all tools used internally by Vase components
+# Use this to verify the vasebuild profile has everything needed
+#
+# Usage: ./mindeps [check]
+#   check - Verify all dependencies are installed
+
+# Categories:
+# [BUILD] - ISO creation (iso_mod)
+# [VM] - VM testing (has it's own dep check ./zazu_lago/setup_vms)
+# [INSTALL] - Installer runtime (hade_box/install, altodeps)
+# [UTIL] - Utilities (traffic, upd_rm, benchmarks)
+# [CORE] - Core system dependencies
+
+if [ "$1" = "check" ]; then
+    echo "Checking VaseOS build dependencies..."
+    MISSING=()
+
+    # Core packages (check with pacman)
+    PACKAGES="base git archiso gnupg squashfs-tools jq tree curl wget"
+
+    for pkg in $PACKAGES; do
+        if pacman -Qi "$pkg" &>/dev/null; then
+            echo "✓ $pkg"
+        else
+            echo "✗ $pkg (missing)"
+            MISSING+=("$pkg")
+        fi
+    done
+
+    if [ ${#MISSING[@]} -gt 0 ]; then
+        echo ""
+        echo "Missing packages: ${MISSING[*]}"
+        echo "Install with: sudo pacman -S ${MISSING[*]}"
+        exit 1
+    else
+        echo ""
+        echo "All dependencies satisfied!"
+        exit 0
+    fi
+fi
+
+# Build-time Dependencies (ISO Creation)
+# ========================================
+# [BUILD] archiso                    - Base ISO building framework
+# [BUILD] pacman                     - Package manager (download/install)
+# [BUILD] repo-add                   - Create local package repositories
+# [BUILD] git                        - Version control, file filtering (ls-files)
+# [BUILD] gpg                        - ISO signing (skipped if dev_mode=1)
+# [BUILD] tar                        - Archive creation for airootfs
+# [BUILD] sed, awk, grep             - Text processing for configs
+# [BUILD] squashfs-tools             - ISO compression (via mkarchiso)
+
+# Utility Dependencies
+# ========================================
+# [UTIL] jq                          - JSON parsing 
+# [UTIL] curl, wget                  - HTTP requests (GitHub API)
+# [UTIL] tree                        - Directory structure output (optional)
+# [UTIL] du, find, wc                - Disk/file statistics
+# [UTIL] date                        - Timestamps, timing
+
+# Core Dependencies (Always Required)
+# ========================================
+# [CORE] bash                        - Shell (all scripts)
+# [CORE] coreutils                   - cat, ls, cp, mv, rm, etc
+# [CORE] findutils                   - find, xargs
+# [CORE] sed                         - Stream editor
+# [CORE] gawk                        - GNU awk
+# [CORE] grep                        - Pattern matching
+# [CORE] util-linux                  - Basic system utilities

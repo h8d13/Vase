@@ -67,6 +67,10 @@ parse_args() {
                 shift
                 break
                 ;;
+            -c|--check-deps)
+                DEPS=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -87,6 +91,7 @@ exec_args() {
         WORKFLOW) [ "${WORKFLOW}" = "1" ] ;;
         DEV) [ "${DEV}" = "1" ] ;;
         GRUB) [ "${GRUB}" = "1" ] ;;
+        DEPS) [ "${DEPS}" = "1" ] ;;
         *) return 1 ;;
     esac
 }

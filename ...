@@ -18,7 +18,7 @@ size="60G"
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
-iso_n="VASE-2025.10.14-x86_64"
+iso_n="VASE-2025.10.15-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
