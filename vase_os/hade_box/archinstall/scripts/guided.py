@@ -213,24 +213,9 @@ def perform_installation(mountpoint: Path) -> None:
 		if cc := config.custom_commands:
 			run_custom_user_commands(cc, installation)
 
-		# Run pandora script if configured
-		if hasattr(arch_config_handler.config, 'pandora_script') and arch_config_handler.config.pandora_script:
-			from pathlib import Path
-			import shutil
-
-			pandora_script = arch_config_handler.config.pandora_script
-			info(f'[PAN_DORA] Running USB optimizations: {pandora_script}')
-
-			# Copy script from live system to target
-			target_script = installation.target / 'tmp' / 'pandora_post_install'
-			shutil.copy2(pandora_script, target_script)
-			target_script.chmod(0o755)
-
-			# Run in chroot
-			installation.arch_chroot('/tmp/pandora_post_install')
-
-			# Cleanup
-			target_script.unlink()
+		# Apply removable media optimizations if enabled
+		if config.removable_media:
+			installation.apply_removable_media_optimizations()
 
 		installation.genfstab()
 

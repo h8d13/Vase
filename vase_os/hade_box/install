@@ -7,22 +7,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if file_ex "$SCRIPT_DIR/../../..."; then
     . "$SCRIPT_DIR/../../..."
 fi
-# Parse command line arguments
-PANDORA_MODE=0
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --pandora|--usb)
-            PANDORA_MODE=1
-            shift
-            ;;
-        *)
-            if [ -n "$1" ]; then
-                ARCHINSTALL_ARGS+=("$1")
-            fi
-            shift
-            ;;
-    esac
-done
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -69,28 +53,8 @@ fi
 preop "Syncing package database... & Checking up to date."
 pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
 
-#python-pydantic python-pyparted python-cryptography
-
-# Export pan_dora script path if USB mode enabled
-if [ "$PANDORA_MODE" = "1" ]; then
-    PANDORA_SCRIPT="$(realpath "$SCRIPT_DIR/../pan_dora/post_install")"
-    if [ -f "$PANDORA_SCRIPT" ]; then
-        preop "PAN_DORA mode enabled - USB optimizations will be applied after installation"
-
-        # Copy script to RAM (survives if installing to the same USB we booted from)
-        PANDORA_SCRIPT_RAM="/tmp/pandora_post_install_$$"
-        cp "$PANDORA_SCRIPT" "$PANDORA_SCRIPT_RAM"
-        chmod +x "$PANDORA_SCRIPT_RAM"
-
-        preop "Copied post-install script to RAM: $PANDORA_SCRIPT_RAM"
-        export PANDORA_SCRIPT="$PANDORA_SCRIPT_RAM"
-    else
-        postop "Warning: PAN_DORA script not found at $PANDORA_SCRIPT"
-    fi
-fi
-
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
-python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
+python -B -m archinstall "$@"
 
 #### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
 # All available archinstall command line options:

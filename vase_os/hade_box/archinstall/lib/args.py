@@ -47,6 +47,7 @@ class Arguments:
 	plugin: str | None = None
 	skip_version_check: bool = False
 	verbose: bool = False
+	pandora: bool = False
 
 @dataclass
 class SwapConfiguration:
@@ -74,6 +75,7 @@ class ArchConfig:
 	timezone: str = 'UTC'
 	services: list[str] = field(default_factory=list)
 	custom_commands: list[str] = field(default_factory=list)
+	removable_media: bool = False
 
 	def unsafe_json(self) -> dict[str, Any]:
 		config: dict[str, list[UserSerialization] | str | None] = {}
@@ -105,6 +107,7 @@ class ArchConfig:
 			'timezone': self.timezone,
 			'services': self.services,
 			'custom_commands': self.custom_commands,
+			'removable_media': self.removable_media,
 			'bootloader': self.bootloader.json() if self.bootloader else None,
 			'grub_config': self.grub_config.__dict__ if self.grub_config else None,
 			'app_config': self.app_config.json() if self.app_config else None,
@@ -239,6 +242,9 @@ class ArchConfig:
 
 		if custom_commands := args_config.get('custom_commands', []):
 			arch_config.custom_commands = custom_commands
+
+		# Set removable_media from config or from command line args
+		arch_config.removable_media = args_config.get('removable_media', args.pandora)
 
 		return arch_config
 
@@ -375,6 +381,14 @@ class ArchConfigHandler:
 			action='store_true',
 			default=False,
 			help='Enabled verbose options',
+		)
+		parser.add_argument(
+			'--pandora',
+			'--live',
+			action='store_true',
+			dest='pandora',
+			default=False,
+			help='Enable removable media optimizations (portable USB/SD card installation)',
 		)
 
 		return parser
