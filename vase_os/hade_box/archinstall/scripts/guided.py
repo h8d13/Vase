@@ -213,6 +213,25 @@ def perform_installation(mountpoint: Path) -> None:
 		if cc := config.custom_commands:
 			run_custom_user_commands(cc, installation)
 
+		# Run pandora script if configured
+		if hasattr(arch_config_handler.config, 'pandora_script') and arch_config_handler.config.pandora_script:
+			from pathlib import Path
+			import shutil
+
+			pandora_script = arch_config_handler.config.pandora_script
+			info(f'[PAN_DORA] Running USB optimizations: {pandora_script}')
+
+			# Copy script from live system to target
+			target_script = installation.target / 'tmp' / 'pandora_post_install'
+			shutil.copy2(pandora_script, target_script)
+			target_script.chmod(0o755)
+
+			# Run in chroot
+			installation.arch_chroot('/tmp/pandora_post_install')
+
+			# Cleanup
+			target_script.unlink()
+
 		installation.genfstab()
 
 		debug(f'Disk states after installing:\n{disk_layouts()}')
@@ -239,13 +258,10 @@ def guided() -> None:
 	if not arch_config_handler.args.silent:
 		ask_user_questions()
 
-	# Add pandora script to custom_commands if environment variable is set
+	# Store pandora script path for later (will be copied to target during installation)
 	import os
 	if pandora_script := os.environ.get('PANDORA_SCRIPT'):
-		if not arch_config_handler.config.custom_commands:
-			arch_config_handler.config.custom_commands = []
-		# Add script as custom command (will be executed via run_custom_user_commands)
-		arch_config_handler.config.custom_commands.append(f'/bin/bash {pandora_script}')
+		arch_config_handler.config.pandora_script = pandora_script
 
 	config = ConfigurationOutput(arch_config_handler.config)
 	config.write_debug()
