@@ -68,7 +68,7 @@ Then we can create a simple test script. For this I use qemu with a rollback mec
 
 ## Some useful things
 
-KDE has neat built-in stuff for programmers: `kbuildsycoca6` and `kwriteconfig6` rebuild system cached files .
+KDE has neat built-in stuff for programmers: `kbuildsycoca6` and `kwriteconfig6` rebuild system cached files / set settings programatically.
 
 They can be a bit inconsistent sometimes. Perhaps of my wrong usage.
 
