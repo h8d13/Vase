@@ -159,4 +159,4 @@ In project root, `...` file contains all configuration constants.
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
-### From an exisitng install for Devs [README](./.github/docs/docs_main.md)
+### From an existing install for Devs [README](./.github/docs/docs_main.md)
