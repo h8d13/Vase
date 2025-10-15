@@ -125,7 +125,7 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ---
 
-## From an existing install for Devs [README](./.github/docs/docs_main.md)
+## For Devs [README](./.github/docs/docs_main.md)
 
 ## Artix Compat Layer 🥶
 
