@@ -110,35 +110,6 @@ Before running the post install script you can uncomment any of these lines for 
 
 ---
 
-### From existing arch system (For devs)
-
-`$ ./main -t (*args)` : Launch TUI forked KDE install
-
-> This will check system subdeps for Arch to Arch installs. On an existing install use sudo.  
-
-#### Main Commands
-
-When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/Check Vase is built okay
-
-```
---update                   # -u # Checks git for updates & pull submodules
---check-deps               # -c # Check build deps 
-
---start                    # -s # Start VM menu
---quick <command>          # -q # Pass direct VM options "help"
---bench <type>             # -b # Run benchmarks: io, cpu, gpu
---isomod                   # -i # Create iso default `iso_profiles/fat.conf`
---flash <device>           # -f # Flash ISO to USB device (e.g., /dev/sdd)
---workflow <device>        # -w # Complete workflow
---dev                      # -d # Development mode flag entry script
---grub <args>              # -g # GRUB utilities -h for help
-
---reset                    # -r # Resets logs and rcw
-```
-
-> Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
-> Mostly tooling for devs... More readmes included. 
-
 ### Turning Konqi in Konqzilla.
 
 We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
@@ -187,3 +158,5 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
+
+### From an exisitng install for Devs [README](./.github/docs/docs_main.md)

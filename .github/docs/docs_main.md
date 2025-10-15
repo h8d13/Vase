@@ -12,10 +12,40 @@ Main program contains ISO building scripts and more ways to interact with all th
 
 ### Main VM Menu
 
-> Assumes KVM availability Intel/AMD.
-
 Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
+
+---
+
+### From existing arch system (For devs)
+
+`$ ./main -t (*args)` : Launch TUI forked KDE install
+
+> This will check system subdeps for Arch to Arch installs. On an existing install use sudo.  
+
+#### Main Commands
+
+When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/Check Vase is built okay
+
+```
+--update                   # -u # Checks git for updates & pull submodules
+--check-deps               # -c # Check build deps 
+
+--start                    # -s # Start VM menu
+--quick <command>          # -q # Pass direct VM options "help"
+--bench <type>             # -b # Run benchmarks: io, cpu, gpu
+--isomod                   # -i # Create iso default `iso_profiles/fat.conf`
+--flash <device>           # -f # Flash ISO to USB device (e.g., /dev/sdd)
+--workflow <device>        # -w # Complete workflow
+--dev                      # -d # Development mode flag entry script
+--grub <args>              # -g # GRUB utilities -h for help
+
+--reset                    # -r # Resets logs and rcw
+```
+
+> Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
+> Mostly tooling for devs... More readmes included. 
+
 
 ---
 
@@ -27,7 +57,6 @@ Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
----
 
 ## Info for nerds / Benchmarks
 
