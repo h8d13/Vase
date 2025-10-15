@@ -107,9 +107,11 @@ Before running the post install script you can uncomment any of these lines for 
 #LG_PACKS+=" noto-fonts-extra"       # Arabic, Hebrew, Greek, Cyrillic, Thai extended symbols
 #LG_PACKS+=" noto-fonts-devanagari"  # Hindi/Devanagari
 ```
-## Live installations
+## Live installations 🔌
 
 You can also use `./main -t --live` for installs in place/removable media (For installing with only one USB: min 8GiB, use newer ones or it will take ages)
+
+> This works because everything is loaded in RAM so you can safely install directly onto the same drive where you put the ISO.
 
 ---
 
