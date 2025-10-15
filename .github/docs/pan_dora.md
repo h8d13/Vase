@@ -14,13 +14,12 @@ Makes your USB installation:
 ```bash
 sudo ./main -t --pandora
 # or
-sudo ./main -t --usb
+sudo ./main -t --live
 ```
 
-Complete installation normally in the TUI to the same USB that you had the ISO on.
-After installation, USB optimizations apply automatically.
+Complete installation normally in the TUI. The "Live medium" option will show as **Enabled** in the menu.
 
-The idea is that you can install on the same drive because it's all coped to RAM.
+**Single USB Install:** You can install to the same USB you booted from! The ISO runs entirely in RAM, so the USB can be reformatted during installation.
 
 ## Optimizations Applied
 
@@ -31,22 +30,20 @@ The idea is that you can install on the same drive because it's all coped to RAM
 
 **Flash Longevity:**
 - Systemd journal in RAM (volatile storage, 30MB max)
-- BFQ I/O scheduler (better USB performance)
-
-## Single USB Install
-
-You can install to the same USB you booted from! The ISO runs entirely in RAM, so the USB can be reformatted during installation.
-
-## Files
-
-- `./pan_dora/post_install` - Post-installation script (runs in chroot)
+- BFQ I/O scheduler (better USB/SSD performance)
 
 ## Technical Details
 
-The `--pandora` or `--usb` flag:
-1. Copies `post_install` script to RAM
-2. Passes it to archinstall as a custom command
-3. Script runs in chroot after base installation
-4. Applies USB-specific optimizations before genfstab
+The `--pandora` or `--live` flag:
+1. Sets `removable_media=True` in archinstall config
+2. Displays in TUI menu as "Live medium: Enabled"
+3. After installation completes, applies optimizations directly via `Installer.apply_removable_media_optimizations()`:
+   - Modifies `/etc/mkinitcpio.conf` and regenerates initramfs
+   - Creates `/etc/systemd/journald.conf.d/usbstick.conf`
+   - Creates `/etc/udev/rules.d/60-ioschedulers.rules`
+4. All changes happen before `genfstab`
 
-Based on some of the points here: https://wiki.archlinux.org/title/Install_Arch_Linux_on_a_removable_medium
+**Implementation:**
+- Integrated into archinstall (no external scripts)
+- Code: `vase_os/hade_box/archinstall/lib/installer.py:403-460`
+- Based on: https://wiki.archlinux.org/title/Install_Arch_Linux_on_a_removable_medium
