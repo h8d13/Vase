@@ -54,7 +54,20 @@ This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful f
 
 The easiet way if you are intrested in digging a bit deeper (and you should): 
 
-`sudo dmidecode -t system`
+`sudo dmidecode -t <type>` 
+
+  | Filter    | Shows                                    |
+  |-----------|------------------------------------------|
+  | system    | Motherboard info, manufacturer, SKU      |
+  | baseboard | Detailed mobo specs (better than system) |
+  | bios      | BIOS version, vendor, date               |
+  | processor | CPU model, cores, threads, speed         |
+  | memory    | RAM sticks, speed, type, slots           |
+  | cache     | CPU cache levels (L1/L2/L3)              |
+  | slot      | PCIe slots (x16, x8, x4, x1)             |
+  | connector | Physical ports/connectors                |
+  | chassis   | Case/chassis type and info               |
+
 
 Can paste the model and manufacturer into a search engine. 
 
@@ -91,3 +104,65 @@ Hardened for dev systems.
 LTS more stable version. (6.12.x)
 
 For example when you build nvidia drivers they are built against your curretn kernel-headers making this just as important as the drivers selection part.
+
+
+---
+
+# Testing dumps
+
+# Testing
+
+Done with browser opened and a few apps to make system 'in-use'. Usually a Youtube Video and a code editor.
+
+----
+
+- Integrated graphics: 1000-5000
+- Mid-range: 5000-15000
+- High-end: 15000-30000+
+
+
+CPU: AMD Ryzen 5 5600X 6-Core 12-Threads Processor
+
+    OpenGL Information
+    GL_VENDOR:      NVIDIA Corporation
+    GL_RENDERER:    NVIDIA GeForce RTX 4060 Ti/PCIe/SSE2
+    GL_VERSION:     4.6.0 NVIDIA 580.95.05
+    Surface Config: buf=32 r=8 g=8 b=8 a=8 depth=24 stencil=0 samples=0
+    Surface Size:   800x600 windowed
+=======================================================
+[build] use-vbo=false: FPS: 6594 FrameTime: 0.152 ms
+[build] use-vbo=true: FPS: 17829 FrameTime: 0.056 ms
+[texture] texture-filter=nearest: FPS: 17437 FrameTime: 0.057 ms
+[texture] texture-filter=linear: FPS: 17360 FrameTime: 0.058 ms
+[texture] texture-filter=mipmap: FPS: 17728 FrameTime: 0.056 ms
+[shading] shading=gouraud: FPS: 17967 FrameTime: 0.056 ms
+[shading] shading=blinn-phong-inf: FPS: 17133 FrameTime: 0.058 ms
+[shading] shading=phong: FPS: 16930 FrameTime: 0.059 ms
+[shading] shading=cel: FPS: 16886 FrameTime: 0.059 ms
+[bump] bump-render=high-poly: FPS: 17360 FrameTime: 0.058 ms
+[bump] bump-render=normals: FPS: 16982 FrameTime: 0.059 ms
+[bump] bump-render=height: FPS: 17052 FrameTime: 0.059 ms
+[effect2d] kernel=0,1,0;1,-4,1;0,1,0;: FPS: 17317 FrameTime: 0.058 ms
+[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;: FPS: 17612 FrameTime: 0.057 ms
+[pulsar] light=false:quads=5:texture=false: FPS: 16804 FrameTime: 0.060 ms
+[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4: FPS: 7500 FrameTime: 0.133 ms
+[desktop] effect=shadow:windows=4: FPS: 8425 FrameTime: 0.119 ms
+[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map: FPS: 1745 FrameTime: 0.573 ms
+[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata: FPS: 3180 FrameTime: 0.315 ms
+[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map: FPS: 2095 FrameTime: 0.477 ms
+[ideas] speed=duration: FPS: 10210 FrameTime: 0.098 ms
+[jellyfish] <default>: FPS: 14311 FrameTime: 0.070 ms
+[terrain] <default>: FPS: 3126 FrameTime: 0.320 ms
+[shadow] <default>: FPS: 11447 FrameTime: 0.087 ms
+[refract] <default>: FPS: 6893 FrameTime: 0.145 ms
+[conditionals] fragment-steps=0:vertex-steps=0: FPS: 17542 FrameTime: 0.057 ms
+[conditionals] fragment-steps=5:vertex-steps=0: FPS: 17277 FrameTime: 0.058 ms
+[conditionals] fragment-steps=0:vertex-steps=5: FPS: 17518 FrameTime: 0.057 ms
+[function] fragment-complexity=low:fragment-steps=5: FPS: 17871 FrameTime: 0.056 ms
+[function] fragment-complexity=medium:fragment-steps=5: FPS: 17940 FrameTime: 0.056 ms
+[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5: FPS: 17528 FrameTime: 0.057 ms
+[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5: FPS: 17746 FrameTime: 0.056 ms
+[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5: FPS: 17276 FrameTime: 0.058 ms
+=======================================================
+                                  glmark2 Score: 13896 
+=======================================================
