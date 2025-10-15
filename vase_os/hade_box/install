@@ -76,7 +76,6 @@ if [ "$PANDORA_MODE" = "1" ]; then
     PANDORA_SCRIPT="$(realpath "$SCRIPT_DIR/../pan_dora/post_install")"
     if [ -f "$PANDORA_SCRIPT" ]; then
         preop "PAN_DORA mode enabled - USB optimizations will be applied after installation"
-        preop "Post-install script: $PANDORA_SCRIPT"
         ARCHINSTALL_ARGS+=("--script" "$PANDORA_SCRIPT")
     else
         postop "Warning: PAN_DORA script not found at $PANDORA_SCRIPT"

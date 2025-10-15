@@ -58,9 +58,18 @@ def main() -> int:
 		_fetch_arch_db()
 	script = arch_config_handler.get_script()
 
-	mod_name = f'archinstall.scripts.{script}'
-	# by loading the module we'll automatically run the script
-	importlib.import_module(mod_name)
+	# Check if script is a file path (bash script) or module name (Python)
+	if script and os.path.exists(script):
+		# External bash script provided as file path
+		print(f"[archinstall] Running external script: {script}")
+		import subprocess
+		result = subprocess.run(['/bin/bash', script], check=False)
+		return result.returncode
+	else:
+		# Internal Python module from archinstall/scripts/
+		mod_name = f'archinstall.scripts.{script}'
+		# by loading the module we'll automatically run the script
+		importlib.import_module(mod_name)
 
 	return 0
 
