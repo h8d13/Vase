@@ -8,8 +8,13 @@ if file_ex "$SCRIPT_DIR/../../..."; then
     . "$SCRIPT_DIR/../../..."
 fi
 # Parse command line arguments
+PANDORA_MODE=0
 while [[ $# -gt 0 ]]; do
     case $1 in
+        --pandora|--usb)
+            PANDORA_MODE=1
+            shift
+            ;;
         *)
             if [ -n "$1" ]; then
                 ARCHINSTALL_ARGS+=("$1")
@@ -64,7 +69,18 @@ fi
 preop "Syncing package database... & Checking up to date."
 pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
 
-#python-pydantic python-pyparted python-cryptography 
+#python-pydantic python-pyparted python-cryptography
+
+# Add pan_dora post-install script if USB mode enabled
+if [ "$PANDORA_MODE" = "1" ]; then
+    PANDORA_SCRIPT="$SCRIPT_DIR/../pan_dora/post_install"
+    if [ -f "$PANDORA_SCRIPT" ]; then
+        preop "PAN_DORA mode enabled - USB optimizations will be applied after installation"
+        ARCHINSTALL_ARGS+=("--script" "$PANDORA_SCRIPT")
+    else
+        postop "Warning: PAN_DORA script not found at $PANDORA_SCRIPT"
+    fi
+fi
 
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARCHINSTALL_ARGS[@]}"
