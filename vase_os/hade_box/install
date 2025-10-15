@@ -76,7 +76,14 @@ if [ "$PANDORA_MODE" = "1" ]; then
     PANDORA_SCRIPT="$(realpath "$SCRIPT_DIR/../pan_dora/post_install")"
     if [ -f "$PANDORA_SCRIPT" ]; then
         preop "PAN_DORA mode enabled - USB optimizations will be applied after installation"
-        export PANDORA_SCRIPT="$PANDORA_SCRIPT"
+
+        # Copy script to RAM (survives if installing to the same USB we booted from)
+        PANDORA_SCRIPT_RAM="/tmp/pandora_post_install_$$"
+        cp "$PANDORA_SCRIPT" "$PANDORA_SCRIPT_RAM"
+        chmod +x "$PANDORA_SCRIPT_RAM"
+
+        preop "Copied post-install script to RAM: $PANDORA_SCRIPT_RAM"
+        export PANDORA_SCRIPT="$PANDORA_SCRIPT_RAM"
     else
         postop "Warning: PAN_DORA script not found at $PANDORA_SCRIPT"
     fi
