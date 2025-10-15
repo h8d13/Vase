@@ -71,12 +71,12 @@ pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Databa
 
 #python-pydantic python-pyparted python-cryptography
 
-# Add pan_dora post-install script if USB mode enabled
+# Export pan_dora script path if USB mode enabled
 if [ "$PANDORA_MODE" = "1" ]; then
     PANDORA_SCRIPT="$(realpath "$SCRIPT_DIR/../pan_dora/post_install")"
     if [ -f "$PANDORA_SCRIPT" ]; then
         preop "PAN_DORA mode enabled - USB optimizations will be applied after installation"
-        ARCHINSTALL_ARGS+=("--script" "$PANDORA_SCRIPT")
+        export PANDORA_SCRIPT="$PANDORA_SCRIPT"
     else
         postop "Warning: PAN_DORA script not found at $PANDORA_SCRIPT"
     fi
