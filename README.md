@@ -94,12 +94,12 @@ If this helped you earn you some time to touch grass (or you even just learned t
 
 ---
 
-## Hardware Compat [README](./.github/docs/hard_ware.md)
+### Hardware Compat [README](./.github/docs/hard_ware.md)
 
 VaseOS automatically detects hardware and recommends appropriate drivers based on modified archinstall `hardware.py` detection logic, but is only a recommendation. You are free to **select the drivers** you want to try. See a full table of supported stuff in the link above. 
 > Generally AMD/Intel stuff will be straight-forward.
 
-## Languages Compat 🌐
+### Languages Compat 🌐
 
 Before running the post install script you can uncomment any of these lines for extended support:
 ```
@@ -115,7 +115,7 @@ You can also use `./main -t --live` for installs in place/removable media (For i
 
 ---
 
-### Turning Konqi in Konqzilla.
+## Turning Konqi in Konqzilla.
 
 We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
 
@@ -129,7 +129,7 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ## For Devs [README](./.github/docs/docs_main.md)
 
-## Artix Compat Layer 🥶
+### Artix Compat Layer 🥶
 
 <a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
 
@@ -141,7 +141,7 @@ Bootstrap Artix Linux with desired init system. From any existing Linux install 
 
 See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVnXU)
 
-## Components
+### Components
 
 Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
 
