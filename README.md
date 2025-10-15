@@ -92,8 +92,6 @@ If this helped you earn you some time to touch grass (or you even just learned t
 
 > We also have a discussions tab for any general purposes questions, ideas, etc...
 
-__EXPERIMENTAL__: You can also use `./main -t --live` for installs in place/removable media (Only one USB min 8GiB, use newer ones or it will take ages)
-
 ---
 
 ## Hardware Compat [README](./.github/docs/hard_ware.md)
@@ -109,6 +107,9 @@ Before running the post install script you can uncomment any of these lines for 
 #LG_PACKS+=" noto-fonts-extra"       # Arabic, Hebrew, Greek, Cyrillic, Thai extended symbols
 #LG_PACKS+=" noto-fonts-devanagari"  # Hindi/Devanagari
 ```
+## Live installations
+
+You can also use `./main -t --live` for installs in place/removable media (For installing with only one USB: min 8GiB, use newer ones or it will take ages)
 
 ---
 
