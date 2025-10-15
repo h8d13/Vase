@@ -81,14 +81,24 @@ Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma ove
 
 ## Order of operations
 
-- base, base-devel, linux-firmware, kernel variants, grub2-bootloader
-- file compression/dec utils (needed to build)
-- microcode (based on hardware detection)
-- xorg / waylands libs + SDDM (display server + manager)
-- alsa + utils (sound)
-- graphics drivers (based on choice/hardware detection)
-- network-manager (connectivity)
-- bluetooth (optional)
-- extra x11 legacy libs (optional)
+(Reflector mirrors sorting ran directly as internet is found.)
+
+- Format target > Mount ordered layout
+- Partitionning FS (Including swap if required on FS)
+- Filesystem packages (e.g., btrfs-progs, dosfstools)
+- Base, base-devel, kernel, linux-firmware
+- Micro-code (AMD/Intel)
+- Hostname/Locale/KB layout/Timezone
+- Mkinitcpio 
+- Set mirrors on target
+- Enable swap type (zram, swapfile or partition)
+- Audio (sof/alsa)
+- Profile: Plasma, graphics drivers, kernel headers (Needed to build against Nvidia drivers) , X11 optionals
+- Bootloader (Grub2 UEFI vs MBR) 
+- Network + Users
+- Enable services (SDDM, NetworkManager, NTP)
+- Snapshots if enabled
+- Optional live media optis
+- Gen fstab 
 
 **PACKGS:** ~720 Base then ~750 with post install script essentials (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
