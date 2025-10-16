@@ -105,7 +105,6 @@ LTS more stable version. (6.12.x)
 
 For example when you build nvidia drivers they are built against your current kernel-headers making this just as important as the drivers selection part.
 
-
 ---
 
 # Testing dumps
