@@ -118,7 +118,7 @@ Done with browser opened and a few apps to make system 'in-use'. Usually a Youtu
 - Mid-range: 5000-15000
 - High-end: 15000-30000+
 
-
+```
 CPU: AMD Ryzen 5 5600X 6-Core 12-Threads Processor
 
     OpenGL Information
@@ -195,3 +195,4 @@ Settings: Low 1240x 1024 - 5:4 ratio
 [VProf]             Networking   0.02   0.16     7207   0.13   0.25     0.27   0.81      115   0.27   0.81
 [VProf]    Server PackEntities   0.01   0.13     7204   0.11   0.33     0.19   0.60      115   0.19   0.60
 [VProf]         SoundOperators   0.00   0.00       18   0.31   2.93     0.00   0.15       13   0.13   1.53
+```
