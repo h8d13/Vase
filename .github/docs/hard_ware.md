@@ -103,14 +103,12 @@ Zen for desktop/gaming.
 Hardened for dev systems.
 LTS more stable version. (6.12.x)
 
-For example when you build nvidia drivers they are built against your curretn kernel-headers making this just as important as the drivers selection part.
+For example when you build nvidia drivers they are built against your current kernel-headers making this just as important as the drivers selection part.
 
 
 ---
 
 # Testing dumps
-
-# Testing
 
 Done with browser opened and a few apps to make system 'in-use'. Usually a Youtube Video and a code editor.
 
