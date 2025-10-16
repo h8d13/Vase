@@ -152,8 +152,8 @@ Or better yet, fork all the repos and send me patches.
 | **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](./.github/docs/hade_box.md) |
 | **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./.github/docs/grom_lum.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
-| **pacto_pac** | GUI - Pacman common operations Gtk/Adwaita app | [README](https://github.com/h8d13/PACTOPAC) |
-| **zazu_lago** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazu_lago_.md) |
+| **pacto_pac** | GUI - Pacman common operations Gtk/Adwaita app | [README](./.github/docs/pacto_pac.md) |
+| **zazu_lago** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazu_lago.md) |
 | **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](./.github/docs/klar_tix.md) |
 | **chap_pie** | System utils - Benchmarking and testing tools for new installs | [README](./.github/docs/chap_pie.md) |
 
