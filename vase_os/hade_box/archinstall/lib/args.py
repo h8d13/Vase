@@ -388,7 +388,7 @@ class ArchConfigHandler:
 			action='store_true',
 			dest='pandora',
 			default=False,
-			help='Enable removable media optimizations (portable USB/SD card installation)',
+			help='Enable removable media optimizations.',
 		)
 
 		return parser

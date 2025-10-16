@@ -402,7 +402,7 @@ class Installer:
 
 	def apply_removable_media_optimizations(self) -> None:
 		"""
-		Apply optimizations for removable media (USB/SD cards).
+		Apply optimizations for removable media.
 		Based on: https://wiki.archlinux.org/title/Install_Arch_Linux_on_a_removable_medium
 
 		Optimizations include:

@@ -593,10 +593,7 @@ class GlobalMenu(AbstractMenu[None]):
 			status = 'Enabled' if item.value else 'Disabled'
 			output = f'Live medium: {status}\n\n'
 			if item.value:
-				output += 'Portable USB/SD installation with:\n'
-				output += '• Hardware-agnostic boot\n'
-				output += '• Reduced flash writes\n'
-				output += '• Optimized I/O scheduler'
+				output += 'Portable installation with:\n'
 			else:
 				output += 'Standard fixed drive installation'
 			return output
