@@ -164,12 +164,13 @@ CPU: AMD Ryzen 5 5600X 6-Core 12-Threads Processor
 =======================================================
                                   glmark2 Score: 13896 
 =======================================================
-
+```
 
 CS2: Workshop map de_dust [FPS Bench](https://steamcommunity.com/sharedfiles/filedetails/?id=3240880604)
 
 Settings: Low 1240x 1024 - 5:4 ratio
 
+```
 [VProf] -- Performance report --
 [VProf] Summary of 60388 frames and 115 1-second intervals.  (4771 frames excluded from analysis.)
 [VProf] FPS: Avg=534.8, P1=182.0
