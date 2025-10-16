@@ -166,3 +166,34 @@ CPU: AMD Ryzen 5 5600X 6-Core 12-Threads Processor
 =======================================================
                                   glmark2 Score: 13896 
 =======================================================
+
+
+CS2: Workshop map de_dust [FPS Bench](https://steamcommunity.com/sharedfiles/filedetails/?id=3240880604)
+
+Settings: Low 1240x 1024 - 5:4 ratio
+
+[VProf] -- Performance report --
+[VProf] Summary of 60388 frames and 115 1-second intervals.  (4771 frames excluded from analysis.)
+[VProf] FPS: Avg=534.8, P1=182.0
+[VProf] 
+[VProf]                         All frames         Active frames       1s max (all)      1s max (active)  
+[VProf]                           Avg    P99        N    Avg    P99      P50    P95        N    P50    P95
+[VProf] ---------------------- ------ ------   ------ ------ ------   ------ ------   ------ ------ ------
+[VProf]             FrameTotal   1.87   5.49    60388   1.87   5.49     5.83  17.83      115   5.83  17.83
+[VProf]       Client Rendering   1.22   1.81    60388   1.22   1.81     1.95  12.19      115   1.95  12.19
+[VProf]         Frame Boundary   0.77   1.45    60388   0.77   1.45     1.59  10.27      115   1.59  10.27
+[VProf]      Client Simulation   0.21   0.95    60388   0.21   0.95     1.16   2.21      115   1.16   2.21
+[VProf]      Server Simulation   0.19   1.79     7204   1.56   2.83     2.04   3.66      115   2.04   3.66
+[VProf]            Server Game   0.15   1.45     7204   1.26   2.12     1.71   3.14      115   1.71   3.14
+[VProf]    ClientSimulateFrame   0.14   0.31    60388   0.14   0.31     0.33   0.88      115   0.33   0.88
+[VProf]   Present_RenderDevice   0.08   0.41    60388   0.08   0.41     0.40   5.57      115   0.40   5.57
+[VProf]             Prediction   0.08   0.61    60388   0.08   0.61     0.65   1.10      115   0.65   1.10
+[VProf]           UserCommands   0.08   0.76     7204   0.63   0.95     0.86   1.48      115   0.86   1.48
+[VProf]     ClientSimulateTick   0.07   0.77     7204   0.60   0.92     0.88   1.62      115   0.88   1.62
+[VProf]       Server Animation   0.03   0.33     7204   0.26   0.91     0.35   1.28      115   0.35   1.28
+[VProf]       Client_Animation   0.03   0.28     7204   0.24   0.53     0.32   0.79      115   0.32   0.79
+[VProf]                   NPCs   0.02   0.28     7204   0.16   0.50     0.35   0.78      115   0.35   0.78
+[VProf] Server Send Networking   0.02   0.17     7204   0.15   0.36     0.22   0.67      115   0.22   0.67
+[VProf]             Networking   0.02   0.16     7207   0.13   0.25     0.27   0.81      115   0.27   0.81
+[VProf]    Server PackEntities   0.01   0.13     7204   0.11   0.33     0.19   0.60      115   0.19   0.60
+[VProf]         SoundOperators   0.00   0.00       18   0.31   2.93     0.00   0.15       13   0.13   1.53
