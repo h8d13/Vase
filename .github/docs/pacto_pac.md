@@ -22,7 +22,6 @@ $ sudo python3 main.py
 Pacman Stuff
 - Enable multi-lib
 - Styling
-- Mirrors
 
 Not Pacman Stuff
 - Flatpak
