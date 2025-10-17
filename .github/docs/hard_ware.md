@@ -1,5 +1,31 @@
 # hard_ware
 
+## System info: 
+
+The easiet way if you are intrested in digging a bit deeper (and you should): 
+
+`sudo dmidecode -t <type>` 
+
+  | Filter    | Shows                                    |
+  |-----------|------------------------------------------|
+  | system    | Motherboard info, manufacturer, SKU      |
+  | baseboard | Detailed mobo specs (better than system) |
+  | bios      | BIOS version, vendor, date               |
+  | processor | CPU model, cores, threads, speed         |
+  | memory    | RAM sticks, speed, type, slots           |
+  | cache     | CPU cache levels (L1/L2/L3)              |
+  | slot      | PCIe slots (x16, x8, x4, x1)             |
+  | connector | Physical ports/connectors                |
+  | chassis   | Case/chassis type and info               |
+
+
+Can paste the model and manufacturer into a search engine. 
+
+`
+Manufacturer: Micro-Star International Co., Ltd.
+Product Name: GP72 6QE
+`
+
 ## Basics
 
   ### HW TABLE
@@ -50,32 +76,6 @@ This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful f
 
 ---
 
-## System info: 
-
-The easiet way if you are intrested in digging a bit deeper (and you should): 
-
-`sudo dmidecode -t <type>` 
-
-  | Filter    | Shows                                    |
-  |-----------|------------------------------------------|
-  | system    | Motherboard info, manufacturer, SKU      |
-  | baseboard | Detailed mobo specs (better than system) |
-  | bios      | BIOS version, vendor, date               |
-  | processor | CPU model, cores, threads, speed         |
-  | memory    | RAM sticks, speed, type, slots           |
-  | cache     | CPU cache levels (L1/L2/L3)              |
-  | slot      | PCIe slots (x16, x8, x4, x1)             |
-  | connector | Physical ports/connectors                |
-  | chassis   | Case/chassis type and info               |
-
-
-Can paste the model and manufacturer into a search engine. 
-
-`
-Manufacturer: Micro-Star International Co., Ltd.
-Product Name: GP72 6QE
-`
-
 Here is me getting 350 fps on this 200$ laptop from eBay.
 
 <img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
@@ -91,8 +91,7 @@ With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Lapt
 
 > For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
 
-
-### Kernels
+## Kernels
 
 During install you pick one or several kernels, that can be found in your Grub boot screen: (Zen, hardened, lts or default)
 
@@ -104,6 +103,9 @@ Hardened for dev systems.
 LTS more stable version. (6.12.x)
 
 For example when you build nvidia drivers they are built against your current kernel-headers making this just as important as the drivers selection part.
+
+Another example is network cards that might need LTS or latest (e.g. Realtek drivers)
+Why is why I recommend trying to trace through your hardware from model or pieces.
 
 ---
 
