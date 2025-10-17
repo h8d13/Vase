@@ -104,8 +104,7 @@ VaseOS automatically detects hardware and recommends appropriate drivers based o
 Before running the post install script you can uncomment any of these lines for extended support:
 ```
 #LG_PACKS+=" noto-fonts-cjk"         # Chinese, Japanese, Korean
-#LG_PACKS+=" noto-fonts-extra"       # Arabic, Hebrew, Greek, Cyrillic, Thai extended symbols
-#LG_PACKS+=" noto-fonts-devanagari"  # Hindi/Devanagari
+#LG_PACKS+=" noto-fonts-extra"       # Full extended symbols
 ```
 ## Live installations 🔌
 
