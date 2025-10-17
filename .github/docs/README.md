@@ -1,8 +1,10 @@
 # Table of contents
 
+General docs [README](./docs_main.md)
+
 | Components | Desc | Docs |
 |:----------|:------------|:--------------|
-| **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](.//hade_box.md) |
+| **hade_box** | Installer fork - Modified TUI for Arch Linux KDE installation | [README](./hade_box.md) |
 | **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./grom_lum.md) |
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman common operations Gtk/Adwaita app | [README](./pacto_pac.md) |
