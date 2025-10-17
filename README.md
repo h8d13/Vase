@@ -55,7 +55,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 ## Prep
 
 You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://apps.kde.org/isoimagewriter/) from Linux (or dd)
-> Select mbr/gpt according to your hardware (ususally gpt) And then when pressing "start" use dd mode for full copy.
+> Select mbr/gpt according to your hardware (usually gpt) And then when pressing "start" use dd mode for full copy.
 
 ---
 
