@@ -1,7 +1,7 @@
 # Project structure
 
 1. hade_box = Installer fork for Arch
-2. grom_lun = Grub2 utils
+2. grom_lun = Grub2 utils EXPERIMENTAL USE WITH CAUTION
 3. zazu_lago = Testing suite
 4. kaes_arch = Post-install script
 5. pacto_pac = Pacman GUI
