@@ -1,10 +1,4 @@
-# Project structure
-
-1. hade_box = Installer fork for Arch
-2. grom_lun = Grub2 utils EXPERIMENTAL USE WITH CAUTION
-3. zazu_lago = Testing suite
-4. kaes_arch = Post-install script
-5. pacto_pac = Pacman GUI
+# VASE 
 
 Main program contains ISO building scripts and more ways to interact with all the project.
 
@@ -12,6 +6,7 @@ Main program contains ISO building scripts and more ways to interact with all th
 
 ### Main VM Menu
 
+Inside `vase_os/zazu_lago/setup_vms` to see the deps that are pulled in.
 Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
@@ -46,17 +41,17 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... More readmes included. 
 
-
 ---
 
 ## Specifications of other files
 
-- Inside `vase_os/env` main detection logic for kernel version, distro, GPU/CPU.
-
-- Inside `vase_os/zazu_lago/setup_vms` for needed packages for QEMU/KVM.
+- Inside `vase_os/env` main detection logic for kernel version, distro/init system, GPU/CPU.
 
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
+- Inside `vase_os/mindeps` deps used by Vase it-self.
+
+- Inside `vase_os/hade_box/install` main TUI entry script for ArchKDE.
 
 ## Philosophy
 
@@ -67,6 +62,8 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 - Brickable: Feel no shame in re-installing 
 
 > Advanced stuff can be applied to Artix while simpler system stays with Arch. 
+
+Inside `vase_os/klar_tix/` to see Artix related features.
 
 ## Info for nerds / Benchmarks
 
