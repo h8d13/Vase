@@ -1,6 +1,6 @@
 # grome_lum
 
-- This section assumes some degree of familiarity on how to modify grub. And do be careful doing stuff like this as it can leave your system unbootable if used unproperly.
+- This section assumes some degree of familiarity on how to modify grub. And do be careful doing stuff like this as it can leave your system unbootable if used unproperly. **ITS ALSO LARGELY EXPERIMENTAL AND UNFINISHED.**
 
 Inside this repo you will find helpers scripts to do anything you want with your Grub menu. Like mount an ISO directly as an entry.
 
