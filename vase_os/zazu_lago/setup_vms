@@ -14,6 +14,9 @@ case "$qemu_display" in
     sdl) pkgs_needed="$pkgs_needed qemu-ui-sdl" ;;
     spice) pkgs_needed="$pkgs_needed qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice" ;;
 esac
+case "$audio_backend" in
+    pipewire) pkgs_needed="$pkgs_needed qemu-audio-pipewire" ;;
+esac
 
 # Add GL renderer if enabled
 [ "$qemu_gl" = "on" ] && pkgs_needed="$pkgs_needed virglrenderer"

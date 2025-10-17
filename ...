@@ -18,7 +18,7 @@ size="60G"
 vm_d="a" 
 # "a" for testing build ISOs "d" for regular
 iso_ext="iso" #raw, bin
-iso_n="VASE-2025.10.16-x86_64"
+iso_n="VASE-2025.10.17-x86_64"
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
@@ -42,7 +42,8 @@ qemu_gl="on"
 # GL acceleration: on, off
 qemu_uefi=1
 # Copy EFI vars to QEMU: 1 or 0
-
+audio_backend="pipewire"  # pa, alsa, pipewire, or none
+audio_device="intel-hda"  # intel-hda, AC97, usb-audio
 
 ################## DIRS/LOGS/PERMS
 iso_sig="asc"

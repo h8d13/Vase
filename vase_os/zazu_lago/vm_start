@@ -16,6 +16,8 @@ short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
+audio_backend="${qemu_audio:-pipewire}"  
+audio_device="${qemu_audio_dev:-intel-hda}" 
 
 # Check for CATART setting and display CLI art
 if [ "${CATART:-1}" = "1" ] && file_ex "${script_dir}/cli_art"; then
@@ -111,6 +113,20 @@ qemu_cmd() {
     else
         # Headless: serial output to terminal, no graphical display
         cmd="$cmd -serial mon:stdio -display none"
+    fi
+
+    if [ "$audio_backend" != "none" ]; then
+        case "$audio_device" in
+            intel-hda)
+                cmd="$cmd -audiodev ${audio_backend},id=snd0 -device intel-hda -device hda-duplex,audiodev=snd0"
+                ;;
+            AC97)
+                cmd="$cmd -audiodev ${audio_backend},id=snd0 -device AC97,audiodev=snd0"
+                ;;
+            usb-audio)
+                cmd="$cmd -audiodev ${audio_backend},id=snd0 -device usb-audio,audiodev=snd0"
+                ;;
+        esac
     fi
 
     while [ $# -gt 0 ]; do
