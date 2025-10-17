@@ -66,6 +66,8 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 - Document changes and tweaks as I go
 - Brickable: Feel no shame in re-installing 
 
+> Advanced stuff can be applied to Artix while simpler system stays with Arch. 
+
 ## Info for nerds / Benchmarks
 
 ### Time
