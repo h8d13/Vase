@@ -58,6 +58,14 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 - Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
 
 
+## Philosophy
+
+- Always works scenario > Simple TUI choices
+- Init systems compatible for post script and GUI for fast set-up
+- Automate as much of workflows as possible
+- Document changes and tweaks as I go
+- Brickable: Feel no shame in re-installing 
+
 ## Info for nerds / Benchmarks
 
 ### Time
