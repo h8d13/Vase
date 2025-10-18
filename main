@@ -214,6 +214,8 @@ if exec_args "BENCH"; then
     esac
 fi
 if exec_args "POST"; then
+    preop "Pulling submodules..."
+    git submodule update --init --recursive
     preop "Running post-install scripts..."
     "./${ka_d}/post" && exit
 fi
