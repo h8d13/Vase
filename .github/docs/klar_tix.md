@@ -32,10 +32,8 @@ sudo ./klartix_desktop
 ## Login again with user in SDDM screen
 cd Vase && ./main -u
 
-cd vase_os/kaes_arch/
-
-sudo vim post # Edit more
-sudo ./post
+./main -pe  # Edit post script
+sudo ./main -p  # Run post-install
 ```
 
 ## Configuration

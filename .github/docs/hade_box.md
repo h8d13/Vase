@@ -38,9 +38,8 @@ Open the apps launcher > type `Konsole`
 ```
 cd Vase/
 ```
-Edit the targets: user and kb using editor of your choice.
 
-Example: `sudo vim post` or `sudo nano post`
+Edit the post script using: `./main -pe`
 
 ```
 DTHEME=dark
@@ -49,7 +48,7 @@ VARIANT=""
 ```
 > Variant is optional, can be left empty. Applies for the current sudo user by default. Do check out some of the parts that you can configure (additional packages, removing stuff, guest account, etc).
 
-Then run: `sudo ./post`
+Then run: `sudo ./main -p`
 
 After running the script it will restart one last time. **And you are done!**
 
