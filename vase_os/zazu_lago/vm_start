@@ -54,17 +54,21 @@ copy_disk() {
     local temp_name
     temp_name="$(dirname "$image")/${short_uuid}$(basename "$image")"
 
-    preop "Copying $image > $temp_name..."
+    preop "Copying $image > $temp_name..." >&2
 
     if ! file_ex "$image"; then
-        postop "Error: $image not found"
-        exit 1
+        postop "Error: $image not found" >&2
+        return 1
     fi
 
-    cp "$image" "$temp_name"
+    if ! cp "$image" "$temp_name"; then
+        postop "Error: Failed to copy $image" >&2
+        return 1
+    fi
 
-    printf "\nCopied to %s\n" "$temp_name"
+    printf "\nCopied to %s\n" "$temp_name" >&2
     echo "$temp_name"
+    return 0
 }
 
 generate_mac() {
@@ -298,6 +302,10 @@ main() {
 
         duck)
             temp_name=$(copy_disk "$image_name")
+            if [ $? -ne 0 ]; then
+                postop "Failed to copy disk"
+                return 1
+            fi
             cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             rm -f "$temp_name"
@@ -306,7 +314,10 @@ main() {
 
         dupk)
             temp_name=$(copy_disk "$image_name")
-            sleep 5
+            if [ $? -ne 0 ]; then
+                postop "Failed to copy disk"
+                return 1
+            fi
             cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             preop "Permanent copy: $temp_name"
@@ -314,16 +325,22 @@ main() {
 
         mayk)
             temp_name=$(copy_disk "$image_name")
+            if [ $? -ne 0 ]; then
+                postop "Failed to copy disk"
+                return 1
+            fi
             cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
-            printf "Save? (raw/no): "
+            printf "Save? (Y/n): "
             read -r save_choice
             save_choice=$(echo "$save_choice" | tr '[:upper:]' '[:lower:]')
             case "$save_choice" in
-                raw)
+                n|no)
+                    rm -f "$temp_name"
+                    preop "Temp disk removed"
                     ;;
                 *)
-                    rm -f "$temp_name"
+                    preop "Permanent copy: $temp_name"
                     ;;
             esac
             ;;
