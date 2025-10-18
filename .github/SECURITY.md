@@ -14,10 +14,17 @@
 ## User configuration is the real key to security
 
 ### Strong Passwords & Usernames
-- **Usernames**: Avoid `admin`, `user`, `root` - use something descriptive unrelated to your identity. 
-  - Ideally lowercase with no special chars (numbers and `-` or `_` are fine.)
-  - Must start with a letter or underscore (not a number or hyphen)
-  - No spaces or special characters like @, #, $, etc.
+
+- **Usernames/Hostnames**: Avoid `admin`, `user`, `root` - use something descriptive unrelated to your identity. 
+
+Hostname has to be RFC-compliant for DNS (strict):
+  - Only: a-z, 0-9, - (hyphen)
+
+Usernames are more flexible:
+  - Start with: a-z or _
+  - Followed by: a-z, 0-9, _, -
+  - Max 31 characters
+  - Can contain $ at the end
 
 - **Passwords**: Mixed case/numbers/symbols, or pw managers
 - **Root**: Strong separate password, different from user accounts
