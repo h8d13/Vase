@@ -175,7 +175,7 @@ if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
 if exec_args "UPDATE"; then
-    git submodule update --init --recursive
+    git submodule init && git submodule update
     check_updates && exit
 fi
 if exec_args "DEPS"; then
@@ -215,7 +215,7 @@ if exec_args "BENCH"; then
 fi
 if exec_args "POST"; then
     preop "Pulling submodules..."
-    git submodule update --init --recursive
+    git submodule init && git submodule update
     preop "Running post-install scripts..."
     "./${ka_d}/post" && exit
 fi
