@@ -8,6 +8,7 @@ vase_os/zazu_lago/d/
 vase_os/zazu_lago/archiso_work/
 vase_os/zazu_lago/archiso_profile
 
+install-*.log
 logs/*
 user_*.json
 __pycache__/*
