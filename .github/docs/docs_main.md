@@ -113,4 +113,4 @@ Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma ove
 
 **PACKGS:** ~720 Base then ~750 with post install script essentials (Flatpak, Zsh, Python-gobject, Adwaita, Gtk4, Firefox) Extra ~30s 
 
-Next reads: [HARDWARE README](./hard_ware.md) [SECURITY README](../SECUTITY.md) 
+Next reads: [HARDWARE README](./hard_ware.md) [SECURITY README](./SECUTITY.md) 
