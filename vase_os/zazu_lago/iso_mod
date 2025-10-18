@@ -126,35 +126,13 @@ if file_ex "$PROFILE_LIST"; then
 
         # Download packages (pacman resolves dependencies automatically)
         if pacman -Sw --noconfirm $packages; then
-            # Recursively get ALL dependencies (not just first level)
+            # Recursively get ALL dependencies using pactree
             info "Resolving complete dependency tree..."
-            all_packages="$packages"
-            to_check="$packages"
-            checked=""
-
-            # Iterate through dependencies in batches (max 5 iterations to prevent infinite loops)
-            for iteration in 1 2 3 4 5; do
-                if [ -z "$to_check" ]; then
-                    break
-                fi
-
-                info "Dependency iteration $iteration..."
-                new_deps=$(pacman -Si $to_check 2>/dev/null | grep "^Depends On" | sed 's/Depends On.*: //' | tr ' ' '\n' | grep -v "^None$" | sed 's/[<>=].*//' | sort -u)
-
-                # Find only new dependencies we haven't checked yet
-                to_check=""
-                for dep in $new_deps; do
-                    if ! echo " $checked " | grep -q " $dep "; then
-                        to_check="$to_check $dep"
-                        all_packages="$all_packages $dep"
-                    fi
-                done
-
-                checked="$checked $to_check"
-            done
-
-            # Deduplicate and count
-            all_packages=$(echo "$all_packages" | tr ' ' '\n' | sort -u | grep -v "^$")
+            all_packages=$(
+                for pkg in $packages; do
+                    pactree -u -l "$pkg" 2>/dev/null || echo "$pkg"
+                done | sort -u | grep -v "^$"
+            )
             dep_count=$(echo "$all_packages" | wc -l)
             info "Copying $dep_count packages to ISO repository..."
 
@@ -210,7 +188,6 @@ fi
 
 ## xz/squashfs compression keeps ISO size efficient: 2.7GB with Plasma pre-cached
 ## Using new fat.conf which has ~856 pkgs cached 
-## Might be totally tripping on how to actually get dep trees properly see for iteration in 1 2 3 4 5 
 
 info "Building ISO with mkarchiso..."
 info "Silent mode: $silent_mode"
