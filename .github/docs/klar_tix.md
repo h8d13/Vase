@@ -30,7 +30,7 @@ sudo vim klartix_desktop # Please edit these values according to hardware.
 sudo ./klartix_desktop
 ## This will trigger another reboot.
 ## Login again with user in SDDM screen
-cd Vase && ./main -u
+cd Vase && ./main -u # Pull sin submodules
 
 ./main -pe  # Edit post script
 sudo ./main -p  # Run post-install
