@@ -167,3 +167,8 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
+
+### TerminationOS
+
+Basically I was just sick of distro-hopping. Thought how can I create my next build in minutes not hours.
+First tried on alpine and gave up at hardware drivers so here we are.
