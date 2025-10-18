@@ -4,7 +4,7 @@
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.2-darkgreen" alt="Arch_Linux"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.3-darkgreen" alt="Arch_Linux"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Plasma-6.4.5-darkgreen" alt="Plasma"></a>
