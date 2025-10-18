@@ -23,14 +23,14 @@ vim vase_os/klar_tix/klartix.conf
 sudo vase_os/klar_tix/klartix
 
 # 3. Reboot to hard disk, clone inside the target then install desktop
-git clone https://github.com/h8d13/Vase && cd Vase/vase_os/klar_tix
+git clone --recurse-submodules https://github.com/h8d13/Vase && cd Vase/vase_os/klar_tix
 
 sudo vim klartix_desktop # Please edit these values according to hardware.
 
 sudo ./klartix_desktop
 ## This will trigger another reboot.
 ## Login again with user in SDDM screen
-cd Vase && ./main -u # Pull sin submodules
+cd Vase
 
 ./main -pe  # Edit post script
 sudo ./main -p  # Run post-install
