@@ -84,7 +84,7 @@ After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
 After login in with your user > Open `Konsole` and type `cd Vase` this is where the post install script lives and more assets.
 
-Then `./main -pe` to edit desired values, then `sudo ./main -p` when ready.
+Then `sudo ./main -pe` to edit desired values, then `sudo ./main -p` when ready.
 
 > Using vim you can use insert to edit, ESC to enter command mode and :wq to write changes.
 > You can also go through some of the rest of the code as there might be some programs you want to add/remove.
