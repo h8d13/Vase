@@ -1365,10 +1365,10 @@ class Installer:
 			if user_home.exists():
 				info(f'Cloning Vase repository to {target_user.username} home directory')
 				target_repo_path = f'{self.target}/home/{target_user.username}/Vase'
-				# Clone using host git directly to target path
-				SysCommand(f'git clone https://github.com/h8d13/Vase {target_repo_path}')
+				# Clone using host git directly to target path with submodules
+				SysCommand(f'git clone --recursive https://github.com/h8d13/Vase {target_repo_path}')
 				self.chown(f'{target_user.username}:{target_user.username}', f'/home/{target_user.username}/Vase', ['-R'])
-				info(f'Successfully cloned Vase to /home/{target_user.username}/Vase')
+				info(f'Successfully cloned Vase with submodules to /home/{target_user.username}/Vase')
 			else:
 				warn(f'Home directory does not exist for user {target_user.username}')
 		except Exception as e:
