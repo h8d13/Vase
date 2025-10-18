@@ -86,6 +86,9 @@ After login in with your user > Open `Konsole` and type `cd Vase` this is where 
 
 Then `./main -pe` to edit desired values, then `sudo ./main -p` when ready.
 
+> Using vim you can use insert to edit, ESC to enter command mode and :wq to write changes.
+> You can also go through some of the rest of the code as there might be some programs you want to add/remove.
+
 [![VaseInstallVideo](http://img.youtube.com/vi/j7YnkxY1mVo/0.jpg)](http://www.youtube.com/watch?v=j7YnkxY1mVo "Vase Installation Demo")
 
 See an example installation on YouTube [here.](https://www.youtube.com/watch?v=j7YnkxY1mVo)
