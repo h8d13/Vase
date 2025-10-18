@@ -213,13 +213,19 @@ if exec_args "BENCH"; then
             ;;
     esac
 fi
-if exec_args "POST"; then    
+if exec_args "POST"; then
+    if [ ! -f "./${ka_d}/post" ]; then
+        preop "Post script not found, initializing submodules..."
+        git submodule update --init --recursive
+    fi
     preop "Running post-install scripts..."
     "./${ka_d}/post" && exit
 fi
 if exec_args "POST_EDIT"; then
-    preop "Pulling submodules..."
-    git submodule init && git submodule update
+    if [ ! -f "./${ka_d}/post" ]; then
+        preop "Post script not found, initializing submodules..."
+        git submodule update --init --recursive
+    fi
     preop "Opening post-install script in ${editor_cmd}..."
     ${editor_cmd} "./${ka_d}/post" && exit
 fi
