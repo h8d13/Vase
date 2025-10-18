@@ -1339,8 +1339,8 @@ class Installer:
 		for user in users:
 			self._create_user(user)
 
-		# Clone KAES-ARCH for sudo users after all users are created
-		self._clone_kaesarch(users)
+		# Clone Vase for sudo users after all users are created
+		self._clone_vase(users)
 
 		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
 		info('Upgrading all packages to latest versions...')
@@ -1349,8 +1349,8 @@ class Installer:
 		except Exception as e:
 			warn(f'Package upgrade failed: {e}')
 
-	def _clone_kaesarch(self, users: list[User]) -> None:
-		"""Clone KAES-ARCH repository for sudo users"""
+	def _clone_vase(self, users: list[User]) -> None:
+		"""Clone Vase repository for sudo users"""
 		sudo_users = [user for user in users if user.sudo]
 
 		if not sudo_users:
@@ -1363,16 +1363,16 @@ class Installer:
 		try:
 			user_home = self.target / 'home' / target_user.username
 			if user_home.exists():
-				info(f'Cloning KAES-ARCH repository to {target_user.username} home directory')
-				target_repo_path = f'{self.target}/home/{target_user.username}/KAES-ARCH'
+				info(f'Cloning Vase repository to {target_user.username} home directory')
+				target_repo_path = f'{self.target}/home/{target_user.username}/Vase'
 				# Clone using host git directly to target path
-				SysCommand(f'git clone https://github.com/h8d13/KAES-ARCH {target_repo_path}')
-				self.chown(f'{target_user.username}:{target_user.username}', f'/home/{target_user.username}/KAES-ARCH', ['-R'])
-				info(f'Successfully cloned KAES-ARCH to /home/{target_user.username}/KAES-ARCH')
+				SysCommand(f'git clone https://github.com/h8d13/Vase {target_repo_path}')
+				self.chown(f'{target_user.username}:{target_user.username}', f'/home/{target_user.username}/Vase', ['-R'])
+				info(f'Successfully cloned Vase to /home/{target_user.username}/Vase')
 			else:
 				warn(f'Home directory does not exist for user {target_user.username}')
 		except Exception as e:
-			warn(f'Failed to clone KAES-ARCH for user {target_user.username}: {e}')
+			warn(f'Failed to clone Vase for user {target_user.username}: {e}')
 
 	def _create_user(self, user: User) -> None:
 		# Password and Group management is still handled by user_create()

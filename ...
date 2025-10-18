@@ -80,6 +80,7 @@ hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazu_lago"
 gl_d="$vase_d/grome_lum"
 chp_d="$vase_d/chap_pie"
+ka_d="$vase_d/kaes_arch"
 
 vase_p_env="$vase_d/env"
 

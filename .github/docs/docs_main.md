@@ -24,6 +24,7 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 
 ```
 --update                   # -u # Checks git for updates & pull submodules
+--post                     # -p # Runs post install script
 --check-deps               # -c # Check build deps 
 
 --start                    # -s # Start VM menu
@@ -71,7 +72,7 @@ Inside `vase_os/klar_tix/` to see Artix related features.
 
 Original: 142.1s to build ISO with 12 virt-cores / ~600-900s for complete install (with a 5-8mb/s mirror).
 
-New: Reduced to <200s (+ configuration in TUI) using custom ISO overlay (caching plasma packages + stuff that is always required). Current best: 2m15s
+New: Reduced to <200s (+ configuration in TUI) using custom ISO overlay (caching plasma packages + stuff that is always required).
 
 I'm aiming for the installer to be the fastest way to install KDE + a good base system and lightest compared to same env on diffrent distros thanks to Archlinux tools/compression.
 

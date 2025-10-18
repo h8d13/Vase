@@ -175,11 +175,11 @@ if ! exec_args "TUI"; then
     init_log "${rel}${p_lib}/${log_n}.${log_ext}"
 fi
 if exec_args "UPDATE"; then
-    git submodule init && git submodule update
-    check_updates && rcw true && exit
+    git submodule update --init --recursive
+    check_updates && exit
 fi
 if exec_args "DEPS"; then
-    "./${vase_d}/mindeps" check && rcw true && exit
+    "./${vase_d}/mindeps" check && exit
 fi
 if exec_args "GRUB"; then
     grub_args="$(get_grub_cmd)"
@@ -188,9 +188,9 @@ if exec_args "GRUB"; then
     # Get remaining args
     grub_rest=$(echo "$grub_args" | cut -d' ' -f3-)
     if [ -z "$grub_flag" ]; then
-        "./${gl_d}/grome_lum" -h && rcw true && exit
+        "./${gl_d}/grome_lum" -h && exit
     else
-        "./${gl_d}/grome_lum" "$grub_flag" $grub_rest && rcw true && exit
+        "./${gl_d}/grome_lum" "$grub_flag" $grub_rest && exit
     fi
 fi
 if exec_args "BENCH"; then
@@ -198,32 +198,36 @@ if exec_args "BENCH"; then
     case "$bench_type" in
         io)
             preop "Starting I/O benchmark..."
-            "./${chp_d}/bench_io" && rcw true && exit
+            "./${chp_d}/bench_io" && exit
             ;;
         cpu)
             preop "Starting CPU benchmark..."
-            "./${chp_d}/bench_cpu" && rcw true && exit
+            "./${chp_d}/bench_cpu" && exit
             ;;
         gpu)
             preop "Starting GPU benchmark..."
-            "./${chp_d}/bench_gpu" && rcw true && exit
+            "./${chp_d}/bench_gpu" && exit
             ;;
         *)
             die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
             ;;
     esac
 fi
+if exec_args "POST"; then
+    preop "Running post-install scripts..."
+    "./${ka_d}/post" && exit
+fi
 # DEV mode entry
 if exec_args "DEV"; then
     pacman-key --init
     chmod +x main
     chmod +x "./${hb_d}/install"
-    "./${hb_d}/install" && rcw true && exit
+    "./${hb_d}/install" && exit
 fi
 # TUI with args
 if exec_args "TUI"; then
     # unquoted so that we can pass several args
-    "./${hb_d}/install" $(get_tui_cmd) && rcw true && exit
+    "./${hb_d}/install" $(get_tui_cmd) && ./vase_os/clean_cache && exit
 fi
 
 obanner "PERMS CHECK"
@@ -349,4 +353,3 @@ else
         die "Running as regular user." # Or warn and do smthn else
     fi
 fi
-# best time current: 1m57
