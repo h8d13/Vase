@@ -5,6 +5,8 @@ vase_v="0.0.12" # For motd / github page
 dev_mode=0 # Copy host files or not (local vs remote -b)
 silent_mode=1 #Supress output of mkarchiso
 auto_date=1 # 1=automatic date, 0=manual
+#### Editor preference
+editor_cmd="vim"  # vim, nano, micro, etc.
 
 ################## VM STUFF
 arch="x86_64"
@@ -87,10 +89,6 @@ vase_p_env="$vase_d/env"
 #### Future alpine imp
 # Privilege escalation (ex: doas alternative)
 elev_cmd="sudo"
-
-#### Editor preference
-editor_cmd="vim"  # vim, nano, micro, etc.
-
 
 ## For runtime output
 script_s=$(date +%s%6N)
