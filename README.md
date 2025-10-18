@@ -82,7 +82,7 @@ Go grab some coffee during installation (it'll be done when you come back).
 After initial install pick `Reboot` and **switch to hard disk** in BIOS. 
 > Note: I recommend only plugging-in one screen at this step. you can then add as many as you want later.
 
-After login in with your user > Open `Konsole` and type `cd KAES-ARCH` this is where the post install script lives and more assets.
+After login in with your user > Open `Konsole` and type `cd Vase` this is where the post install script lives and more assets.
 
 Then `sudo vim post` edit to desired values, then `sudo ./post` when ready.
 

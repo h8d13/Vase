@@ -84,9 +84,12 @@ ka_d="$vase_d/kaes_arch"
 
 vase_p_env="$vase_d/env"
 
-#### Future alpine imp 
+#### Future alpine imp
 # Privilege escalation (ex: doas alternative)
 elev_cmd="sudo"
+
+#### Editor preference
+editor_cmd="vim"  # vim, nano, micro, etc.
 
 
 ## For runtime output

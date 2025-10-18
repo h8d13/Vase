@@ -36,7 +36,7 @@ Open the apps launcher > type `Konsole`
 > I've taken the liberty to clone the other repo in sudo user 0's home.
 
 ```
-cd KAES-ARCH/
+cd Vase/
 ```
 Edit the targets: user and kb using editor of your choice.
 

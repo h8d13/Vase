@@ -75,6 +75,10 @@ parse_args() {
                 POST=1
                 shift
                 ;;
+            -pe|--post-edit)
+                POST_EDIT=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -97,6 +101,7 @@ exec_args() {
         GRUB) [ "${GRUB}" = "1" ] ;;
         DEPS) [ "${DEPS}" = "1" ] ;;
         POST) [ "${POST}" = "1" ] ;;
+        POST_EDIT) [ "${POST_EDIT}" = "1" ] ;;
         *) return 1 ;;
     esac
 }

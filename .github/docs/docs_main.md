@@ -23,20 +23,22 @@ Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/Check Vase is built okay
 
 ```
---update                   # -u # Checks git for updates & pull submodules
---post                     # -p # Runs post install script
---check-deps               # -c # Check build deps 
+--update                   # -u  # Checks git for updates & pull submodules
+--check-deps               # -c  # Check build deps 
 
---start                    # -s # Start VM menu
---quick <command>          # -q # Pass direct VM options "help"
---bench <type>             # -b # Run benchmarks: io, cpu, gpu
---isomod                   # -i # Create iso default `iso_profiles/fat.conf`
---flash <device>           # -f # Flash ISO to USB device (e.g., /dev/sdd)
---workflow <device>        # -w # Complete workflow
---dev                      # -d # Development mode flag entry script
---grub <args>              # -g # GRUB utilities -h for help
+--post-edit                # -pe # Edits post install script
+--post                     # -p  # Runs post install script
 
---reset                    # -r # Resets logs and rcw
+--start                    # -s  # Start VM menu
+--quick <command>          # -q  # Pass direct VM options "help"
+--bench <type>             # -b  # Run benchmarks: io, cpu, gpu
+--isomod                   # -i  # Create iso default `iso_profiles/fat.conf`
+--flash <device>           # -f  # Flash ISO to USB device (e.g., /dev/sdd)
+--workflow <device>        # -w  # Complete workflow
+--dev                      # -d  # Development mode flag entry script
+--grub <args>              # -g  # GRUB utilities -h for help
+
+--reset                    # -r  # Resets logs and rcw
 ```
 
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.

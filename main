@@ -217,6 +217,10 @@ if exec_args "POST"; then
     preop "Running post-install scripts..."
     "./${ka_d}/post" && exit
 fi
+if exec_args "POST_EDIT"; then
+    preop "Opening post-install script in ${editor_cmd}..."
+    ${editor_cmd} "./${ka_d}/post" && exit
+fi
 # DEV mode entry
 if exec_args "DEV"; then
     pacman-key --init
