@@ -157,12 +157,13 @@ This is useful to reset if you are trying to get something running.
 
 And for actual game files: `/home/myuser/.local/share/Steam/steamapps/common`
 
-
 Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-arounds. Do be careful to filter with Arch and your type of hardware.
 
-There are also many other useful ressources like [Lutris](https://lutris.net/downloads) [THisGuyGoated](https://github.com/legluondunet/MyLittleLutrisScripts), [AreWeAntiCheatYet](https://areweanticheatyet.com/) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks) 
+For lutris `sudo pacman -S winetricks`
 
-Also useful `steam --reset` in Konsole and watch logs when trying somehting out.
+There are also many other useful ressources like [Lutris](https://lutris.net/downloads) [ThisGuyGoated](https://github.com/legluondunet/MyLittleLutrisScripts), [AreWeAntiCheatYet](https://areweanticheatyet.com/) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks) 
+
+Also useful `steam --reset` in Konsole and watch logs when trying something out.
 
 ---
 
