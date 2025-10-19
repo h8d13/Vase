@@ -76,6 +76,32 @@ This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful f
 
 ---
 
+## Steam Gaming
+
+Most Steam games (especially older titles like GTA IV) require 32-bit graphics drivers. If you installed Nvidia drivers but games crash immediately without error, install the 32-bit libraries:
+
+Example for Nvidia.
+
+```bash
+sudo pacman -S lib32-nvidia-utils lib32-vulkan-icd-loader
+```
+
+**Why this happens:**
+- Steam Deck ships with all 32-bit libraries pre-installed
+- Vanilla Arch only installs 64-bit drivers by default
+- Games launch but immediately crash when 32-bit OpenGL/Vulkan libraries are missing
+
+**Verify installation:**
+```bash
+pacman -Q | grep lib32
+```
+
+You should see `lib32-nvidia-utils`, `lib32-vulkan-icd-loader`, and `lib32-mesa` in the list (for Nvidia).
+
+**AMD/Intel users:** The same applies using `lib32-vulkan-radeon` (AMD) or `lib32-vulkan-intel` (Intel) for the same reason.
+
+---
+
 Here is me getting 350 fps on this 200$ laptop from eBay.
 
 <img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
