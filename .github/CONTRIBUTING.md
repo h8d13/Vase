@@ -7,7 +7,7 @@ Create a testing user on your existing install. We have a script called `setup_v
 - Create your first ISO: modify `vase_os/zazu_lago/iso_profiles/fat.conf` & `vase_os/zazu_lago/iso_mod`
 - Run `sudo ./main -i` find in 'a' folder (dev drive) you newly created ISO.
 - Change the installer `vase_os/hade_box/archinstall/default_profiles` or anything inside `hade_box` (hardware or bootloaders, etc...)
-- Test quickly inside VMs.
+- Test quickly inside VMs using `...` config file. And VM menu.
 
 ### Reverse engineer
 
