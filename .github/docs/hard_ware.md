@@ -162,6 +162,8 @@ Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-a
 
 There are also many other useful ressources like [Lutris](https://lutris.net/downloads) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks)
 
+Also useful `steam --reset` in Konsole and watch logs when trying somehting out.
+
 ---
 
 ## Testing dumps
