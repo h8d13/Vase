@@ -164,7 +164,7 @@ There are also many other useful ressources like [Lutris](https://lutris.net/dow
 
 ---
 
-# Testing dumps
+## Testing dumps
 
 Done with browser opened and a few apps to make system 'in-use'. Usually a Youtube Video and a code editor.
 
@@ -264,6 +264,6 @@ Here is me getting 350 fps on this 200$ laptop from eBay.
 With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Laptop/GP72-6QE-Leopard-Pro/Specification)
 
 
-And on GTA4: Complete edition inside Nico's appartement with 400 fps.
+And on GTA4: Complete edition inside Nico's appartement with 400 fps (on the 4060Ti).
 
 <img width="1920" height="1080" alt="Screenshot_20251019_160348" src="https://github.com/user-attachments/assets/5cf609fd-b748-4d58-b23b-d04af552bec2" />
