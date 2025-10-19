@@ -125,6 +125,16 @@ For example when you build nvidia drivers they are built against your current ke
 Another example is network cards that might need LTS or latest (e.g. Realtek drivers)
 Why is why I recommend trying to trace through your hardware from model or pieces.
 
+
+## Windows programs Compat
+
+Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-arounds. Do be careful to filter with Arch and your type of hardware.
+
+There are also many other useful ressources like [Lutris](https://lutris.net/downloads) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks)
+
+In steam you can also force certain compatibility tools: Right clikc a game > `Compatibility` 
+`Settings` > `Downloads` > `Allow Shader Background processing`
+
 ---
 
 # Testing dumps
