@@ -264,7 +264,7 @@ if im_groot; then
             fi
             cbanner "FILES CHECK"
             preop "Starting VM Menu..."
-            "./${zl_d}/vm_start" && rcw true && exit
+            "./${zl_d}/vm_start" && exit
         fi
         if exec_args "QUICK"; then
             quick_arg="$(get_quick_cmd)"
@@ -277,9 +277,9 @@ if im_groot; then
         fi
         if exec_args "ISO"; then
             preop "Checking host is Up to Date..."
-            "./${zl_d}/host_uptodate" && rcw true || exit 1
+            "./${zl_d}/host_uptodate" || exit 1
             preop "Starting ISO Builder..."
-            "./${zl_d}/iso_mod" && rcw true && exit
+            "./${zl_d}/iso_mod" && exit
         fi
         if exec_args "FLASH"; then
             flash_device="$(get_flash_device)"

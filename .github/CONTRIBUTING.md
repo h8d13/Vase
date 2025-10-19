@@ -2,7 +2,12 @@
 
 ## Get started helping out !
 
-Create a testing user on your existing KDE install. We have a script called `setup_vb` in the repo made for this.
+Create a testing user on your existing install. We have a script called `setup_vb` in the repo made for this.
+
+- Create your first ISO: modify `vase_os/zazu_lago/iso_profiles/fat.conf` & `vase_os/zazu_lago/iso_mod`
+- Run `sudo ./main -i`
+- Change the installer `vase_os/hade_box/archinstall/default_profiles` or anything inside `hade_box` (hardware or bootloaders, etc...)
+- Test quickly inside VMs.
 
 ### Reverse engineer
 
