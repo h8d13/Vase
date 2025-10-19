@@ -145,7 +145,7 @@ You can also clear cache here.
 
 Can also add non-steam games (or any `.exe`) > `Games` > `Add non-steam game to my library`
 
-You can import an exisitng library from a mountpoint: 
+You can import an exisiting library from a mountpoint: 
 
 `Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `home/myuser/.local/share/Steam`
 
