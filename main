@@ -236,7 +236,6 @@ fi
 
 obanner "PERMS CHECK"
 if im_groot; then
-    info "Running with root privileges"
     # Tree output
     if cmd_exists "tree"; then
         info "Output dir strucs to .directory file..."
