@@ -177,3 +177,5 @@ For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
 Basically I was just sick of distro-hopping. Thought how can I create my next build in minutes not hours.
 First tried on alpine and gave up at hardware drivers so here we are.
+
+> It is also largely frustration-driven: Both with how newer users struggle (usually in forums) and what I wish I had when I first started using Arch.
