@@ -90,7 +90,7 @@ For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/K
 - Swap config inside disks to make possible swap on partition
 - Removed all BOOTLOADERS/HSM/LVM/FIDO2/LUKS2 logic >  Replaced by default: Grub > To be able to expand on snapper/timeshift features + Grub config and people can do what they want after.
 - Stripped a lot of code for defaults to be simpler. And for display (translations, certain menus, etc)
-- Removed plugins for maintanability of installer code (scripts still available).
+- Removed plugins/scripts for maintanability IDEA was that the stripped version could be forked itself to add more advanced features directly in the flow instead.
 - Logging inside dir > Auto-save/Load configs also inside dir.
 - Legacy x11 server options
 - Change certain OOO flow:
