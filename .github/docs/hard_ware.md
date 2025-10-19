@@ -83,7 +83,7 @@ Most Steam games (especially older titles like GTA IV) require 32-bit graphics d
 Example for Nvidia.
 
 ```bash
-sudo pacman -S lib32-nvidia-utils lib32-vulkan-icd-loader
+sudo pacman -S lib32-nvidia-utils steam
 ```
 
 **Why this happens:**
@@ -91,12 +91,12 @@ sudo pacman -S lib32-nvidia-utils lib32-vulkan-icd-loader
 - Vanilla Arch only installs 64-bit drivers by default
 - Games launch but immediately crash when 32-bit OpenGL/Vulkan libraries are missing
 
-**Verify installation:**
+**Verify installation 32bit libs:**
 ```bash
 pacman -Q | grep lib32
 ```
 
-You should see `lib32-nvidia-utils`, `lib32-vulkan-icd-loader`, and `lib32-mesa` in the list (for Nvidia).
+You should see `lib32-nvidia-utils`, `lib32-vulkan-icd-loader`, and `lib32-mesa` in the list + many more others pulled by steam.
 
 **AMD/Intel users:** The same applies using `lib32-vulkan-radeon` (AMD) or `lib32-vulkan-intel` (Intel) for the same reason.
 
