@@ -160,7 +160,7 @@ And for actual game files: `/home/myuser/.local/share/Steam/steamapps/common`
 
 Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-arounds. Do be careful to filter with Arch and your type of hardware.
 
-There are also many other useful ressources like [Lutris](https://lutris.net/downloads) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks)
+There are also many other useful ressources like [Lutris](https://lutris.net/downloads), [AreWeAntiCheatYet](https://areweanticheatyet.com/) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks) 
 
 Also useful `steam --reset` in Konsole and watch logs when trying somehting out.
 
