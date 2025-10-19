@@ -37,4 +37,19 @@ Display: gtk | GL: on
  macg    : Generate MAC + run
  exit    : Exit
 ########################################
+Any key to skip and use standard CMD...
 ```
+
+
+### Example usage
+
+Edit `...` file to match: where is my ISO `vm_d="a"` I use a drive for dev builds and `d` for regular ISOs.
+
+Edit `iso_n="VASE-2025.10.18-x86_64"` to match you own.
+
+Edit `vm_name="myvm1" #anydistro` this will be the Cqow2 disk.
+
+Then `sudo ./main -q rdisk`, `brick` then `dupk`.
+
+
+
