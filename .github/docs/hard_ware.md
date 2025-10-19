@@ -100,14 +100,6 @@ You should see `lib32-nvidia-utils`, `lib32-vulkan-icd-loader`, and `lib32-mesa`
 
 **AMD/Intel users:** The same applies using `lib32-vulkan-radeon` (AMD) or `lib32-vulkan-intel` (Intel) for the same reason.
 
----
-
-Here is me getting 350 fps on this 200$ laptop from eBay.
-
-<img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
-
-With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Laptop/GP72-6QE-Leopard-Pro/Specification)
-
 ### NVIDIA Table :(
 
 - GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
@@ -224,3 +216,17 @@ Settings: Low 1240x 1024 - 5:4 ratio
 [VProf]    Server PackEntities   0.01   0.13     7204   0.11   0.33     0.19   0.60      115   0.19   0.60
 [VProf]         SoundOperators   0.00   0.00       18   0.31   2.93     0.00   0.15       13   0.13   1.53
 ```
+
+
+---
+
+Here is me getting 350 fps on this 200$ laptop from eBay.
+
+<img width="1920" height="1080" alt="2025-10-13_14 37 49" src="https://github.com/user-attachments/assets/e91b64ac-a4f1-43e1-bf1a-bbc3a71143c1" />
+
+With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Laptop/GP72-6QE-Leopard-Pro/Specification)
+
+
+And on GTA4: Complete edition inside Nico's appartement with 400 fps.
+
+<img width="1920" height="1080" alt="Screenshot_20251019_160348" src="https://github.com/user-attachments/assets/5cf609fd-b748-4d58-b23b-d04af552bec2" />
