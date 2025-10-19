@@ -128,12 +128,32 @@ Why is why I recommend trying to trace through your hardware from model or piece
 
 ## Windows programs Compat
 
+In dolphin CTRL + H to show hidden files. 
+
+In steam you can also force certain compatibility tools: Right click a game > `Compatibility` 
+
+This: `Settings` > `Downloads` > `Allow Shader Background processing` 
+
+You can also clear cache here.
+
+Can also add non-steam games (or any `.exe`) > `Games` > `Add non-steam game to my library`
+
+You can import an exisitng library from a mountpoint: 
+
+`Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `home/myuser/.local/share/Steam`
+
+Compat data uses steamID (for example CS2 = 730)
+
+`home/myuser/.local/share/Steam/steamapps/compatdata/730`
+
+This is useful to reset if you are trying to get something running.
+
+And for actual game files: `/home/myuser/.local/share/Steam/steamapps/common`
+
+
 Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-arounds. Do be careful to filter with Arch and your type of hardware.
 
 There are also many other useful ressources like [Lutris](https://lutris.net/downloads) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks)
-
-In steam you can also force certain compatibility tools: Right clikc a game > `Compatibility` 
-`Settings` > `Downloads` > `Allow Shader Background processing`
 
 ---
 
