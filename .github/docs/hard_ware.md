@@ -80,6 +80,12 @@ This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful f
 
 Most Steam games (especially older titles like GTA IV) require 32-bit graphics drivers. If you installed Nvidia drivers but games crash immediately without error, install the 32-bit libraries:
 
+Using pactopac you can toggle it directly. 
+
+<img width="953" height="702" alt="image" src="https://github.com/user-attachments/assets/6acf2f95-01d1-400a-9a2c-32615f24ec5c" />
+
+Or manually edit `/etc/pacman.conf` then refresh using `pacman -Sy`
+
 Example for Nvidia.
 
 ```bash
