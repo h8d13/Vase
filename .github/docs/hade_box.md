@@ -63,7 +63,6 @@ For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/K
 - Fixed a case where it would pick up on host fstab zram causing boot hangs. `genfstab {flags} -f {self.target} {self.target}` note the `-f` for filter.
 - Change `f'pacstrap -C /etc/pacman.conf -K {self.target} {" ".join(packages)} --needed --noconfirm'` note the `--needed` flag to prevent re-installs.
 - Change `arch-chroot {self.target} mkinitcpio {" ".join(flags)}')` to remove `peek_output=True` causing broken pipe errors. Comestic but important.
-- Added `sof-firmware` to base to avoid another mkinitcpio hook
 - Expanded on brtfs-snapper/timeshift integration
 
 - **Fixed fallbacks in case endpoints are down:** Critical endpoints like https://archlinux.org/mirrors/status/json/ fail or manual one: https://archlinux.org/mirrorlist/
