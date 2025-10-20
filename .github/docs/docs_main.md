@@ -32,12 +32,12 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 
 --start                    # -s  # Start VM menu
 --quick <command>          # -q  # Pass direct VM options "help"
---bench <type>             # -b  # Run benchmarks: io, cpu, gpu
 --isomod                   # -i  # Create iso default `iso_profiles/fat.conf`
 --flash <device>           # -f  # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>        # -w  # Complete workflow
 --dev                      # -d  # Development mode flag entry script
 --grub <args>              # -g  # GRUB utilities -h for help
+--bench <type>             # -b  # Run benchmarks: io, cpu, gpu
 
 --reset                    # -r  # Resets logs and rcw
 ```
