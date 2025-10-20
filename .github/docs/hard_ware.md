@@ -74,6 +74,22 @@ prime-run kdenlive        # Video editor
 
 This runs the application on the Nvidia dGPU instead of the Intel iGPU, useful for power management and performance. 
 
+## Kernels
+
+During install you pick one or several kernels, that can be found in your Grub boot screen: (Zen, hardened, lts or default)
+
+Depending on hardware again, performance might differ from one mainline to another variant. 
+
+Mainline standard balanced.
+Zen for desktop/gaming.
+Hardened for dev systems.
+LTS more stable version. (6.12.x)
+
+For example when you build nvidia drivers they are built against your current kernel-headers making this just as important as the drivers selection part.
+
+Another example is network cards that might need LTS or latest (e.g. Realtek drivers)
+Why is why I recommend trying to trace through your hardware from model or pieces.
+
 ---
 
 ## Steam Gaming
@@ -121,6 +137,9 @@ You can import an exisiting library from a mountpoint:
 
 `Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `/myext/nvmemountpoint/home/myuser/.local/share/Steam`
 
+Also useful `steam --reset` in Konsole and watch logs when trying something out.
+
+
 ### NVIDIA Table :(
 
 - GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
@@ -129,23 +148,6 @@ You can import an exisiting library from a mountpoint:
 - Older than GTX 200 → No longer supported.
 
 > For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
-
-## Kernels
-
-During install you pick one or several kernels, that can be found in your Grub boot screen: (Zen, hardened, lts or default)
-
-Depending on hardware again, performance might differ from one mainline to another variant. 
-
-Mainline standard balanced.
-Zen for desktop/gaming.
-Hardened for dev systems.
-LTS more stable version. (6.12.x)
-
-For example when you build nvidia drivers they are built against your current kernel-headers making this just as important as the drivers selection part.
-
-Another example is network cards that might need LTS or latest (e.g. Realtek drivers)
-Why is why I recommend trying to trace through your hardware from model or pieces.
-
 
 ## Windows programs Compat
 
@@ -162,8 +164,6 @@ Here is a very helpful [site](https://www.protondb.com) to find tweaks or work-a
 For lutris `sudo pacman -S winetricks`
 
 There are also many other useful ressources like [Lutris](https://lutris.net/downloads) [ThisGuyGoated](https://github.com/legluondunet/MyLittleLutrisScripts), [AreWeAntiCheatYet](https://areweanticheatyet.com/) and [Protontricks](https://flathub.org/en/apps/com.github.Matoking.protontricks) 
-
-Also useful `steam --reset` in Konsole and watch logs when trying something out.
 
 ---
 
