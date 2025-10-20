@@ -20,3 +20,7 @@ __pycache__
 /traffic
 /traffic.json
 /traffic.json.backup
+src/
+pkg/
+*.pkg.tar.zst
+vaseos-git/

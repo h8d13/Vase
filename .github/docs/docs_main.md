@@ -20,7 +20,7 @@ Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 
 #### Main Commands
 
-When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/Check Vase is built okay
+When no args are provided shows help
 
 ```
 --update                   # -u  # Checks git for updates & pull submodules

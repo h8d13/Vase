@@ -1,0 +1,90 @@
+.TH VASE 1 "2025-10-20" "VaseOS 0.0.13" "User Commands"
+.SH NAME
+vase \- Arch Linux KDE testing suite and installation platform
+.SH SYNOPSIS
+.B vase
+[\fIOPTION\fR] [\fIARGUMENT\fR]
+.SH DESCRIPTION
+VaseOS is a testing suite to run VMs and development platform to perform Arch Linux system installations. It builds custom ISOs with pre-cached packages and provides QEMU/KVM VM testing environments for rapid iteration.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help message
+.TP
+.BR \-u ", " \-\-update
+Check git for updates & pull submodules
+.TP
+.BR \-c ", " \-\-check\-deps
+Check build dependencies
+.TP
+.BR \-pe ", " \-\-post\-edit
+Edit post install script
+.TP
+.BR \-p ", " \-\-post
+Run post install script
+.TP
+.BR \-pm ", " \-\-pkg\-man
+Launch pacman GUI
+.TP
+.BR \-s ", " \-\-start
+Start VM menu
+.TP
+.BR \-q ", " \-\-quick " \fICOMMAND\fR"
+Pass direct VM options (use "help" for list)
+.TP
+.BR \-i ", " \-\-isomod
+Create ISO using iso_profiles/fat.conf
+.TP
+.BR \-f ", " \-\-flash " \fIDEVICE\fR"
+Flash ISO to USB device (e.g., /dev/sdd)
+.TP
+.BR \-w ", " \-\-workflow " \fIDEVICE\fR"
+Complete workflow: build, sign, flash
+.TP
+.BR \-t ", " \-\-tuimenu
+Launch installer TUI
+.TP
+.BR \-d ", " \-\-dev
+Development mode entry
+.TP
+.BR \-g ", " \-\-grub " \fIARGS\fR"
+GRUB utilities (\-h for grub help)
+.TP
+.BR \-b ", " \-\-bench " \fITYPE\fR"
+Run benchmarks: io, cpu, gpu
+.TP
+.BR \-r ", " \-\-reset
+Reset logs and settings
+.SH EXAMPLES
+.TP
+.B vase \-i
+Build ISO with package cache
+.TP
+.B vase \-s
+Start VM testing menu
+.TP
+.B vase \-q help
+Show VM quick commands
+.TP
+.B vase \-w /dev/sdd
+Build ISO, sign, and flash to USB
+.SH FILES
+.TP
+.I /opt/vaseos/...
+Configuration file (VM settings, paths, versions)
+.TP
+.I /opt/vaseos/.vase.d/
+Runtime settings and logs directory
+.TP
+.I /opt/vaseos/.vase.d/logs.conf
+Runtime logging settings
+.SH AUTHOR
+Written by h8d13.
+.SH REPORTING BUGS
+Report bugs at: <https://github.com/h8d13/Vase/issues>
+.SH COPYRIGHT
+Copyright © 2025 h8d13. License GPLv3+: GNU GPL version 3 or later.
+.SH SEE ALSO
+.BR archinstall (1),
+.BR mkarchiso (8),
+.BR qemu (1)

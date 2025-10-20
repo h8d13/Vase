@@ -1,0 +1,47 @@
+# Maintainer: Your Name <your.email@example.com>
+pkgname=vaseos-git
+pkgver=0013
+pkgrel=1
+pkgdesc="VaseOS - Arch Linux KDE testing suite and installation platform"
+arch=('x86_64')
+url="https://github.com/h8d13/Vase"
+license=('GPL')
+depends=('base' 'git' 'archiso' 'gnupg' 'squashfs-tools' 'jq' 'python3' 'arch-install-scripts' 'tree' 'curl' 'wget')
+source=("${pkgname}::git+https://github.com/h8d13/Vase.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$pkgname"
+    grep '^vase_v=' ... | cut -d'"' -f2 | tr -d '.'
+}
+
+prepare() {
+    cd "$pkgname"
+    git submodule update --init --recursive
+}
+
+package() {
+    cd "$pkgname"
+
+    # Install to /opt/vaseos using git archive (preserves permissions)
+    install -dm755 "$pkgdir/opt/vaseos"
+    git archive HEAD | tar -x -C "$pkgdir/opt/vaseos"
+
+    # Copy submodules
+    export pkgdir="$pkgdir"
+    git submodule foreach --recursive 'mkdir -p "$pkgdir/opt/vaseos/$path" && git archive HEAD | tar -x -C "$pkgdir/opt/vaseos/$path"'
+
+    # Create wrapper script
+    install -dm755 "$pkgdir/usr/bin"
+    cat > "$pkgdir/usr/bin/vase" <<'EOF'
+#!/bin/bash
+cd /opt/vaseos && exec sudo ./main "$@"
+EOF
+    chmod +x "$pkgdir/usr/bin/vase"
+
+    # License
+    install -Dm644 "$pkgdir/opt/vaseos/LICENSE" "$pkgdir/usr/share/licenses/vaseos/LICENSE"
+
+    # Man page
+    install -Dm644 "$pkgdir/opt/vaseos/.github/man/vase.1" "$pkgdir/usr/share/man/man1/vase.1"
+}
