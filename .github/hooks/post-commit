@@ -1,0 +1,23 @@
+#!/bin/bash
+# Post-commit hook: Generate MD5 hashes for modified/added/deleted files only
+
+# Get files changed in the last commit (excluding .md5/ directory)
+git diff --name-only HEAD~1 HEAD | grep -v "^\.md5/" | while read file; do
+    if [ -f "$file" ]; then
+        # File exists - update its hash
+        mkdir -p ".md5/$(dirname "$file")"
+        md5sum "$file" | awk '{print $1}' > ".md5/$file.md5"
+    else
+        # File was deleted - remove its hash
+        rm -f ".md5/$file.md5"
+        # Clean up empty directories in .md5/
+        rmdir -p ".md5/$(dirname "$file")" 2>/dev/null || true
+    fi
+done
+
+# Check if there are changes in .md5/
+if [ -n "$(git status --porcelain .md5/)" ]; then
+    # Stage and commit the .md5 changes
+    git add .md5/
+    git commit --no-verify -m "$(date +%H:%M) MD5 Sums"
+fi
