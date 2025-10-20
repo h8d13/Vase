@@ -23,25 +23,25 @@ prepare() {
 package() {
     cd "$pkgname"
 
-    # Install to /opt/vaseos using git archive (preserves permissions)
-    install -dm755 "$pkgdir/opt/vaseos"
-    git archive HEAD | tar -x -C "$pkgdir/opt/vaseos"
+    # Install to /opt/vase using git archive (preserves permissions)
+    install -dm755 "$pkgdir/opt/vase"
+    git archive HEAD | tar -x -C "$pkgdir/opt/vase"
 
     # Copy submodules
     export pkgdir="$pkgdir"
-    git submodule foreach --recursive 'mkdir -p "$pkgdir/opt/vaseos/$path" && git archive HEAD | tar -x -C "$pkgdir/opt/vaseos/$path"'
+    git submodule foreach --recursive 'mkdir -p "$pkgdir/opt/vase/$path" && git archive HEAD | tar -x -C "$pkgdir/opt/vase/$path"'
 
     # Create wrapper script
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/vase" <<'EOF'
 #!/bin/bash
-cd /opt/vaseos && exec sudo ./main "$@"
+cd /opt/vase && exec sudo ./main "$@"
 EOF
     chmod +x "$pkgdir/usr/bin/vase"
 
     # License
-    install -Dm644 "$pkgdir/opt/vaseos/LICENSE" "$pkgdir/usr/share/licenses/vaseos/LICENSE"
+    install -Dm644 "$pkgdir/opt/vase/LICENSE" "$pkgdir/usr/share/licenses/vaseos/LICENSE"
 
     # Man page
-    install -Dm644 "$pkgdir/opt/vaseos/.github/man/vase.1" "$pkgdir/usr/share/man/man1/vase.1"
+    install -Dm644 "$pkgdir/opt/vase/.github/man/vase.1" "$pkgdir/usr/share/man/man1/vase.1"
 }
