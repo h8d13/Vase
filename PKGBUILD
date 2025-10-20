@@ -1,4 +1,4 @@
-# Maintainer: Your Name <your.email@example.com>
+# Maintainer: Hadean <hadean-eon-dev@proton.me>
 pkgname=vase-git
 pkgver=0013
 pkgrel=1
