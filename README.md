@@ -175,12 +175,6 @@ In project root, `...` file contains all configuration constants.
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
-### System-wide install
-
-You can install Vase into `/opt` by running `makepkg -Ccfi` in project root. And to remove `sudo pacman -Rns vase-git`
-
-This means all files will live within `/opt/vase` instead of where you cloned it and you will not need to write `sudo`.
-
 ### TerminationOS
 
 Basically I was just sick of distro-hopping. Thought how can I create my next build in minutes not hours.

@@ -47,6 +47,14 @@ When no args are provided shows help
 
 ---
 
+### System-wide install
+
+You can install Vase into `/opt` by running `makepkg -Ccfi` in project root. And to remove `sudo pacman -Rns vase-git`
+
+This means all files will live within `/opt/vase` instead of where you cloned it and you will not need to write `sudo`.
+
+---
+
 ## Specifications of other files
 
 - Inside `vase_os/env` main detection logic for kernel version, distro/init system, GPU/CPU.
