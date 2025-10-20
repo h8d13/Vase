@@ -29,7 +29,7 @@
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.13 | <strong>Tested:</strong> 2025-10-20 10:32:37 | <strong>Size:</strong> 2.4G
+<strong>Version:</strong> 0.0.12 | <strong>Tested:</strong> 2025-10-20 09:00:44 | <strong>Size:</strong> 2.7G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 
@@ -148,6 +148,8 @@ See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVn
 
 ### Components
 
+Project can be built system-wide using ``
+
 Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
 
 Or better yet, fork all the repos and send me patches. 
@@ -164,7 +166,7 @@ Or better yet, fork all the repos and send me patches.
 | **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](./.github/docs/klar_tix.md) |
 | **chap_pie** | System utils - Benchmarking and testing tools for new installs | [README](./.github/docs/chap_pie.md) |
 
-[QEMU Docs](https://www.qemu.org/documentation/)
+[QEMU Docs](https://www.qemu.org/documentation/) 
 
 ### Settings
 
@@ -172,6 +174,12 @@ In project root, `...` file contains all configuration constants.
 > VM Config, paths, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
+
+### System-wide install
+
+You can install Vase into `/opt` by running `makepkg -Ccfi` in project root. And to remove `sudo pacman -Rns vase-git`
+
+This means all files will live within `/opt/vase` instead of where you cloned it and you will not need to write `sudo`.
 
 ### TerminationOS
 

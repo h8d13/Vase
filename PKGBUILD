@@ -1,5 +1,5 @@
 # Maintainer: Your Name <your.email@example.com>
-pkgname=vaseos-git
+pkgname=vase-git
 pkgver=0013
 pkgrel=1
 pkgdesc="VaseOS - Arch Linux KDE testing suite and installation platform"
@@ -30,6 +30,16 @@ package() {
     # Copy submodules
     export pkgdir="$pkgdir"
     git submodule foreach --recursive 'mkdir -p "$pkgdir/opt/vase/$path" && git archive HEAD | tar -x -C "$pkgdir/opt/vase/$path"'
+
+    # Include .git for update functionality
+    cp -a .git "$pkgdir/opt/vase/"
+
+    # Copy submodule .git directories
+    find . -path '*/.git' -type d | while read gitdir; do
+        subpath="${gitdir#./}"
+        mkdir -p "$pkgdir/opt/vase/$(dirname "$subpath")"
+        cp -a "$gitdir" "$pkgdir/opt/vase/$(dirname "$subpath")/"
+    done
 
     # Create wrapper script
     install -dm755 "$pkgdir/usr/bin"
