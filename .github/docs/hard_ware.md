@@ -56,6 +56,15 @@ Product Name: GP72 6QE
 
 > They are a bit of a hit or miss. But what is cool is that you can try several drivers (prop vs open vs fallback), kernels (zen, lts) in little time and run `Glmark2` or `3dmax` or similar to test perf. My Ada series (4060Ti) works perfectly fine on proprietary for example.
 
+### NVIDIA Table :(
+
+- GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
+- GTX 400/500 (Fermi) → needs nvidia-390xx-dkms (AUR)
+- GTX 200/8800 (Tesla) → needs nvidia-340xx-dkms (AUR)
+- Older than GTX 200 → No longer supported.
+
+> For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
+
 ### Hybrid Graphics (Intel + Nvidia)
 
 When both Intel and Nvidia GPUs are detected, `nvidia-prime` is automatically included with any Nvidia driver selection. This enables GPU switching for laptops with Optimus.
@@ -138,16 +147,6 @@ You can import an exisiting library from a mountpoint:
 `Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `/myext/nvmemountpoint/home/myuser/.local/share/Steam`
 
 Also useful `steam --reset` in Konsole and watch logs when trying something out.
-
-
-### NVIDIA Table :(
-
-- GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
-- GTX 400/500 (Fermi) → needs nvidia-390xx-dkms (AUR)
-- GTX 200/8800 (Tesla) → needs nvidia-340xx-dkms (AUR)
-- Older than GTX 200 → No longer supported.
-
-> For these above use Nouveau then install from AUR appropriately. [WikiNVIDIA](https://wiki.archlinux.org/title/NVIDIA)
 
 ## Windows programs Compat
 
