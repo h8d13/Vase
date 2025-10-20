@@ -28,6 +28,7 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 
 --post-edit                # -pe # Edits post install script
 --post                     # -p  # Runs post install script
+--pkg-man                  # -pm # Launch pacman GUI
 
 --start                    # -s  # Start VM menu
 --quick <command>          # -q  # Pass direct VM options "help"
