@@ -86,6 +86,7 @@ ka_d="$vase_d/kaes_arch"
 pp_d="$vase_d/pacto_pac"
 
 vase_p_env="$vase_d/env"
+cc_py="$vase_d/clean_cache"
 
 #### Future alpine imp
 # Privilege escalation (ex: doas alternative)

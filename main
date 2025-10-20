@@ -223,7 +223,7 @@ if exec_args "POST_EDIT"; then
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."
-    python3 -B "./${pp_d}/main.py" && exit
+    python3 "./${pp_d}/main.py" && ./${cc_py} && exit
 fi
 # DEV mode entry
 if exec_args "DEV"; then
@@ -235,9 +235,8 @@ fi
 # TUI with args
 if exec_args "TUI"; then
     # unquoted so that we can pass several args
-    "./${hb_d}/install" $(get_tui_cmd) && ./vase_os/clean_cache && exit
+    "./${hb_d}/install" $(get_tui_cmd) && ./${cc_py} && exit
 fi
-
 obanner "PERMS CHECK"
 if im_groot; then
     # Tree output
