@@ -148,8 +148,6 @@ See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVn
 
 ### Components
 
-Project can be built system-wide using ``
-
 Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
 
 Or better yet, fork all the repos and send me patches. 
@@ -167,13 +165,6 @@ Or better yet, fork all the repos and send me patches.
 | **chap_pie** | System utils - Benchmarking and testing tools for new installs | [README](./.github/docs/chap_pie.md) |
 
 [QEMU Docs](https://www.qemu.org/documentation/) 
-
-### Settings
-
-In project root, `...` file contains all configuration constants.
-> VM Config, paths, custom names, etc...
-
-For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
 ### TerminationOS
 

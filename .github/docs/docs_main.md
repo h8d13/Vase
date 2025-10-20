@@ -10,6 +10,13 @@ Inside `vase_os/zazu_lago/setup_vms` to see the deps that are pulled in.
 Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 > Useful to run QEMU with specific options or with attached storage. Or test other distros/architectures from Arch.
 
+### Settings
+
+In project root, `...` file contains all configuration constants.
+> VM Config, paths, custom names, etc...
+
+For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
+
 ---
 
 ### From existing arch system (For devs)
