@@ -35,7 +35,7 @@ When no args are provided we simply: Check for KVM/QEMU deps/Check permissions/C
 --isomod                   # -i  # Create iso default `iso_profiles/fat.conf`
 --flash <device>           # -f  # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>        # -w  # Complete workflow
---dev                      # -d  # Development mode flag entry script
+--dev                      # -d  # Development mode flag entry
 --grub <args>              # -g  # GRUB utilities -h for help
 --bench <type>             # -b  # Run benchmarks: io, cpu, gpu
 
