@@ -198,15 +198,15 @@ if exec_args "BENCH"; then
     case "$bench_type" in
         io)
             preop "Starting I/O benchmark..."
-            "./${chp_d}/bench_io" && exit
+            "./${ch_d}/bench_io" && exit
             ;;
         cpu)
             preop "Starting CPU benchmark..."
-            "./${chp_d}/bench_cpu" && exit
+            "./${ch_d}/bench_cpu" && exit
             ;;
         gpu)
             preop "Starting GPU benchmark..."
-            "./${chp_d}/bench_gpu" && exit
+            "./${ch_d}/bench_gpu" && exit
             ;;
         *)
             die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
@@ -220,6 +220,10 @@ fi
 if exec_args "POST_EDIT"; then
     preop "Opening post-install script in ${editor_cmd}..."
     ${editor_cmd} "./${ka_d}/post" && exit
+fi
+if exec_args "PKG_MAN"; then
+    preop "Launching PACTOPAC package manager..."
+    python3 -B "./${pp_d}/main.py" && exit
 fi
 # DEV mode entry
 if exec_args "DEV"; then

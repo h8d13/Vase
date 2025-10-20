@@ -79,6 +79,10 @@ parse_args() {
                 POST_EDIT=1
                 shift
                 ;;
+            -pm|--pkg-man)
+                PKG_MAN=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 exit 1
@@ -102,6 +106,7 @@ exec_args() {
         DEPS) [ "${DEPS}" = "1" ] ;;
         POST) [ "${POST}" = "1" ] ;;
         POST_EDIT) [ "${POST_EDIT}" = "1" ] ;;
+        PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
         *) return 1 ;;
     esac
 }
