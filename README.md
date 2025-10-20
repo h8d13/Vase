@@ -29,7 +29,7 @@
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.12 | <strong>Tested:</strong> 2025-10-20 09:00:44 | <strong>Size:</strong> 2.7G
+<strong>Version:</strong> 0.0.13 | <strong>Tested:</strong> 2025-10-20 10:32:37 | <strong>Size:</strong> 2.4G
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 

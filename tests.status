@@ -55,3 +55,4 @@
 2025-10-20 10:23:43 | Version: 0.0.12 | ISO: VASE-2025.10.20-x86_64.iso | Size: 2.4G | GPG: gpg: Signature made Mon 20 Oct 2025 10:21:32 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
 2025-10-20 10:32:37 | Version: 0.0.13 | ISO: VASE-2025.10.20-x86_64.iso | Size: 2.4G | GPG: gpg: Signature made Mon 20 Oct 2025 10:30:27 CEST gpg: using RSA key 4CA4772C82201726B8F89A695218D3C539927115 gpg: Good signature from "Eihdran L (ISO 1M) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
 2025-10-20 10:41:47 | Host KDE/Qt: Plasma: 6.4.5 | Frameworks: 6.19.0 | Qt: 6.10.0
+2025-10-20 15:53:00 | Host KDE/Qt: Plasma: 6.4.5 | Frameworks: 6.19.0 | Qt: 6.10.0
