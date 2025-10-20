@@ -107,6 +107,20 @@ You should see `lib32-nvidia-utils`, `lib32-vulkan-icd-loader`, and `lib32-mesa`
 
 **AMD/Intel users:** The same applies using `lib32-vulkan-radeon` (AMD) or `lib32-vulkan-intel` (Intel) for the same reason.
 
+In dolphin CTRL + H to show hidden files. 
+
+In steam you can also force certain compatibility tools: Right click a game > `Compatibility` 
+
+This: `Settings` > `Downloads` > `Allow Shader Background processing` 
+
+You can also clear cache here.
+
+Can also add non-steam games (or any `.exe`) > `Games` > `Add non-steam game to my library`
+
+You can import an exisiting library from a mountpoint: 
+
+`Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `/myext/nvmemountpoint/home/myuser/.local/share/Steam`
+
 ### NVIDIA Table :(
 
 - GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
@@ -134,20 +148,6 @@ Why is why I recommend trying to trace through your hardware from model or piece
 
 
 ## Windows programs Compat
-
-In dolphin CTRL + H to show hidden files. 
-
-In steam you can also force certain compatibility tools: Right click a game > `Compatibility` 
-
-This: `Settings` > `Downloads` > `Allow Shader Background processing` 
-
-You can also clear cache here.
-
-Can also add non-steam games (or any `.exe`) > `Games` > `Add non-steam game to my library`
-
-You can import an exisiting library from a mountpoint: 
-
-`Settings` > `Storage` > `Add a drive` > Then match the file path but on your mountpoint (you can set it up to automount): `home/myuser/.local/share/Steam`
 
 Compat data uses steamID (for example CS2 = 730)
 
