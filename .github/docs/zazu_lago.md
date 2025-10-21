@@ -52,5 +52,3 @@ Edit `vm_name="myvm1" #anydistro` this will be the Cqow2 disk.
 Then `sudo ./main -q rdisk`, `brick` then `dupk`.
 
 You can also for example use `sudo ./main -q none` this uses the default CMD.
-
-
