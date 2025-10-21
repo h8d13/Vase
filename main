@@ -260,11 +260,13 @@ if im_groot; then
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
         . "./${vase_p_env}"
+
+        rcw "echo \"${vm_d}/: \$(du -sh \"./${zl_d}/${vm_d}/\" | cut -f1) (\$(find \"./${zl_d}/${vm_d}/\" -type f | wc -l))\""
+        rcw "echo \"c/: \$(du -sh \"./${zl_d}/c/\" | cut -f1) (\$(find \"./${zl_d}/c/\" -type f | wc -l))\""
+
         cbanner "ENVIR CHECK"
         if exec_args "START"; then
             obanner "FILES CHECK"
-            rcw "echo \"${vm_d}/: \$(du -sh \"./${zl_d}/${vm_d}/\" | cut -f1) (\$(find \"./${zl_d}/${vm_d}/\" -type f | wc -l))\""
-            rcw "echo \"c/: \$(du -sh \"./${zl_d}/c/\" | cut -f1) (\$(find \"./${zl_d}/c/\" -type f | wc -l))\""
 
             if ! file_ex "./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"; then
                 info "Looking for ./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
