@@ -72,7 +72,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				action=self._select_x11_packages,
 				value=getattr(self._profile_config, 'x11_packages', None),
 				preview_action=lambda item: ', '.join(item.value) if item.value else 'None',
-				enabled=any(de in self._profile_config.profile.current_selection_names() for de in ['KDE Plasma', 'GNOME']) if self._profile_config.profile else False,
+				enabled='KDE Plasma' in self._profile_config.profile.current_selection_names() if self._profile_config.profile else False,
 				dependencies=['profile'],
 				key='x11_packages',
 			),
@@ -158,7 +158,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				greeter_item.value = profile.default_greeter_type
 
 			x11_item = self._item_group.find_by_key('x11_packages')
-			if any(de in profile.current_selection_names() for de in ['KDE Plasma', 'GNOME']):
+			if 'KDE Plasma' in profile.current_selection_names():
 				x11_item.enabled = True
 			else:
 				x11_item.enabled = False
@@ -243,9 +243,10 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 			selection_names = profile.current_selection_names()
 			if 'KDE Plasma' in selection_names:
 				available_packages.append('plasma-x11-session')
-
-		# Add common X11 packages
-		available_packages.extend(['xorg-xinit', 'xorg-xrandr'])
+				available_packages.extend(['xorg-xinit', 'xorg-xrandr', 'xorg-xauth'])
+		
+		# Can add common ones here that apply to several DE
+		# Currently for GNOME leave wayland only.
 
 		items = [
 			MenuItem(
