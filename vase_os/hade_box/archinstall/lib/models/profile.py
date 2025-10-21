@@ -27,11 +27,13 @@ class ProfileConfiguration:
 	def json(self) -> _ProfileConfigurationSerialization:
 		from ..profile.profiles_handler import profile_handler
 
+		# Needs to be conditional > Plasma > extra x11 plasma packages 
+
 		return {
 			'profile': profile_handler.to_json(self.profile),
 			'gfx_driver': self.gfx_driver.value if self.gfx_driver else None,
 			'greeter': self.greeter.value if self.greeter else None,
-			'plasma_x11_session': self.plasma_x11_session,
+			'plasma_x11_session': self.plasma_x11_session, 
 			'x11_packages': self.x11_packages,
 		}
 

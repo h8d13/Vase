@@ -67,13 +67,13 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 **This also works from an existing ArchLinux based installation.** where you can skip ISOs (mirrors only).
 
-> In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access.
+> In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
 
 `$ pacman-key --init && pacman -Sy git`
 
 `$ git clone https://github.com/h8d13/Vase && cd Vase`
 
-`$ ./main -t` : Launch TUI forked KDE install
+`$ ./main -t` : Launch TUI forked archinstall
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
@@ -86,7 +86,7 @@ After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
 After login in with your user > Open `Konsole` and type `cd Vase` this is where the post install script lives and more assets.
 
-Then `sudo ./main -pe` to edit desired values, then `sudo ./main -p` when ready.
+Then `sudo ./main -pe` to edit desired values, then `sudo ./main -p` when ready. **Only for KDE.**
 
 > Using vim you can use insert to edit, ESC to enter command mode and :wq to write changes.
 > You can also go through some of the rest of the code as there might be some programs you want to add/remove.
