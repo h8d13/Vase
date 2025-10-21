@@ -305,11 +305,7 @@ if im_groot; then
         fi
         if exec_args "WORKFLOW"; then
             all_device="$(get_workflow_device)"
-            if [ -z "$all_device" ]; then
-                die "No device specified. Use: -w /dev/sdX"
-            fi
-
-            preop "Starting ISO workflow..."
+            preop "Starting ISO workflow..." # Check happens in util_f
 
             # Build ISO
             preop "Checking host is Up to Date..."

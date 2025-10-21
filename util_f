@@ -88,6 +88,11 @@ parse_args() {
             -f|--flash)
                 FLASH=1
                 FLASH_DEVICE="$2"
+                if [ -z "$flash_device" ]; then
+                    lsblk
+                    echo "No device specified. Use: -f /dev/sdX"
+                    exit 1
+                fi
                 shift 2
                 ;;
             -w|--workflow)
