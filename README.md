@@ -67,13 +67,13 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 **This also works from an existing ArchLinux based installation.** where you can skip ISOs altogether (mirrors only).
 
+> In our ISO builds: One arrow UP does what is bellow one go.
+
 `$ pacman-key --init && pacman -Sy git`
 
 `$ git clone https://github.com/h8d13/Vase && cd Vase`
 
 `$ ./main -t` : Launch TUI forked KDE install
-
-> In our builds: One arrow UP does this one go.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
