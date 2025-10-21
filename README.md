@@ -73,7 +73,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 `$ ./main -t` : Launch TUI forked KDE install
 
-> In our builds: One arrow up does all this one go.
+> In our builds: One arrow UP does this one go.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
