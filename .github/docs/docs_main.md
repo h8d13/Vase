@@ -80,6 +80,7 @@ This means all files will live within `/opt/vase` instead of where you cloned it
 - Automate as much of workflows as possible
 - Document changes and tweaks as I go
 - Brickable: Feel no shame in re-installing 
+- No re-inventing the wheel. Use existing stuff but use it well
 
 > Advanced stuff can be applied to Artix while simpler system stays with Arch. 
 
