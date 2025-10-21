@@ -13,7 +13,7 @@ class PlasmaProfile(Profile):
 			packages=[
 				'xorg-server',
 			],
-			services=['sddm'],
+			services=[],
 			support_gfx_driver=True,
 		)
 
@@ -27,7 +27,6 @@ class PlasmaProfile(Profile):
 			'dolphin',
 			'ark',
 			'plasma-workspace',
-			'sddm',
 		]
 
 	@property

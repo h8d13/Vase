@@ -10,7 +10,7 @@ class GnomeProfile(Profile):
 			packages=[
 				'xorg-server',
 			],
-			services=['gdm'],
+			services=[],
 			support_gfx_driver=True,
 		)
 
@@ -20,7 +20,6 @@ class GnomeProfile(Profile):
 		return super().packages + [
 			'gnome',
 			'gnome-tweaks',
-			'gdm',
 		]
 
 	@property

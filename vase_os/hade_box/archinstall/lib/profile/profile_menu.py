@@ -153,9 +153,10 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				greeter_item.enabled = False
 				greeter_item.value = None
 			else:
-				greeter_item.enabled = False  # Disable manual selection, auto-determined by desktop env
-				# Always auto-set greeter based on desktop environment
-				greeter_item.value = profile.default_greeter_type
+				greeter_item.enabled = True
+				# Set default if not already chosen
+				if greeter_item.value is None:
+					greeter_item.value = profile.default_greeter_type
 
 			x11_item = self._item_group.find_by_key('x11_packages')
 			if 'KDE Plasma' in profile.current_selection_names():
