@@ -29,6 +29,8 @@ iso_ext="iso" #raw, bin
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
+
+#dupkvm will look something like this 9c901bmyvm1
 vm_ext="qcow2" #raw, bin
 
 ## For running with attached storage
