@@ -270,9 +270,9 @@ if im_groot; then
 
             if ! file_ex "./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"; then
                 info "Looking for ./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
-                die "ISO Not found. Build using -i or change ... config. Get the official ISO from archlinux.org/download"
+                die "ISO: $iso_n Not found in dir ${vm_d}. Build using -i or change ... config. Or get an ISO"
             else
-                info "Found $iso_n" in proper location.
+                info "Found $iso_n in proper location."
             fi
             cbanner "FILES CHECK"
             preop "Starting VM Menu..."
@@ -280,6 +280,12 @@ if im_groot; then
         fi
         if exec_args "QUICK"; then
             quick_arg="$(get_quick_cmd)"
+            if ! file_ex "./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"; then
+                info "Looking for ./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
+                die "ISO: $iso_n Not found in dir ${vm_d}. Build using -i or change ... config. Or get an ISO"
+            else
+                info "Found $iso_n in proper location dir: ${vm_d}"
+            fi
             if [ -z "$quick_arg" ]; then
                 "./${zl_d}/vm_start" "__default__"
             else
