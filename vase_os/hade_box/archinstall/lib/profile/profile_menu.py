@@ -77,7 +77,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				key='x11_packages',
 			),
 			MenuItem(
-				text=('Greeter (SDDM Default for KDE.)'),
+				text=('Greeter (SDDM for KDE)'),
 				action=lambda x: select_greeter(preset=x),
 				value=self._profile_config.greeter if self._profile_config.profile and self._profile_config.profile.is_greeter_supported() else None,
 				enabled=self._profile_config.profile.is_graphic_driver_supported() if self._profile_config.profile else False,
