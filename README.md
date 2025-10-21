@@ -63,7 +63,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 ### From the official [ISO](https://archlinux.org/download/) or our builds [here](https://github.com/h8d13/Vase/releases)
 
-> By default you are already root in the ISO env.
+> By default you are already root in the ISO env. 
 
 **This also works from an existing ArchLinux based installation.** where you can skip ISOs altogether (mirrors only).
 
@@ -72,6 +72,8 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 `$ git clone https://github.com/h8d13/Vase && cd Vase`
 
 `$ ./main -t` : Launch TUI forked KDE install
+
+> In our builds: One arrow up does all this one go.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
