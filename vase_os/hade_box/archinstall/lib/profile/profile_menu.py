@@ -244,7 +244,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 			if 'KDE Plasma' in selection_names:
 				available_packages.append('plasma-x11-session')
 			if 'GNOME' in selection_names:
-				available_packages.append('gnome-session')
+				available_packages.append('xorg-xauth')
 
 		# Add common X11 packages
 		available_packages.extend(['xorg-xinit', 'xorg-xrandr'])
