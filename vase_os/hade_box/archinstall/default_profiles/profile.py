@@ -14,6 +14,7 @@ class ProfileType(Enum):
 class GreeterType(Enum):
 	# Only SDDM for KDE Plasma
 	Sddm = 'sddm'
+	Gdm = 'gdm'
 
 class SelectResult(Enum):
 	NewSelection = auto()

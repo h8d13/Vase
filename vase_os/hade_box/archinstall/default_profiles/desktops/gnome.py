@@ -1,19 +1,16 @@
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from archinstall.default_profiles.profile import GreeterType, Profile, ProfileType
 
-if TYPE_CHECKING:
-	pass
-
-class PlasmaProfile(Profile):
+class GnomeProfile(Profile):
 	def __init__(self) -> None:
 		super().__init__(
-			'KDE Plasma',
+			'GNOME',
 			ProfileType.DesktopEnv,
 			packages=[
 				'xorg-server',
 			],
-			services=['sddm'],
+			services=['gdm'],
 			support_gfx_driver=True,
 		)
 
@@ -21,16 +18,12 @@ class PlasmaProfile(Profile):
 	@override
 	def packages(self) -> list[str]:
 		return super().packages + [
-			'plasma-meta',
-			'konsole',
-			'kate',
-			'dolphin',
-			'ark',
-			'plasma-workspace',
-			'sddm',
+			'gnome',
+			'gnome-tweaks',
+			'gdm',
 		]
 
 	@property
 	@override
 	def default_greeter_type(self) -> GreeterType:
-		return GreeterType.Sddm
+		return GreeterType.Gdm

@@ -159,11 +159,10 @@ class ProfileHandler:
 
 	def install_greeter(self, install_session: 'Installer', greeter: GreeterType) -> None:
 		"""
-		KDE installer - SDDM only
+		Install display manager based on greeter type
 		"""
-		# Always install SDDM for KDE
-		install_session.add_additional_packages(['sddm'])
-		install_session.enable_service(['sddm'])
+		install_session.add_additional_packages([greeter.value])
+		install_session.enable_service([greeter.value])
 
 	def install_gfx_driver(self, install_session: 'Installer', driver: GfxDriver) -> None:
 		debug(f'Installing GFX driver: {driver.value}')
@@ -296,14 +295,16 @@ class ProfileHandler:
 
 	def _find_available_profiles(self) -> list[Profile]:
 		"""
-		Only load Desktop and KDE Plasma profiles
+		Load Desktop, KDE Plasma, and GNOME profiles
 		"""
 		from ...default_profiles.desktop import DesktopProfile
 		from ...default_profiles.desktops.plasma import PlasmaProfile
+		from ...default_profiles.desktops.gnome import GnomeProfile
 
 		profiles = [
 			DesktopProfile(),
 			PlasmaProfile(),
+			GnomeProfile(),
 		]
 
 		self._verify_unique_profile_names(profiles)

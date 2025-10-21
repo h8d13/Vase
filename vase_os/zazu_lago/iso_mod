@@ -13,7 +13,7 @@ SCRIPT_DIR="$(dirname "$0")"
 PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
 WORK_DIR="$SCRIPT_DIR/archiso_work"
 OUTPUT_DIR="$SCRIPT_DIR/a"
-PROFILE_LIST="$SCRIPT_DIR/iso_profiles/skinny.conf"
+PROFILE_LIST="$SCRIPT_DIR/iso_profiles/plasma_skinny.conf"
 
 # Cleanup function for trap
 cleanup() {
@@ -187,7 +187,7 @@ fi
 ## xz/squashfs compression keeps ISO size efficient: 2.7GB with Plasma pre-cached
 ## Using new fat.conf which has ~720 > 680 pkgs cached 
 
-## Using skinny.conf ~681 > 626 pkgs could be more stable? Idek > Resulting ISO: 
+## Using plasma_skinny.conf ~681 > 626 pkgs could be more stable? Idek > Resulting ISO: 
 
 info "Building ISO with mkarchiso..."
 info "Silent mode: $silent_mode"

@@ -32,7 +32,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 			allow_reset=True,
 		)
 		
-		# Set checkmark status: Type and Greeter only have one option so always default, 
+		# Set checkmark status: Type is auto-selected, Greeter is auto-determined by desktop env,
 		# only Graphics Driver can be user-modified
 		for item in self._item_group._menu_items:
 			if item.value is not None:
@@ -45,7 +45,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 						item.default_value = GfxDriver.AllOpenSource
 						item._value_modified = True   # User modified
 				else:
-					# Type and Greeter only have one option each, so always default
+					# Type and Greeter are auto-determined, always default
 					item.default_value = item.value
 					item._value_modified = False
 
@@ -127,8 +127,8 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 		try:
 			return (
 				self._item_group.find_by_key('profile')._value_modified or
-				self._item_group.find_by_key('gfx_driver')._value_modified or
-				self._item_group.find_by_key('greeter')._value_modified
+				self._item_group.find_by_key('gfx_driver')._value_modified
+				# greeter is auto-determined, not user-modifiable
 			)
 		except ValueError:
 			return False
@@ -152,10 +152,9 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				greeter_item.enabled = False
 				greeter_item.value = None
 			else:
-				greeter_item.enabled = True
-				# Only set default greeter if user hasn't already chosen one
-				if greeter_item.value is None:
-					greeter_item.value = profile.default_greeter_type
+				greeter_item.enabled = False  # Disable manual selection, auto-determined by desktop env
+				# Always auto-set greeter based on desktop environment
+				greeter_item.value = profile.default_greeter_type
 
 		else:
 			self._item_group.find_by_key('gfx_driver').value = None
@@ -329,7 +328,7 @@ def select_profile(
 		header = ('This is a list of pre-programmed default_profiles') + '\n'
 
 	items = [MenuItem(p.name, value=p) for p in top_level_profiles]
-	group = MenuItemGroup(items, sort_items=True)
+	group = MenuItemGroup(items, sort_items=False)
 	group.set_selected_by_value(current_profile)
 
 	result = SelectMenu[Profile](
