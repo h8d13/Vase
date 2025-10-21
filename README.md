@@ -150,7 +150,7 @@ See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVn
 
 ### Components
 
-Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.  
+Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates. Also `-h` for help :)
 
 Or better yet, fork all the repos and send me patches. 
 
