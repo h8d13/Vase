@@ -72,7 +72,8 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				action=self._select_x11_packages,
 				value=getattr(self._profile_config, 'x11_packages', None),
 				preview_action=lambda item: ', '.join(item.value) if item.value else 'None',
-				enabled=True,
+				enabled=any(de in self._profile_config.profile.current_selection_names() for de in ['KDE Plasma', 'GNOME']) if self._profile_config.profile else False,
+				dependencies=['profile'],
 				key='x11_packages',
 			),
 			MenuItem(
@@ -156,9 +157,17 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				# Always auto-set greeter based on desktop environment
 				greeter_item.value = profile.default_greeter_type
 
+			x11_item = self._item_group.find_by_key('x11_packages')
+			if any(de in profile.current_selection_names() for de in ['KDE Plasma', 'GNOME']):
+				x11_item.enabled = True
+			else:
+				x11_item.enabled = False
+				x11_item.value = None
+
 		else:
 			self._item_group.find_by_key('gfx_driver').value = None
 			self._item_group.find_by_key('greeter').value = None
+			self._item_group.find_by_key('x11_packages').value = None
 
 		return profile
 
@@ -226,11 +235,19 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 		header = 'Select X11 packages to install:\n'
 		header += 'Usually useful for older hardware, alongside Wayland.\n'
 
-		available_packages = [
-			'plasma-x11-session',
-			'xorg-xinit',
-			'xorg-xrandr'
-		]
+		# Get current profile to determine DE-specific packages
+		profile: Profile | None = self._item_group.find_by_key('profile').value
+		available_packages = []
+
+		if profile:
+			selection_names = profile.current_selection_names()
+			if 'KDE Plasma' in selection_names:
+				available_packages.append('plasma-x11-session')
+			if 'GNOME' in selection_names:
+				available_packages.append('gnome-session')
+
+		# Add common X11 packages
+		available_packages.extend(['xorg-xinit', 'xorg-xrandr'])
 
 		items = [
 			MenuItem(
