@@ -17,7 +17,7 @@ Options:
 
   -s,  --start               Start VM menu
   -q,  --quick <command>     Pass direct VM options (use "help" for list)
-  -i,  --isomod              Create ISO using iso_profiles/fat.conf
+  -i,  --isomod              Create ISO using iso_profiles/skinny.conf
   -f,  --flash <device>      Flash ISO to USB device (e.g., /dev/sdd)
   -w,  --workflow <device>   Complete workflow: build, sign, flash
   -t,  --tuimenu             Launch installer TUI
