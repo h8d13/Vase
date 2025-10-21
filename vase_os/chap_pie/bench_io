@@ -35,7 +35,7 @@ elif [[ "$BASE_DEV" == sd* ]]; then
 fi
 echo "" 
 
-echo "Starting disk I/O benchmark (bypassing cache for real speeds)..." 
+echo "Starting disk I/O benchmark..." 
 echo ""
 
 # Write test with direct I/O (bypass cache)
