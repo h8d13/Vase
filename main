@@ -140,7 +140,7 @@ rcw() {
 }
 init_log() {
     if [ "$TEELOG" = "1" ]; then
-        local log_file="${1:-./pyla.log}"
+        local log_file="${1:-./vase.log}"
         if [ "$LOGCLR" = "1" ]; then
             # Keep colors in log
             if [ "$LOGMEM" = "0" ]; then
@@ -221,7 +221,7 @@ if exec_args "BENCH"; then
     esac
 fi
 if exec_args "POST"; then
-    preop "Running post-install scripts..."
+    preop "Running post-install script..."
     "./${ka_d}/post" && exit
 fi
 if exec_args "POST_EDIT"; then
@@ -293,9 +293,7 @@ if im_groot; then
         fi
         if exec_args "FLASH"; then
             flash_device="$(get_flash_device)"
-            if [ -z "$flash_device" ]; then
-                die "No device specified. Use: -f /dev/sdX"
-            fi
+
             iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
             if ! file_ex "$iso_file"; then
                 die "ISO not found: $iso_file"

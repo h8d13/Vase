@@ -32,7 +32,7 @@ vm_name="myvm1" #anyname
 
 vm_ext="qcow2" #raw, bin
 
-## For running with attached storage (Conk/Conkd/Cupk/Cupkd commands)
+## For running with attached storage
 target_p="sdf"
 target_t="/dev/"
 target="${target_t}${target_p}"
