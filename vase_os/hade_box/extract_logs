@@ -1,4 +1,3 @@
 #!/bin/bash
 # Debug helper. Gather link that is in response for clean log format. The same can be done with "cmd_history.txt and cmd_output.txt"
-
-curl -F'file=./logs/install.log' https://0x0.st
+curl -F'file=@./logs/install.log' https://0x0.st
