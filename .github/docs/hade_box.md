@@ -54,6 +54,12 @@ After running the script it will restart one last time. **And you are done!**
 
 ---
 
+## Debug Logs
+
+Install logs can be found inside `vase_os/hade_box/logs` and post install logs `vase_os/kaes_arch`
+
+We also have a helper to extract logs: `vase_os/hade_box/extract_logs` this will return a URL with a short ex: `https://0x0.st/KjFo.log`
+
 For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 
 ### Modifications
