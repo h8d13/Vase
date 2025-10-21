@@ -20,16 +20,15 @@ size="60G"
 
 vm_d="a"
 # "a" for testing build ISOs "d" for regular
-iso_ext="iso" #raw, bin
 
 [ "$auto_date" = "1" ] && iso_n="VASE-$(date +%Y.%m.%d)-x86_64" || iso_n="VASE-2025.10.18-x86_64"
 
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format    # Or manual ^^
+iso_ext="iso" #raw, bin
 
 vm_name="myvm1" #anyname
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
-
 vm_ext="qcow2" #raw, bin
 
 ## For running with attached storage
