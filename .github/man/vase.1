@@ -17,8 +17,11 @@ Check git for updates & pull submodules
 .BR \-c ", " \-\-check\-deps
 Check build dependencies
 .TP
+.BR \-t ", " \-\-tuimenu
+Launch installer TUI (usually in ISO but not always)
+.TP
 .BR \-pe ", " \-\-post\-edit
-Edit post install script
+Edit post install script (once in the target system)
 .TP
 .BR \-p ", " \-\-post
 Run post install script
@@ -40,9 +43,6 @@ Flash ISO to USB device (e.g., /dev/sdd)
 .TP
 .BR \-w ", " \-\-workflow " \fIDEVICE\fR"
 Complete workflow: build, sign, flash
-.TP
-.BR \-t ", " \-\-tuimenu
-Launch installer TUI
 .TP
 .BR \-d ", " \-\-dev
 Development mode entry
