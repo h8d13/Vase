@@ -11,6 +11,7 @@ Options:
   -u,  --update              Check git for updates & pull submodules
   -c,  --check-deps          Check build dependencies
 
+  -t,  --tuimenu             Launch ArchKDE installer TUI
   -pe, --post-edit           Edit post install script
   -p,  --post                Run post install script
   -pm, --pkg-man             Launch pacman GUI
@@ -20,15 +21,14 @@ Options:
   -i,  --isomod              Create ISO using iso_profiles/skinny.conf
   -f,  --flash <device>      Flash ISO to USB device (e.g., /dev/sdd)
   -w,  --workflow <device>   Complete workflow: build, sign, flash
-  -t,  --tuimenu             Launch installer TUI
   -d,  --dev                 Development mode entry
   -g,  --grub <args>         GRUB utilities (-h for grub help)
   -b,  --bench <type>        Run benchmarks: io, cpu, gpu
   -r,  --reset               Reset logs and settings
 
 Examples:
+
   ./main -i                  Build ISO
-  ./main -s                  Start VM testing menu
   ./main -q help             Show VM quick commands
   ./main -w /dev/sdd         Build ISO, sign, and flash to USB
 
