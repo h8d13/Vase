@@ -12,6 +12,9 @@ Options:
   -c,  --check-deps          Check build dependencies
 
   -t,  --tuimenu             Launch ArchKDE installer TUI
+  -xl, --extract-logs        Extract installer logs
+  -xlu,--extract-logs-up     Extract and upload installer logs
+  
   -pe, --post-edit           Edit post install script
   -p,  --post                Run post install script
   -pm, --pkg-man             Launch pacman GUI
@@ -25,6 +28,7 @@ Options:
   -g,  --grub <args>         GRUB utilities (-h for grub help)
   -b,  --bench <type>        Run benchmarks: io, cpu, gpu
   -r,  --reset               Reset logs and settings
+
 
 Examples:
 
@@ -132,6 +136,14 @@ parse_args() {
                 PKG_MAN=1
                 shift
                 ;;
+            -xl|--extract-logs)
+                EXTRACT_LOGS=1
+                shift
+                ;;
+            -xlu|--extract-logs-up)
+                EXTRACT_LOGS_UPLOAD=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 echo "Run './main -h' for help"
@@ -158,6 +170,8 @@ exec_args() {
         POST) [ "${POST}" = "1" ] ;;
         POST_EDIT) [ "${POST_EDIT}" = "1" ] ;;
         PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
+        EXTRACT_LOGS) [ "${EXTRACT_LOGS}" = "1" ] ;;
+        EXTRACT_LOGS_UPLOAD) [ "${EXTRACT_LOGS_UPLOAD}" = "1" ] ;;
         *) return 1 ;;
     esac
 }

@@ -1,7 +1,22 @@
 #!/bin/bash
 # Debug helper. Gather link that is in response for clean log format. The same can be done with "cmd_history.txt and cmd_output.txt"
 
-grep -iE 'INFO|error' ./logs/install.log
+mode="${1:-extract}"
 
-# Helper if you need to send logs for debug
-#curl -F'file=@./logs/install.log' https://0x0.st 
+case "$mode" in
+    extract)
+        echo "[+] Extracting installer logs..."
+        grep -iE 'INFO|error' ./logs/install.log
+        ;;
+    upload)
+        echo "[+] Extracting installer logs..."
+        grep -iE 'INFO|error' ./logs/install.log
+        echo ""
+        echo "[+] Uploading logs to 0x0.st..."
+        curl -F'file=@./logs/install.log' https://0x0.st
+        ;;
+    *)
+        echo "Usage: $0 {extract|upload}"
+        exit 1
+        ;;
+esac 

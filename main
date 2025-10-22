@@ -232,6 +232,14 @@ if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."
     python3 "./${pp_d}/main.py" && ./${cc_py} && exit
 fi
+if exec_args "EXTRACT_LOGS"; then
+    preop "Extracting installer logs..."
+    "./${hb_d}/extract_logs" extract && exit
+fi
+if exec_args "EXTRACT_LOGS_UPLOAD"; then
+    preop "Extracting and uploading installer logs..."
+    "./${hb_d}/extract_logs" upload && exit
+fi
 # DEV mode entry
 if exec_args "DEV"; then
     pacman-key --init
