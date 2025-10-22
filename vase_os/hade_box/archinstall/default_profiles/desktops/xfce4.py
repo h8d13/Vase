@@ -21,6 +21,7 @@ class Xfce4Profile(Profile):
 		return super().packages + [
 			'xfce4',
 			'xfce4-goodies',
+			'lightdm-gtk-greeter',
 			'pavucontrol',
 			'gvfs',
 			'xarchiver',
