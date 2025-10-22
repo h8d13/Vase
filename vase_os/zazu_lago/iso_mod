@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
@@ -28,16 +28,6 @@ cleanup() {
 
 # Register cleanup on exit/interrupt
 trap cleanup EXIT INT TERM
-
-# If the was still remenants
-if dir_ex "$PROFILE_DIR"; then
-    info "Cleaning up previous run..."
-    rm -rf "$PROFILE_DIR"
-fi
-if dir_ex "$WORK_DIR"; then
-    info "Cleaning up previous run..."
-    rm -rf "$WORK_DIR"
-fi
 
 info "Setting up archiso profile..."
 #rm -rf "$PROFILE_DIR"
@@ -123,7 +113,13 @@ if file_ex "$PROFILE_LIST"; then
         info "Downloading packages with dependencies: $packages"
 
         # Download packages (pacman resolves dependencies automatically)
-        if pacman -Sw --noconfirm $packages; then
+        if [ "$silent_mode" = "1" ]; then
+            pacman -Sw --noconfirm $packages >/dev/null 2>&1
+        else
+            pacman -Sw --noconfirm $packages
+        fi
+
+        if [ $? -eq 0 ]; then
             # Recursively get ALL dependencies using pactree
             info "Resolving complete dependency tree..."
             all_packages=$(
