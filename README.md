@@ -52,6 +52,8 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
+**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly. Heavily simplifed to be a starting point for both Arch and compat with Artix. Also contains post-install utilties and can extended to other DE's or services. 
+
 ## Prep
 
 You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://apps.kde.org/isoimagewriter/) from Linux (or dd)

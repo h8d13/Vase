@@ -1,19 +1,32 @@
 #!/bin/bash
 # Debug helper. Gather link that is in response for clean log format. The same can be done with "cmd_history.txt and cmd_output.txt"
 
+# Find the correct log path based on where we are ran from
+
+if [ -f "./logs/install.log" ]; then
+    log_file="./logs/install.log"
+elif [ -f "./vase_os/hade_box/logs/install.log" ]; then
+    log_file="./vase_os/hade_box/logs/install.log"
+else
+    echo "[-] Error: No installer logs found"
+    echo "    Checked: ./logs/install.log"
+    echo "    Checked: ./vase_os/hade_box/logs/install.log"
+    exit 1
+fi
+
 mode="${1:-extract}"
 
 case "$mode" in
     extract)
-        echo "[+] Extracting installer logs..."
-        grep -iE 'INFO|error' ./logs/install.log
+        echo "[+] Extracting installer logs from: $log_file"
+        grep -iE 'INFO|error' "$log_file"
         ;;
     upload)
-        echo "[+] Extracting installer logs..."
-        grep -iE 'INFO|error' ./logs/install.log
+        echo "[+] Extracting installer logs from: $log_file"
+        grep -iE 'INFO|error' "$log_file"
         echo ""
         echo "[+] Uploading logs to 0x0.st..."
-        curl -F'file=@./logs/install.log' https://0x0.st
+        curl -F"file=@$log_file" https://0x0.st
         ;;
     *)
         echo "Usage: $0 {extract|upload}"
