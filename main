@@ -221,12 +221,14 @@ if exec_args "BENCH"; then
     esac
 fi
 if exec_args "POST"; then
-    preop "Running post-install script..."
-    "./${ka_d}/post_plasma" && exit
+    post_type="$(get_post_type)"
+    preop "Running post-install script: post_${post_type}..."
+    "./${ka_d}/post_${post_type}" && exit
 fi
 if exec_args "POST_EDIT"; then
-    preop "Opening post-install script in ${editor_cmd}..."
-    ${editor_cmd} "./${ka_d}/post_plasma" && exit
+    post_edit_type="$(get_post_edit_type)"
+    preop "Opening post-install script in ${editor_cmd}: post_${post_edit_type}..."
+    ${editor_cmd} "./${ka_d}/post_${post_edit_type}" && exit
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."

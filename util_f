@@ -14,9 +14,9 @@ Options:
   -t,  --tuimenu             Launch ArchKDE installer TUI
   -xl, --extract-logs        Extract installer logs
   -xlu,--extract-logs-up     Extract and upload installer logs
-  
-  -pe, --post-edit           Edit post install script
-  -p,  --post                Run post install script
+
+  -pe, --post-edit <type>    Edit post install script (plasma/gnome, default: plasma)
+  -p,  --post <type>         Run post install script (plasma/gnome, default: plasma)
   -pm, --pkg-man             Launch pacman GUI
 
   -s,  --start               Start VM menu
@@ -126,11 +126,23 @@ parse_args() {
                 ;;
             -p|--post)
                 POST=1
-                shift
+                if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
+                    POST_TYPE="$2"
+                    shift 2
+                else
+                    POST_TYPE="plasma"
+                    shift
+                fi
                 ;;
             -pe|--post-edit)
                 POST_EDIT=1
-                shift
+                if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
+                    POST_EDIT_TYPE="$2"
+                    shift 2
+                else
+                    POST_EDIT_TYPE="plasma"
+                    shift
+                fi
                 ;;
             -pm|--pkg-man)
                 PKG_MAN=1
@@ -192,6 +204,12 @@ get_workflow_device() {
 }
 get_grub_cmd() {
     echo "${GRUB_CMD}"
+}
+get_post_type() {
+    echo "${POST_TYPE}"
+}
+get_post_edit_type() {
+    echo "${POST_EDIT_TYPE}"
 }
 preop() {
     echo "[+] $1"
