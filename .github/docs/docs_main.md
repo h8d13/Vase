@@ -30,23 +30,27 @@ For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 When no args are provided shows help
 
 ```
---update                   # -u  # Checks git for updates & pull submodules
---check-deps               # -c  # Check build deps 
+--update                   # -u   # Checks git for updates & pull submodules
+--check-deps               # -c   # Check build deps
 
---post-edit                # -pe # Edits post install script
---post                     # -p  # Runs post install script
---pkg-man                  # -pm # Launch pacman GUI
+--tui-menu                 # -t   # Checks for deps and launches TUI
+--extract-logs             # -xl  # Extract installer logs
+--extract-logs-up          # -xlu # Extract and upload installer logs
 
---start                    # -s  # Start VM menu
---quick <command>          # -q  # Pass direct VM options "help"
---isomod                   # -i  # Create iso default `iso_profiles/fat.conf`
---flash <device>           # -f  # Flash ISO to USB device (e.g., /dev/sdd)
---workflow <device>        # -w  # Complete workflow
---dev                      # -d  # Development mode flag entry
---grub <args>              # -g  # GRUB utilities -h for help
---bench <type>             # -b  # Run benchmarks: io, cpu, gpu
+--post-edit <type>         # -pe  # Edit post install script (plasma/gnome, default: plasma)
+--post <type>              # -p   # Run post install script (plasma/gnome, default: plasma)
+--pkg-man                  # -pm  # Launch pacman GUI
 
---reset                    # -r  # Resets logs and rcw
+--start                    # -s   # Start VM menu
+--quick <command>          # -q   # Pass direct VM options "help"
+--isomod                   # -i   # Create iso default `iso_profiles/fat.conf`
+--flash <device>           # -f   # Flash ISO to USB device (e.g., /dev/sdd)
+--workflow <device>        # -w   # Complete workflow
+--dev                      # -d   # Development mode flag entry
+--grub <args>              # -g   # GRUB utilities -h for help
+--bench <type>             # -b   # Run benchmarks: io, cpu, gpu
+
+--reset                    # -r   # Resets logs and rcw
 ```
 
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
