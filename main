@@ -349,6 +349,7 @@ if im_groot; then
 
             # Log to test.status
             test_date=$(date '+%Y-%m-%d %H:%M:%S')
+            # get a better size conversion by getting raw bytes then convert
             iso_size=$(du -h "$iso_file" 2>/dev/null | cut -f1)
             if [ "${dev_mode:-0}" = "1" ]; then
                 echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: DEV" >> tests.status
