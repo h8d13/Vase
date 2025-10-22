@@ -1,16 +1,13 @@
 #!/bin/bash
 # Debug helper. Gather link that is in response for clean log format. The same can be done with "cmd_history.txt and cmd_output.txt"
 
-# Find the correct log path based on where we are ran from
+# Find the correct log path based on script location
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+log_file="${script_dir}/logs/install.log"
 
-if [ -f "./logs/install.log" ]; then
-    log_file="./logs/install.log"
-elif [ -f "./vase_os/hade_box/logs/install.log" ]; then
-    log_file="./vase_os/hade_box/logs/install.log"
-else
+if [ ! -f "$log_file" ]; then
     echo "[-] Error: No installer logs found"
-    echo "    Checked: ./logs/install.log"
-    echo "    Checked: ./vase_os/hade_box/logs/install.log"
+    echo "    Expected: $log_file"
     exit 1
 fi
 
