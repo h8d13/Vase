@@ -1,5 +1,7 @@
 # Bring Your Own B****
 
+Clone then run `-u` to pull submodules.
+
 1. Modify `vase_os/zazu_lago/iso_profiles/?.conf` and `vase_os/hade_box/archinstall/default_profiles/desktops/?.py` 
 
 > Here you might also need to search in `hade_box` term: `class ProfileHandler:` 
