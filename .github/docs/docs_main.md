@@ -142,6 +142,7 @@ Original: ~1,42Gb ISO installation image size / New: ~2,67Gb ISO with plasma ove
 ## Order of operations
 
 (Reflector mirrors sorting ran directly as internet is found.)
+User has TUI with mirrors loaded.
 
 - Format target > Mount ordered layout
 - Partitionning FS (Including swap if required on FS)
