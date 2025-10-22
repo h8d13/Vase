@@ -40,7 +40,6 @@ Display: gtk | GL: on
 Any key to skip and use standard CMD...
 ```
 
-
 ### Example usage
 
 Edit `...` file to match: where is my ISO `vm_d="a"` I use a drive for dev builds and `d` for regular ISOs.
