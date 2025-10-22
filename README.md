@@ -52,7 +52,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
-**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly. Heavily simplifed to be a starting point for both Arch and compat with Artix. Also contains post-install utilties and can extended to other DE's or services. 
+**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly. Heavily simplifed to be a starting point for both Arch and compat with Artix. Post-install utilties and can extended to other DE's or services (and clones itself to sudo user0's home).
 
 ## Prep
 
@@ -180,4 +180,4 @@ Basically I was just sick of distro-hopping. Thought how can I create my next bu
 First tried on alpine and gave up at hardware drivers so here we are.
 
 > It is also largely frustration-driven: Both with how newer users struggle (usually in forums) and what I wish I had when I first started using Arch.
-> Shout to Bringus Studios on YT too for the inspiration with the many weird build gaming systems and videos.
+> Shout to Bringus Studios on YT too for the inspiration with the many weird build gaming systems and videos. Perhaps this project can also serve for others who want to create their own systems?
