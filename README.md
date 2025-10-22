@@ -129,7 +129,7 @@ You can also use `./main -t --live` for installs in place/removable media (For i
 
 ## Turning Konqi in Konqzilla.
 
-We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs.
+We believe builds should receive almost daily updates (we are currently building one ISO per day or two), proactively fixing issues that others have overlooked for too long, in an idempotent and perennial way. This does incur some compute costs at the advantage of being 100% brickable 🧱
 
 Making it all open so people can edit anything they desire from the flow, while reducing the scope of archinstall, which is impossible to maintain. 
 
