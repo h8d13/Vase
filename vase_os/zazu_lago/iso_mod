@@ -13,7 +13,7 @@ SCRIPT_DIR="$(dirname "$0")"
 PROFILE_DIR="$SCRIPT_DIR/archiso_profile"
 WORK_DIR="$SCRIPT_DIR/archiso_work"
 OUTPUT_DIR="$SCRIPT_DIR/a"
-PROFILE_LIST="$SCRIPT_DIR/iso_profiles/plasma_skinny.conf"
+PROFILE_LIST="$SCRIPT_DIR/iso_profiles/$iso_profile.conf"
 
 # Cleanup function for trap
 cleanup() {
