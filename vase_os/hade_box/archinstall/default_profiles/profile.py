@@ -12,9 +12,10 @@ class ProfileType(Enum):
 	DesktopEnv = 'Desktop Environment'
 
 class GreeterType(Enum):
-	# Only SDDM for KDE Plasma
+	# Display managers for desktop environments
 	Sddm = 'sddm'
 	Gdm = 'gdm'
+	Lightdm = 'lightdm'
 
 class SelectResult(Enum):
 	NewSelection = auto()

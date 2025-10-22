@@ -37,8 +37,8 @@ When no args are provided shows help
 --extract-logs             # -xl  # Extract installer logs
 --extract-logs-up          # -xlu # Extract and upload installer logs
 
---post-edit <type>         # -pe  # Edit post install script (plasma/gnome, default: plasma)
---post <type>              # -p   # Run post install script (plasma/gnome, default: plasma)
+--post-edit <type>         # -pe  # Edit post install script (plasma/gnome/xfce4, default: plasma)
+--post <type>              # -p   # Run post install script (plasma/gnome/xfce4, default: plasma)
 --pkg-man                  # -pm  # Launch pacman GUI
 
 --start                    # -s   # Start VM menu
