@@ -54,7 +54,33 @@ When no args are provided shows help
 ```
 
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
-> Mostly tooling for devs... More readmes included. 
+> Mostly tooling for devs... 
+
+Now `vase_os/zazu_lago/` inside contains `a|c|d` 
+```
+a:  # drive is for dev builds
+c:  # drive is for qcow2 disks
+d:  # drive is for regular ISOs
+```
+
+The ISO name and path config must match to `...` file. 
+
+You can switch between different builds simply by:
+
+> Removing automatic date (this because I build regularly)
+and editing to match you ISO name: 
+```
+iso_n="VASE-2025.10.21-x86_64"
+# Or manual ^^
+```
+Then finally: Edit:
+```
+vm_name="myvm1" #anyname-plasma
+#vm_name="myvm2" #alpine-plasma
+#vm_name="myvm3" #arch-gnome
+#dupkvm will look something like this 9c901bmyvm1
+```
+By simply commenting out you can easily switch builds.
 
 ---
 
