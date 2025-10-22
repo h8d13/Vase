@@ -118,4 +118,3 @@ For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/K
 → **Normal usages** → Use PACTOPAC for ongoing management if needed (or use command line if familiar).
 
 > This set-up with a rolling release is ideal because we have single sources of truth for each critical aspect. Keep my work on the side and be able to brick an install if needed in 15 minutes. We can also easily allow for self-upgrades by simply running `git pull` in the right location.
-
