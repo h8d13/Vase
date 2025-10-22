@@ -1,6 +1,6 @@
 # Bring Your Own B****
 
-Clone then run `-u` to pull submodules.
+Clone then run `-u` to pull submodules. Be faomiliar with `...` file and main options.
 
 1. Modify `vase_os/zazu_lago/iso_profiles/?.conf` and `vase_os/hade_box/archinstall/default_profiles/desktops/?.py` 
 
