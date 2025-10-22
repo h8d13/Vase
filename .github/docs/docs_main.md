@@ -56,6 +56,17 @@ When no args are provided shows help
 > Assumes KVM compatible hardware for VM options. And valid GPG key setup: `gpg --full-generate-key` and follow prompts for building.
 > Mostly tooling for devs... 
 
+
+### System-wide install
+
+You can install Vase into `/opt` by running `makepkg -Ccfi` in project root. And to remove `sudo pacman -Rns vase-git`
+This means all files will live within `/opt/vase` instead of where you cloned it and you will not need to write `sudo`.
+
+> You can also then `man vase` to see manpage for Vase.
+
+## Structure
+
+
 Now `vase_os/zazu_lago/` inside contains `a|c|d` 
 ```
 a:  # drive is for dev builds
@@ -81,15 +92,6 @@ vm_name="myvm1" #anyname-plasma
 #dupkvm will look something like this 9c901bmyvm1
 ```
 By simply commenting out you can easily switch builds.
-
----
-
-### System-wide install
-
-You can install Vase into `/opt` by running `makepkg -Ccfi` in project root. And to remove `sudo pacman -Rns vase-git`
-This means all files will live within `/opt/vase` instead of where you cloned it and you will not need to write `sudo`.
-
-> You can also then `man vase` to see manpage for Vase.
 
 ---
 
