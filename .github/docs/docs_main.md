@@ -13,7 +13,7 @@ Inside `vase_os/zazu_lago/vm_start` to modify VM behaviours/options.
 ### Settings
 
 In project root, `...` file contains all configuration constants.
-> VM Config, paths, custom names, etc...
+> VM Config, paths, iso profile, custom names, etc...
 
 For logging: Inside `.vase.d` you can find `logs.conf` & main program logs.
 
@@ -43,7 +43,7 @@ When no args are provided shows help
 
 --start                    # -s   # Start VM menu
 --quick <command>          # -q   # Pass direct VM options "help"
---isomod                   # -i   # Create iso default `iso_profiles/fat.conf`
+--isomod                   # -i   # Create iso default `iso_profiles/plasma_profile.conf`
 --flash <device>           # -f   # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>        # -w   # Complete workflow
 --dev                      # -d   # Development mode flag entry
