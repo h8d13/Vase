@@ -211,6 +211,10 @@ get_post_type() {
 get_post_edit_type() {
     echo "${POST_EDIT_TYPE}"
 }
+bytes_to_gib() {
+    local bytes="$1"
+    awk "BEGIN {printf \"%.1fGiB\", $bytes/1024/1024/1024}"
+}
 preop() {
     echo "[+] $1"
 }
