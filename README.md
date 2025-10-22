@@ -52,7 +52,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
-**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly. Heavily simplifed to be a starting point for both Arch and compat with Artix. Post-install utilties and can extended to other DE's or services (and clones itself to sudo user0's home).
+**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly. Heavily simplifed to be a starting point for both Arch and compat with Artix. Post-install utilties and could be extended to other DE's or services (and clones itself to sudo user0's home for faster iteration).
 
 ## Prep
 
