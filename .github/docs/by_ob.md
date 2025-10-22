@@ -16,4 +16,6 @@ Clone then run `-u` to pull submodules. Be faomiliar with `...` file and main op
 
 4. Test in VM, then on hardware. Using VM tooling.
 
-> `rdisk`, `brick`, `std` `sudo ./main -pe ?` `sudo ./main -p ?`
+> `rdisk`, `brick`, `dupk`, `std`
+
+And run post you created... `sudo ./main -pe ?` `sudo ./main -p ?`
