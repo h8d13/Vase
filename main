@@ -222,11 +222,11 @@ if exec_args "BENCH"; then
 fi
 if exec_args "POST"; then
     preop "Running post-install script..."
-    "./${ka_d}/post" && exit
+    "./${ka_d}/post_plasma" && exit
 fi
 if exec_args "POST_EDIT"; then
     preop "Opening post-install script in ${editor_cmd}..."
-    ${editor_cmd} "./${ka_d}/post" && exit
+    ${editor_cmd} "./${ka_d}/post_plasma" && exit
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."
