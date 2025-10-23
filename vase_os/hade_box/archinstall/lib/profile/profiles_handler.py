@@ -295,18 +295,20 @@ class ProfileHandler:
 
 	def _find_available_profiles(self) -> list[Profile]:
 		"""
-		Load Desktop, KDE Plasma, GNOME, and Xfce4 profiles
+		Load Desktop, KDE Plasma, GNOME, Xfce4, and Sway profiles
 		"""
 		from ...default_profiles.desktop import DesktopProfile
 		from ...default_profiles.desktops.plasma import PlasmaProfile
 		from ...default_profiles.desktops.gnome import GnomeProfile
 		from ...default_profiles.desktops.xfce4 import Xfce4Profile
+		from ...default_profiles.desktops.sway import SwayProfile
 
 		profiles = [
 			DesktopProfile(),
 			PlasmaProfile(),
 			GnomeProfile(),
 			Xfce4Profile(),
+			SwayProfile(),
 		]
 
 		self._verify_unique_profile_names(profiles)
