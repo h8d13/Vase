@@ -158,12 +158,6 @@ See an example Klartix install [here.](https://www.youtube.com/watch?v=N1Uy02KVn
 
 Run in project root: `sudo ./main -u` or `--update` this pulls in the submodules and checks for updates.
 
-Common commands:
-- `./main -h` - Show all available commands
-- `./main -ec` - Edit configuration file (...)
-- `./main -pm` - Launch pacman GUI (PacToPac)
-- `./main -t` - Launch installer TUI
-
 Or better yet, fork all the repos and send me patches. 
 
 [GENERAL README](./.github/docs/docs_main.md)
