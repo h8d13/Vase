@@ -307,6 +307,7 @@ gui_som() {
     local runtime_dir="/run/user/$(id -u "$user")"
 
     export XDG_RUNTIME_DIR="$runtime_dir"
+    export DBUS_SESSION_BUS_ADDRESS="unix:path=${runtime_dir}/bus"
     export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"  
     export DISPLAY="$DISPLAY"  
     export XAUTHORITY=$XAUTHORITY
