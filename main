@@ -232,6 +232,7 @@ if exec_args "POST_EDIT"; then
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."
+    gui_som "$SUDO_USER" #export XDG/XAUTHORITY for sudo user
     python3 "./${pp_d}/main.py" && ./${cc_py} && exit
 fi
 if exec_args "EXTRACT_LOGS"; then
