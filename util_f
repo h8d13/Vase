@@ -156,6 +156,10 @@ parse_args() {
                 EXTRACT_LOGS_UPLOAD=1
                 shift
                 ;;
+            -ec|--edit-conf)
+                EDIT_CONF=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 echo "Run './main -h' for help"
@@ -184,8 +188,12 @@ exec_args() {
         PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
         EXTRACT_LOGS) [ "${EXTRACT_LOGS}" = "1" ] ;;
         EXTRACT_LOGS_UPLOAD) [ "${EXTRACT_LOGS_UPLOAD}" = "1" ] ;;
+        EDIT_CONF) [ "${EDIT_CONF}" = "1" ] ;;
         *) return 1 ;;
     esac
+}
+get_edit_conf_cmd() {
+    echo "${EDIT_CONF}"
 }
 get_quick_cmd() {
     echo "${QUICK_CMD}"

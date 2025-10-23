@@ -220,6 +220,10 @@ if exec_args "BENCH"; then
             ;;
     esac
 fi
+if exec_args "EDIT_CONF"; then
+    preop "Editing config file"
+    ${editor_cmd} ... && exit
+fi
 if exec_args "POST"; then
     post_type="$(get_post_type)"
     preop "Running post-install script: post_${post_type}..."
