@@ -39,6 +39,7 @@ class SwayProfile(Profile):
 			'pavucontrol',
 			'foot',
 			'xorg-xwayland',
+			'lightdm-gtk-greeter',
 		] + additional
 
 	@property

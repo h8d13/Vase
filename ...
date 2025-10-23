@@ -4,7 +4,7 @@
 vase_v="0.0.14" # For motd / github page
 dev_mode=0 # Copy host files or not (local vs remote -b)
 silent_mode=1 #Supress output of mkarchiso
-auto_date=1 # 1=automatic date, 0=manual
+auto_date=0 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
 #### Editor preference
@@ -23,7 +23,7 @@ vm_d="a"
 # "a" for testing build ISOs "d" for regular
 
 [ "$auto_date" = "1" ] && iso_n="VASE-$(date +%Y.%m.%d)-x86_64" ||\
-iso_n="VASE-2025.10.21-x86_64"
+iso_n="VASE-2025.10.22-x86_64"
 # Or manual ^^
 
 #iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format   
