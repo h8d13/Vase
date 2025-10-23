@@ -41,7 +41,7 @@ package() {
         cp -a "$gitdir" "$pkgdir/opt/vase/$(dirname "$subpath")/"
     done
 
-    # Create wrapper script
+    # Create wrapper script #TODO CHANGE TO RUN
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/vase" <<'EOF'
 #!/bin/bash
