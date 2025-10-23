@@ -41,12 +41,12 @@ kde_info="Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
 # Log to tests.status
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Host KDE/Qt: ${kde_info}" >> tests.status
 echo "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
-# Read traffic data from traffic.json (use accumulated historical total)
+# Read traffic data from traffic.json (use cumulative all-time total)
 if file_ex "traffic.json"; then
     # Check if normalized format exists
     if jq -e '.daily_clones' traffic.json &>/dev/null; then
-        # New format: sum all daily records
-        clone_count=$(jq '.total_count // 0' traffic.json)
+        # Use cumulative_total for badge (never decreases), fallback to total_count
+        clone_count=$(jq '.cumulative_total // .total_count // 0' traffic.json)
         unique_clones=$(jq '.total_uniques // 0' traffic.json)
     else
         # Old format: use latest 14-day window
