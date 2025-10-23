@@ -232,7 +232,7 @@ if exec_args "POST_EDIT"; then
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager... Might need sudo -E"
-    "./${pp_d}/run_pm" && ./${cc_py} && exit
+    python3 "./${pp_d}/main.py" && ./${cc_py} && exit
 fi
 if exec_args "EXTRACT_LOGS"; then
     preop "Extracting installer logs..."
