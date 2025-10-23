@@ -10,6 +10,7 @@ Options:
   -h,  --help                Show this help message
   -u,  --update              Check git for updates & pull submodules
   -c,  --check-deps          Check build dependencies
+  -ec, --edit-conf           Edit configuration file (...)
 
   -t,  --tuimenu             Launch ArchKDE installer TUI
   -xl, --extract-logs        Extract installer logs

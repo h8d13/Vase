@@ -41,11 +41,11 @@ package() {
         cp -a "$gitdir" "$pkgdir/opt/vase/$(dirname "$subpath")/"
     done
 
-    # Create wrapper script #TODO CHANGE TO RUN
+    # Create wrapper script
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/vase" <<'EOF'
 #!/bin/bash
-cd /opt/vase && exec sudo ./main "$@"
+cd /opt/vase && exec sudo -E ./main "$@"
 EOF
     chmod +x "$pkgdir/usr/bin/vase"
 
