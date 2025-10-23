@@ -218,11 +218,6 @@ show_menu() {
 main() {
     local quick_cmd="${1:-}"  # Get quick command from argument
 
-    # Setup
-    dir_excreate "${script_dir}/a/"
-    dir_excreate "${script_dir}/c/"
-    dir_excreate "${script_dir}/d/"
-
     # Create disk if it doesn't exist
     if ! file_ex "$image_name"; then
         preop "Creating initial disk: $image_name"
