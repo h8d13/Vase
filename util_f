@@ -303,9 +303,12 @@ gui_what() {
     fi
 }
 gui_som() {
-    local runtime_dir
-    runtime_dir="/run/user/$(id -u "$1")"
+    local user="${1:-$SUDO_USER}"
+    local runtime_dir="/run/user/$(id -u "$user")"
+
     export XDG_RUNTIME_DIR="$runtime_dir"
+    export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"  
+    export DISPLAY="$DISPLAY"  
     export XAUTHORITY=$XAUTHORITY
 }
 chown_all() {

@@ -235,8 +235,8 @@ if exec_args "POST_EDIT"; then
     ${editor_cmd} "./${ka_d}/post_${post_edit_type}" && exit
 fi
 if exec_args "PKG_MAN"; then
-    preop "Launching PACTOPAC package manager... Might need sudo -E"
-    python3 "./${pp_d}/main.py" && ./${cc_py} && exit
+    preop "Launching PACTOPAC package manager..."
+    sudo -u "$SUDO_USER" -E python3 "./${pp_d}/main.py" && ./${cc_py} && exit
 fi
 if exec_args "EXTRACT_LOGS"; then
     preop "Extracting installer logs..."
