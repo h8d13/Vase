@@ -4,7 +4,7 @@
 vase_v="0.0.14" # For motd / github page
 dev_mode=0 # Copy host files or not (local vs remote -b)
 silent_mode=1 #Supress output of mkarchiso
-auto_date=0 # 1=automatic date, 0=manual
+auto_date=1 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
 #### Editor preference
@@ -25,8 +25,7 @@ vm_d="a"
 [ "$auto_date" = "1" ] && iso_n="VASE-$(date +%Y.%m.%d)-x86_64" ||\
 iso_n="VASE-2025.10.22-x86_64"
 # Or manual ^^
-
-#iso_n="archlinux-YYYY.MM.DD-x86_64" # Test ISO usual format   
+ 
 iso_ext="iso" #raw, bin
 
 vm_name="myvm1" #anyname
@@ -37,7 +36,7 @@ vm_name="myvm1" #anyname
 vm_ext="qcow2" #raw, bin
 
 ## For running with attached storage
-target_p="sdf"
+target_p="sdc"
 target_t="/dev/"
 target="${target_t}${target_p}"
 ## This can also be a mounted fs
@@ -46,7 +45,7 @@ target="${target_t}${target_p}"
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
 
 ## QEMU Display Settings
-qemu_display="gtk"
+qemu_display="sdl"
 # Display backend: gtk, sdl, vnc, spice
 qemu_gl="on"
 # GL acceleration: on, off

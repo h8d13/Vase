@@ -69,3 +69,9 @@ echo "Cleaning up test file..."
 rm -f testfile
 
 echo "Disk I/O benchmark complete."
+if ! command -v kdiskmark >/dev/null 2>&1; then
+    echo "Error: kdiskmark not found. Install it with: sudo pacman -S kdiskmark"
+    exit 1
+fi
+
+
