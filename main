@@ -26,6 +26,7 @@ if exec_args "RESET"; then
 fi
 # Setup lib directory
 dir_excreate "${rel}${p_lib}"
+dir_excreate "${rel}${zl_d}/a"  # Create ISO dir 
 dir_excreate "${rel}${zl_d}/d"  # Create ISO dir 
 dir_excreate "${rel}${zl_d}/c" # Create Disks dir
 
@@ -219,6 +220,10 @@ if exec_args "BENCH"; then
             die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
             ;;
     esac
+fi
+if exec_args "CLONE"; then
+    preop "Cloning running system to bootable ISO..."
+    cd "./${ch_d}" && ./arch-clone && exit
 fi
 if exec_args "EDIT_CONF"; then
     preop "Editing config file"

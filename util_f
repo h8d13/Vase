@@ -28,6 +28,7 @@ Options:
   -d,  --dev                 Development mode entry
   -g,  --grub <args>         GRUB utilities (-h for grub help)
   -b,  --bench <type>        Run benchmarks: io, cpu, gpu
+  -cl, --clone               Clone running system to bootable ISO
   -r,  --reset               Reset logs and settings
 
 
@@ -161,6 +162,10 @@ parse_args() {
                 EDIT_CONF=1
                 shift
                 ;;
+            -cl|--clone)
+                CLONE=1
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 echo "Run './main -h' for help"
@@ -190,6 +195,7 @@ exec_args() {
         EXTRACT_LOGS) [ "${EXTRACT_LOGS}" = "1" ] ;;
         EXTRACT_LOGS_UPLOAD) [ "${EXTRACT_LOGS_UPLOAD}" = "1" ] ;;
         EDIT_CONF) [ "${EDIT_CONF}" = "1" ] ;;
+        CLONE) [ "${CLONE}" = "1" ] ;;
         *) return 1 ;;
     esac
 }

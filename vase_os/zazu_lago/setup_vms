@@ -3,13 +3,6 @@
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
 
-## Strucs
-
-# Setup
-dir_excreate "${script_dir}/a/"
-dir_excreate "${script_dir}/c/"
-dir_excreate "${script_dir}/d/"
-
 # Base QEMU packages
 pkgs_needed="qemu-system-x86 qemu-img qemu-hw-display-virtio-gpu-pci qemu-hw-display-virtio-gpu"
 #pkgs_optional="qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice bridge-utils dmidecode dnsmasq iptables-nft tigervnc qemu-ui-spice-app qemu-hw-display-qxl"
