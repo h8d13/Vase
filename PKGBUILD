@@ -1,12 +1,13 @@
 # Maintainer: Hadean <hadean-eon-dev@proton.me>
 pkgname=vase-git
-pkgver=0013
+pkgver=0014
 pkgrel=1
-pkgdesc="VaseOS - Arch Linux KDE testing suite and installation platform"
+pkgdesc="VaseOS - Arch Linux testing suite and installation platform"
 arch=('x86_64')
 url="https://github.com/h8d13/Vase"
 license=('GPL')
-depends=('base' 'git' 'archiso' 'gnupg' 'squashfs-tools' 'jq' 'python3' 'arch-install-scripts' 'tree' 'curl' 'wget')
+depends=('base' 'git' 'gnupg' 'jq' 'python' 'curl' 'wget' 'tree')
+makedepends=('archiso' 'squashfs-tools' 'arch-install-scripts')
 source=("${pkgname}::git+https://github.com/h8d13/Vase.git")
 sha256sums=('SKIP')
 
@@ -45,12 +46,12 @@ package() {
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/vase" <<'EOF'
 #!/bin/bash
-cd /opt/vase && exec sudo -E ./main "$@"
+cd /opt/vase && exec sudo ./main "$@"
 EOF
     chmod +x "$pkgdir/usr/bin/vase"
 
     # License
-    install -Dm644 "$pkgdir/opt/vase/LICENSE" "$pkgdir/usr/share/licenses/vaseos/LICENSE"
+    install -Dm644 "$pkgdir/opt/vase/LICENSE" "$pkgdir/usr/share/licenses/vase/LICENSE"
 
     # Man page
     install -Dm644 "$pkgdir/opt/vase/.github/man/vase.1" "$pkgdir/usr/share/man/man1/vase.1"
