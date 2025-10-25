@@ -269,3 +269,11 @@ With a Intel iGPU and Nvidia 950M. Specsheet here [MSI](https://www.msi.com/Lapt
 And on GTA4: Complete edition inside Nico's appartement with 400 fps (on the 4060Ti).
 
 <img width="1920" height="1080" alt="Screenshot_20251019_160348" src="https://github.com/user-attachments/assets/5cf609fd-b748-4d58-b23b-d04af552bec2" />
+
+
+And on a 3080Ti 12GiB in my favorite workshop map:
+
+![20251025114417_1](https://github.com/user-attachments/assets/9e016533-90a1-46e7-bf41-e9811eba30c2)
+
+
+
