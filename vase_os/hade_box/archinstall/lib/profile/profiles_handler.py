@@ -161,7 +161,13 @@ class ProfileHandler:
 		"""
 		Install display manager based on greeter type
 		"""
-		install_session.add_additional_packages([greeter.value])
+		packages = [greeter.value]
+
+		# Lightdm requires a greeter interface
+		if greeter == GreeterType.Lightdm:
+			packages.append('lightdm-gtk-greeter')
+
+		install_session.add_additional_packages(packages)
 		install_session.enable_service([greeter.value])
 
 	def install_gfx_driver(self, install_session: 'Installer', driver: GfxDriver) -> None:

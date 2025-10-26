@@ -42,7 +42,6 @@ class HyprlandProfile(Profile):
 			'grim',
 			'slurp',
 			'xorg-xwayland',
-			'lightdm-gtk-greeter',
 			'noto-fonts',
 			'noto-fonts-emoji',
 			'ttf-liberation',
