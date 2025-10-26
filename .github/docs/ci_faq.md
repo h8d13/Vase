@@ -4,7 +4,7 @@
 Check that when flashing it you use `mbr/gpt` appropriate to hardware. Usually gpt for UEFI newer hardware.
 
 - BIOS Options errors
-  - Secure boot: Off or Other OS
+  - Secure boot: Off or Other OS (In some case that can allow for simple grub os-prober integration to other OSes.)
   - Check that SATA mode is correct (usually AHCPI)
 
 For full secure-boot setup: [Wiki](https://wiki.archlinux.org/title/GRUB#Secure_Boot_support)
