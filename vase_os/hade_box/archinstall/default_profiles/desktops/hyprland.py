@@ -48,7 +48,7 @@ class HyprlandProfile(Profile):
 	@property
 	@override
 	def default_greeter_type(self) -> GreeterType:
-		return GreeterType.Sddm
+		return GreeterType.Lightdm
 
 	@property
 	@override
