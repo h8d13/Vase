@@ -41,6 +41,8 @@ class HyprlandProfile(Profile):
 			'polkit-kde-agent',
 			'grim',
 			'slurp',
+			'xorg-xwayland',
+			'lightdm-gtk-greeter',
 		] + additional
 
 	@property

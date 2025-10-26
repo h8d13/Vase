@@ -169,7 +169,6 @@ if file_ex "${rel}${vase_d}/${cli_a}" && [ "${CATART:-1}" = "1" ]; then
     cat "${rel}${vase_d}/${cli_a}"
     nlp
 fi
-
 # Make exec
 file_mex "${rel}${p_lib}/${rcw_file}"
 # Check wrapper
