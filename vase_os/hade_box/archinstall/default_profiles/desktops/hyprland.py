@@ -43,6 +43,11 @@ class HyprlandProfile(Profile):
 			'slurp',
 			'xorg-xwayland',
 			'lightdm-gtk-greeter',
+			'noto-fonts',
+			'noto-fonts-emoji',
+			'ttf-liberation',
+			'otf-font-awesome',
+			'ttf-jetbrains-mono',
 		] + additional
 
 	@property
