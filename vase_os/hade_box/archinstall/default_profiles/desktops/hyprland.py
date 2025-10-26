@@ -34,6 +34,7 @@ class HyprlandProfile(Profile):
 			'uwsm',
 			'dolphin',
 			'wofi',
+			'waybar',
 			'xdg-desktop-portal-hyprland',
 			'qt5-wayland',
 			'qt6-wayland',
