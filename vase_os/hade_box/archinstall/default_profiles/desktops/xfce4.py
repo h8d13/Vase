@@ -25,6 +25,7 @@ class Xfce4Profile(Profile):
 			'pavucontrol',
 			'gvfs',
 			'xarchiver',
+			'xdg-utils',
 		]
 
 	@property

@@ -47,6 +47,7 @@ class HyprlandProfile(Profile):
 			'ttf-liberation',
 			'otf-font-awesome',
 			'ttf-jetbrains-mono',
+			'xdg-utils',
 		] + additional
 
 	@property

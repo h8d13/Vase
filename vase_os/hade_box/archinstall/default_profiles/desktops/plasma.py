@@ -27,6 +27,7 @@ class PlasmaProfile(Profile):
 			'dolphin',
 			'ark',
 			'plasma-workspace',
+			'xdg-utils',
 		]
 
 	@property

@@ -33,7 +33,6 @@ class DesktopProfile(Profile):
 			'wireless_tools',
 			'wpa_supplicant',
 			'smartmontools',
-			'xdg-utils',
 		]
 
 	@property

@@ -294,7 +294,7 @@ class ProfileHandler:
 
 	def _find_available_profiles(self) -> list[Profile]:
 		"""
-		Load Desktop, KDE Plasma, GNOME, Xfce4, Sway, and Hyprland profiles
+		Load Desktop, KDE Plasma, GNOME, Xfce4, Sway, Hyprland, and Minimal profiles
 		"""
 		from ...default_profiles.desktop import DesktopProfile
 		from ...default_profiles.desktops.plasma import PlasmaProfile
@@ -302,6 +302,7 @@ class ProfileHandler:
 		from ...default_profiles.desktops.xfce4 import Xfce4Profile
 		from ...default_profiles.desktops.sway import SwayProfile
 		from ...default_profiles.desktops.hyprland import HyprlandProfile
+		from ...default_profiles.desktops.minimal import MinimalProfile
 
 		profiles = [
 			DesktopProfile(),
@@ -310,6 +311,7 @@ class ProfileHandler:
 			Xfce4Profile(),
 			SwayProfile(),
 			HyprlandProfile(),
+			MinimalProfile(),
 		]
 
 		self._verify_unique_profile_names(profiles)

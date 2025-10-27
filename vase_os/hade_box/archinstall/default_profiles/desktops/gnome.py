@@ -20,6 +20,7 @@ class GnomeProfile(Profile):
 		return super().packages + [
 			'gnome',
 			'gnome-tweaks',
+			'xdg-utils',
 		]
 
 	@property
