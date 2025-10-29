@@ -1,10 +1,10 @@
 #... strucs
 # This file is an absolute mess but everything is declared here
 ################## ISO CREATION
-vase_v="0.0.14" # For motd / github page
+vase_v="0.0.15" # For motd / github page
 dev_mode=0 # Copy host files or not (local vs remote -b)
 silent_mode=1 #Supress output of mkarchiso
-auto_date=0 # 1=automatic date, 0=manual
+auto_date=1 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
 #### Editor preference

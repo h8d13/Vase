@@ -26,6 +26,8 @@ Manufacturer: Micro-Star International Co., Ltd.
 Product Name: GP72 6QE
 `
 
+You can also use `lspci | grep "Something"`
+
 ## Basics
 
   ### HW TABLE
