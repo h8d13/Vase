@@ -226,7 +226,7 @@ if exec_args "CLONE"; then
 fi
 if exec_args "EDIT_CONF"; then
     preop "Editing config file"
-    ${editor_cmd} ... && exit
+    $EDITOR ... && exit
 fi
 if exec_args "POST"; then
     post_type="$(get_post_type)"
@@ -235,8 +235,8 @@ if exec_args "POST"; then
 fi
 if exec_args "POST_EDIT"; then
     post_edit_type="$(get_post_edit_type)"
-    preop "Opening post-install script in ${editor_cmd}: post_${post_edit_type}..."
-    ${editor_cmd} "./${ka_d}/post_${post_edit_type}" && exit
+    preop "Opening post-install script in $EDITOR: post_${post_edit_type}..."
+    $EDITOR "./${ka_d}/post_${post_edit_type}" && exit
 fi
 if exec_args "PKG_MAN"; then
     preop "Launching PACTOPAC package manager..."

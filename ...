@@ -7,9 +7,6 @@ silent_mode=1 #Supress output of mkarchiso
 auto_date=1 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
-#### Editor preference
-editor_cmd="vim"  # vim, nano, micro, etc.
-
 ################## VM STUFF
 arch="x86_64"
 ram="8096"
