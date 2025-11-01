@@ -45,9 +45,9 @@ else # Always check full deps when not running with ISO
 fi
 
 # Backup FULL mirror list before anything happens (auto reflector)
-if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
-    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
-fi
+#if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
+#    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
+#fi
 
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database... & Checking up to date."
