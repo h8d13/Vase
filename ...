@@ -25,7 +25,8 @@ iso_n="VASE-2025.10.24-x86_64"
  
 iso_ext="iso" #raw, bin
 
-vm_name="myvm1" #anyname
+vm_name="myvm0" 
+#vm_name="myvm1" #gnome-testing
 #vm_name="myvm2" #alpine
 #vm_name="myvm3" #arch
 #dupkvm will look something like this 9c901bmyvm1
