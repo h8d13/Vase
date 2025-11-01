@@ -48,9 +48,7 @@ class Bootloader(Enum):
 @dataclass
 class GrubConfiguration:
 	"""Configuration options for GRUB bootloader"""
-	enable_os_prober: bool = False
-	hide_menu: bool = False  # Only hide if OS prober is disabled
-	remember_last_selection: bool = False  # Remember last selected OS
+	hide_menu: bool = False # Default off
 	timeout: int = 5
 	enable_custom_colors: bool = False
 	color_normal: str = "light-blue/black"
@@ -60,10 +58,7 @@ class GrubConfiguration:
 
 	def get_timeout_style(self) -> str:
 		"""Return the appropriate timeout style based on configuration"""
-		if self.enable_os_prober:
-			# If OS prober is enabled, always show menu
-			return 'menu'
-		elif self.hide_menu:
+		if self.hide_menu:
 			# Hide menu only if OS prober is disabled
 			return 'hidden'
 		else:

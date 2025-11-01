@@ -1134,11 +1134,6 @@ class Installer:
 
 		self.pacman.strap('grub')
 
-		# Install os-prober if enabled
-		if grub_config and grub_config.enable_os_prober:
-			debug('Installing os-prober for multi-OS detection')
-			self.pacman.strap('os-prober')
-
 		grub_default = self.target / 'etc/default/grub'
 		config = grub_default.read_text()
 
@@ -1190,19 +1185,6 @@ class Installer:
 			#else:
 				# If GRUB_CMDLINE_LINUX_DEFAULT doesn't exist, create it
 				#config += f'\n# Hardware-specific parameters\nGRUB_CMDLINE_LINUX_DEFAULT="{" ".join(hw_params)}"\n'
-
-		# Apply GRUB configuration
-		if grub_config:
-			# Configure OS prober - uncomment line if enabled, leave default (commented) if disabled
-			if grub_config.enable_os_prober:
-				if 'GRUB_DISABLE_OS_PROBER=' in config:
-					config = re.sub(
-						r'#?\s*GRUB_DISABLE_OS_PROBER=.*',
-						'\nGRUB_DISABLE_OS_PROBER=false',
-						config
-					)
-				else:
-					config += '\n# Enable detection of other operating systems\nGRUB_DISABLE_OS_PROBER=false\n'
 
 			# Configure menu visibility
 			timeout_style = grub_config.get_timeout_style()

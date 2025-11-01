@@ -89,9 +89,6 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 
 	config = GrubConfiguration()
 
-	# Disable OS prober by default (removed from menu)
-	config.enable_os_prober = False
-
 	# Ask about hiding menu
 	hide_menu_options = [
 		MenuItem(
