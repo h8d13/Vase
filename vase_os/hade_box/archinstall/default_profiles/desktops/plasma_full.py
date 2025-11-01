@@ -24,6 +24,7 @@ class PlasmaFullProfile(Profile):
 		return super().packages + [
 			'plasma',  # Full Plasma desktop meta package
 			'kde-applications',  # All KDE applications (utilities, graphics, multimedia, games, etc)
+			'xdg-utils', 
 		]
 
 	@property
