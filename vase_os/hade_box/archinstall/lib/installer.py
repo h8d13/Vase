@@ -1186,6 +1186,9 @@ class Installer:
 				# If GRUB_CMDLINE_LINUX_DEFAULT doesn't exist, create it
 				#config += f'\n# Hardware-specific parameters\nGRUB_CMDLINE_LINUX_DEFAULT="{" ".join(hw_params)}"\n'
 
+		# Apply GRUB configuration
+		if grub_config:
+			
 			# Configure menu visibility
 			timeout_style = grub_config.get_timeout_style()
 			if 'GRUB_TIMEOUT_STYLE=' in config:
