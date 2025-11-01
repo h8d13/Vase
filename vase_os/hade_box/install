@@ -14,9 +14,6 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 preop "HADE_BOOT - ARCHINSTALL"
-
-ping -c 3 google.com 
-
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
     preop "Running from Arch Linux ISO / USB Medium"
