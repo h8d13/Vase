@@ -226,11 +226,6 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 	def _define_menu_options(self) -> list[MenuItem]:
 		return [
 			MenuItem(
-				text=('Reflector status'),
-				action=lambda preset: preset,
-				preview_action=self._prev_reflector_status,
-			),
-			MenuItem(
 				text=('Mirror configuration'),
 				action=configure_mirrors,
 				value=self._mirror_config.mirror_regions,
@@ -259,37 +254,6 @@ class MirrorMenu(AbstractSubMenu[MirrorConfiguration]):
 				key='custom_repositories',
 			),
 		]
-
-	def _check_reflector_status(self) -> str:
-		from .exceptions import SysCallError
-		try:
-			result = SysCommand('systemctl is-active reflector.service', environment_vars={'SYSTEMD_COLORS': '0'})
-			status = result.decode().strip()
-		except SysCallError as e:
-			# systemctl is-active returns non-zero for inactive/failed services
-			# but still outputs the status, so we can extract it
-			status = str(e).split('\n')[0] if str(e) else 'unknown'
-			# Try to extract from the exception output
-			if 'inactive' in str(e).lower():
-				status = 'inactive'
-			elif 'failed' in str(e).lower():
-				status = 'failed'
-			elif 'activating' in str(e).lower():
-				status = 'activating'
-		except Exception:
-			return 'N/A'
-
-		if status in ['active', 'activating']:
-			return 'Running...'
-		elif status == 'inactive':
-			return 'Done.'
-		elif status in ['dead', 'failed']:
-			return f'Error ({status})'
-		else:
-			return f'Status: {status}'
-
-	def _prev_reflector_status(self, item: MenuItem) -> str:
-		return self._check_reflector_status()
 
 	def _prev_regions(self, item: MenuItem) -> str:
 		regions = item.get_value()

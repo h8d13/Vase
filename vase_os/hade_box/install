@@ -13,8 +13,9 @@ if [ "$EUID" -ne 0 ]; then
     echo "Error: This script must be run as root"
     exit 1
 fi
-
 preop "HADE_BOOT - ARCHINSTALL"
+
+ping -c 3 google.com 
 
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
@@ -38,18 +39,38 @@ if [ -d "/run/archiso" ]; then
     done
     preop "Checked only python deps. Skipping full check..."
 
-    # Arch disabled reflector.service auto-run - run it manually for fast mirrors
-    preop "Filtering mirrors with reflector (HTTPS, latest 20, sorted by speed)..."
-    if command -v reflector >/dev/null 2>&1; then
-        # Backup original full mirrorlist before filtering
-        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
-
-        # Run reflector to get fast HTTPS mirrors
-        reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-            reop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
-            postop "Reflector failed, using original mirrorlist"
+    # Check internet connectivity before proceeding
+    preop "Checking internet connectivity..."
+    if ping -c 3 google.com >/dev/null 2>&1; then
+        reop "Internet connection verified"
     else
-        postop "Reflector not found, using default mirrorlist"
+        postop "No internet connection detected!"
+        echo ""
+        echo "Please configure your network connection:"
+        echo "  - Ethernet: Should work automatically"
+        echo "  - WiFi: Use 'iwctl' to connect"
+        echo "    Example: iwctl station wlan0 connect 'YourSSID'"
+        echo ""
+        exit 1
+    fi
+    # Arch disabled reflector.service auto-run - run it manually for fast mirrors
+    # Skip if reflector already ran (user restarted installer)
+    current_mirrors=$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo "999")
+    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "$current_mirrors" -lt 100 ]; then
+        preop "Reflector already ran ($current_mirrors mirrors), skipping..."
+    else
+        preop "Filtering mirrors with reflector (HTTPS, latest 20, sorted by speed)..."
+        if command -v reflector >/dev/null 2>&1; then
+            # Backup original full mirrorlist before filtering
+            cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
+
+            # Run reflector to get fast HTTPS mirrors
+            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
+                reop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
+                postop "Reflector failed, using original mirrorlist"
+        else
+            postop "Reflector not found, using default mirrorlist"
+        fi
     fi
 else # Always check full deps when not running with ISO
    	preop "Running from live system. Checking deps..."
