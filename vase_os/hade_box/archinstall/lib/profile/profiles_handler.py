@@ -199,11 +199,6 @@ class ProfileHandler:
 		if profile_config.greeter:
 			self.install_greeter(install_session, profile_config.greeter)
 
-		# Add X11 packages if selected
-		if profile_config.x11_packages:
-			install_session.add_additional_packages(profile_config.x11_packages)
-			# xorg-server is always installed since i think its used both in sddm and for certain features of KDE
-
 	def _import_profile_from_url(self, url: str) -> None:
 		"""
 		Import default_profiles from a url path

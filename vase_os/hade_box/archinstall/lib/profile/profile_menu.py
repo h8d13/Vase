@@ -68,16 +68,7 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				key='gfx_driver',
 			),
 			MenuItem(
-				text=('X11 packages'),
-				action=self._select_x11_packages,
-				value=getattr(self._profile_config, 'x11_packages', None),
-				preview_action=lambda item: ', '.join(item.value) if item.value else 'None',
-				enabled='KDE Plasma' in self._profile_config.profile.current_selection_names() if self._profile_config.profile else False,
-				dependencies=['profile'],
-				key='x11_packages',
-			),
-			MenuItem(
-				text=('Greeter (SDDM for KDE)'),
+				text=('Greeter'),
 				action=lambda x: select_greeter(preset=x),
 				value=self._profile_config.greeter if self._profile_config.profile and self._profile_config.profile.is_greeter_supported() else None,
 				enabled=self._profile_config.profile.is_greeter_supported() if self._profile_config.profile else False,
@@ -158,17 +149,9 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 				if greeter_item.value is None:
 					greeter_item.value = profile.default_greeter_type
 
-			x11_item = self._item_group.find_by_key('x11_packages')
-			if 'KDE Plasma' in profile.current_selection_names():
-				x11_item.enabled = True
-			else:
-				x11_item.enabled = False
-				x11_item.value = None
-
 		else:
 			self._item_group.find_by_key('gfx_driver').value = None
 			self._item_group.find_by_key('greeter').value = None
-			self._item_group.find_by_key('x11_packages').value = None
 
 		return profile
 
@@ -229,54 +212,6 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 
 			if text:
 				return text
-
-		return None
-
-	def _select_x11_packages(self, preset: list[str] | None) -> list[str] | None:
-		header = 'Select X11 packages to install:\n'
-		header += 'Usually useful for older hardware, alongside Wayland.\n'
-
-		# Get current profile to determine DE-specific packages
-		profile: Profile | None = self._item_group.find_by_key('profile').value
-		available_packages = []
-
-		if profile:
-			selection_names = profile.current_selection_names()
-			if 'KDE Plasma' in selection_names:
-				available_packages.append('plasma-x11-session')
-				available_packages.extend(['xorg-xinit', 'xorg-xrandr', 'xorg-xauth'])
-		
-		# Can add common ones here that apply to several DE
-		# Currently for GNOME leave wayland only.
-
-		items = [
-			MenuItem(
-				text=pkg,
-				value=pkg
-			)
-			for pkg in available_packages
-		]
-
-		group = MenuItemGroup(items)
-
-		if preset:
-			group.set_selected_by_value(preset)
-
-		result = SelectMenu[str](
-			group,
-			multi=True,
-			header=header,
-			allow_skip=True,
-			allow_reset=True,
-			frame=FrameProperties.min('X11 packages'),
-		).run()
-
-		if result.type_ == ResultType.Skip:
-			return preset
-		elif result.type_ == ResultType.Selection:
-			return result.get_values()
-		elif result.type_ == ResultType.Reset:
-			return None
 
 		return None
 
