@@ -299,6 +299,7 @@ class ProfileHandler:
 		from ...default_profiles.desktop import DesktopProfile
 		from ...default_profiles.desktops.plasma import PlasmaProfile
 		from ...default_profiles.desktops.plasma_minimal import PlasmaMinimalProfile
+		from ...default_profiles.desktops.plasma_full import PlasmaFullProfile
 		from ...default_profiles.desktops.gnome import GnomeProfile
 		from ...default_profiles.desktops.xfce4 import Xfce4Profile
 		from ...default_profiles.desktops.sway import SwayProfile
@@ -309,6 +310,7 @@ class ProfileHandler:
 			DesktopProfile(),
 			PlasmaProfile(),
 			PlasmaMinimalProfile(),
+			PlasmaFullProfile(),
 			GnomeProfile(),
 			Xfce4Profile(),
 			SwayProfile(),
