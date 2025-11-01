@@ -37,17 +37,28 @@ if [ -d "/run/archiso" ]; then
         fi
     done
     preop "Checked only python deps. Skipping full check..."
+    preop "Waiting for reflector to finish filtering mirrors..."
+    timeout=60  # 60 second timeout
+    elapsed=0
+    while systemctl is-active reflector.service >/dev/null 2>&1; do
+        sleep 1
+        elapsed=$((elapsed + 1))
+        if [ $elapsed -ge $timeout ]; then
+            postop "Reflector timeout - continuing with current mirrorlist"
+            break
+        fi
+    done
+    [ $elapsed -lt $timeout ] && preop "Reflector finished after ${elapsed}s"
+    # Backup FULL mirror list before anything happens (auto reflector)
+    #if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
+    #    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
+    #fi
 else # Always check full deps when not running with ISO
    	preop "Running from live system. Checking deps..."
     chmod +x "$SCRIPT_DIR/altodeps"
    	"$SCRIPT_DIR/altodeps"
     preop "Dependency check complete. Continuing..."
 fi
-
-# Backup FULL mirror list before anything happens (auto reflector)
-#if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
-#    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
-#fi
 
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database... & Checking up to date."
