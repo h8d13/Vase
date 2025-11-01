@@ -44,24 +44,8 @@ info "Adding customizations to airootfs..."
 mkdir -p "$PROFILE_DIR/airootfs/root"
 
 # Dev mode: Copy entire Vase project into ISO (including uncommitted changes, respects .gitignore)
-dev_mode="${dev_mode:-0}"
+
 silent_mode="${silent_mode:-0}"
-if [ "$dev_mode" = "1" ]; then
-    info "dev_mode enabled: Copying entire Vase project into ISO..."
-    VASE_SRC="$SCRIPT_DIR/../../"
-    if dir_ex "$VASE_SRC"; then
-        mkdir -p "$PROFILE_DIR/airootfs/root/Vase"
-        # Use git ls-files to get all tracked and untracked (but not ignored) files
-        (cd "$VASE_SRC" && \
-         git ls-files && \
-         git ls-files --others --exclude-standard) | \
-        tar -C "$VASE_SRC" -cf - -T - | \
-        tar -C "$PROFILE_DIR/airootfs/root/Vase" -xf -
-        reop "Local Vase project (including uncommitted changes) copied to ISO for development"
-    else
-        warn "Vase source directory not found at $VASE_SRC"
-    fi
-fi
 
 # Add git to ISO packages (needed for users to clone Vase)
 info "Adding git to ISO package list..."
@@ -78,7 +62,8 @@ HISTEOF
 
 # Append custom MOTD
 build_date=$(date '+%Y.%m.%d')
-if [ "$dev_mode" = "0" ]; then cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
+
+cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 
 ╔═══════════════════════════════════════╗
       VASE ARCH INSTALLER ${vase_v}

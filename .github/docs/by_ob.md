@@ -8,8 +8,6 @@ Clone then run `-u` to pull submodules. Be faomiliar with `...` file and main op
 
 2 Generate an ISO using `-i` just for ISO or `-w` for gpg signing for PROD.
 
-> `dev_mode=1` for copying local uncommited changes to root of ISO
-
 3. Create a post script inside `vase_os/kaes_arch` with name `post_dename`
 
 > This for quick set-up is cloned automatically also in sudo_user0's home

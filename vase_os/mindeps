@@ -47,7 +47,7 @@ fi
 # [BUILD] pacman                     - Package manager (download/install)
 # [BUILD] repo-add                   - Create local package repositories
 # [BUILD] git                        - Version control, file filtering (ls-files)
-# [BUILD] gpg                        - ISO signing (skipped if dev_mode=1)
+# [BUILD] gpg                        - ISO signing
 # [BUILD] tar                        - Archive creation for airootfs
 # [BUILD] sed, awk, grep             - Text processing for configs
 # [BUILD] squashfs-tools             - ISO compression (via mkarchiso)

@@ -338,18 +338,12 @@ if im_groot; then
             preop "Building ISO..."
             "./${zl_d}/iso_mod" || exit 1
 
-            # Sign ISO (skip in dev_mode)
-            if [ "${dev_mode:-0}" = "0" ]; then
-                preop "Signing ISO..."
-                sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
+            preop "Signing ISO..."
+            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
 
-                # Verify signature
-                preop "Verifying signature..."
-                gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
-            else
-                info "Skipping GPG signing (dev_mode enabled)"
-                gpg_info="N/A (dev_mode)"
-            fi
+            # Verify signature
+            preop "Verifying signature..."
+            gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
 
             # Flash ISO
             iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"

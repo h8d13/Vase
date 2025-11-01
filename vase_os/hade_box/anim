@@ -1,0 +1,50 @@
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+. "$SCRIPT_DIR/install"
+
+spinner() {
+    spinner_chars=("𜱼" "𜱽" "𜱾")  # 3 spinner faces
+
+    while :; do
+        # First half cycle: Typewriter effect - Print faces one by one
+        for char in "${spinner_chars[@]}"; do
+            echo -n "$char"
+            sleep 0.2  # Typewriter delay
+        done
+
+        # Erase each face one by one (overwriting them with spaces)
+        for ((i=0; i<${#spinner_chars[@]}; i++)); do
+            echo -ne "\r"  # Move cursor back to the beginning
+            echo -n "    "  # Overwrite the line with spaces
+            sleep 0.3  # Small delay between erasing
+            echo -ne "\r"  # Move cursor back to the beginning again
+        done
+
+        # Second half cycle: Normal spinning (loop through the faces continuously)
+        for ((i=0; i<3; i++)); do
+            echo -n "${spinner_chars[$i]}"
+            sleep 0.2  # Delay for spinning
+            echo -ne "\r"  # Move cursor back to the beginning of the line
+        done
+    done
+}
+
+# Main function to run the spinner and operation
+lo_spinner() {
+    # Start the spinner (this will handle the typewriter effect and looping)
+    spinner &
+
+    # Capture the spinner's process ID
+    spinner_pid=$!
+
+    # Simulate the operation (replace with actual operation)
+    operation
+
+    # Stop the spinner after the operation completes
+    kill $spinner_pid
+
+    # Print a completion message
+    echo -e "\nOperation completed!"
+}
+lo_spinner

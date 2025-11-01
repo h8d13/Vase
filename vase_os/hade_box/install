@@ -2,6 +2,8 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+. "$SCRIPT_DIR/anim"
+
 . "$SCRIPT_DIR/../../util_f"
 # Source constants if they exist
 if file_ex "$SCRIPT_DIR/../../..."; then
@@ -62,9 +64,13 @@ if [ -d "/run/archiso" ]; then
             cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
 
             # Run reflector to get fast HTTPS mirrors
-            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
-                postop "Reflector failed, using original mirrorlist"
+            operation() {
+                reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
+                    postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
+                    postop "Reflector failed, using original mirrorlist"
+                    sleep 1
+            }
+
         else
             postop "Reflector not found, using default mirrorlist"
         fi
