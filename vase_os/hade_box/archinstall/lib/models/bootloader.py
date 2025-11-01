@@ -48,7 +48,8 @@ class Bootloader(Enum):
 @dataclass
 class GrubConfiguration:
 	"""Configuration options for GRUB bootloader"""
-	hide_menu: bool = False # Default off
+	hide_menu: bool = False  # Only hide if OS prober is disabled
+	remember_last_selection: bool = False  # Remember last selected OS
 	timeout: int = 5
 	enable_custom_colors: bool = False
 	color_normal: str = "light-blue/black"
