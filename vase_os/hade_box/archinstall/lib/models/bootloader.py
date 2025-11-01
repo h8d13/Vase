@@ -28,7 +28,7 @@ class Bootloader(Enum):
 	def get_default(cls) -> Bootloader:
 		"""Get default bootloader based on system capabilities"""
 		if SysInfo.has_uefi():
-			return Bootloader.Systemd
+			return Bootloader.Grub
 		else:
 			return Bootloader.Grub
 
