@@ -38,42 +38,18 @@ if [ -d "/run/archiso" ]; then
     done
     preop "Checked only python deps. Skipping full check..."
 
-    # Check reflector service status
-    reflector_enabled=$(systemctl is-enabled reflector.service 2>/dev/null || echo "disabled")
-    reflector_status=$(systemctl show reflector.service --property=ActiveState --value 2>/dev/null || echo "unknown")
-    preop "Reflector service: enabled=$reflector_enabled, status=$reflector_status"
+    # Arch disabled reflector.service auto-run - run it manually for fast mirrors
+    preop "Filtering mirrors with reflector (HTTPS, latest 20, sorted by speed)..."
+    if command -v reflector >/dev/null 2>&1; then
+        # Backup original full mirrorlist before filtering
+        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
 
-    # Count mirrors before waiting
-    mirrors_before=$(grep -c "^Server = " /etc/pacman.d/mirrorlist 2>/dev/null || echo "0")
-    preop "Mirrors in mirrorlist before wait: $mirrors_before"
-
-    preop "Waiting for reflector to finish filtering mirrors..."
-    timeout=60  # 60 second timeout
-    elapsed=0
-    while systemctl is-active reflector.service >/dev/null 2>&1; do
-        sleep 1
-        elapsed=$((elapsed + 1))
-        if [ $elapsed -ge $timeout ]; then
-            postop "Reflector timeout - continuing with current mirrorlist"
-            break
-        fi
-    done
-    [ $elapsed -lt $timeout ] && preop "Reflector finished after ${elapsed}s"
-
-    # Count mirrors after waiting
-    mirrors_after=$(grep -c "^Server = " /etc/pacman.d/mirrorlist 2>/dev/null || echo "0")
-    preop "Mirrors in mirrorlist after wait: $mirrors_after"
-
-    # Show first few mirrors for verification
-    preop "First 5 mirrors in current mirrorlist:"
-    grep "^Server = " /etc/pacman.d/mirrorlist | head -5 | while read line; do
-        preop "  $line"
-    done
-    sleep 5
-    # Backup reflector's result for caching
-    if [ ! -f /etc/pacman.d/mirrorlist.reflector_result ]; then
-        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.reflector_result 2>/dev/null || true
-        preop "Backed up reflector result to mirrorlist.reflector_result"
+        # Run reflector to get fast HTTPS mirrors
+        reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
+            reop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
+            postop "Reflector failed, using original mirrorlist"
+    else
+        postop "Reflector not found, using default mirrorlist"
     fi
 else # Always check full deps when not running with ISO
    	preop "Running from live system. Checking deps..."
