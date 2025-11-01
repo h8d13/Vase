@@ -43,9 +43,9 @@ target="${target_t}${target_p}"
 
 ## QEMU Display Settings
 qemu_display="sdl"
-# Display backend: gtk, sdl, vnc, spice
+# Display backend: sdl, gtk, vnc, spice
 qemu_gl="on"
-# GL acceleration: on, off
+# GL acceleration: on, off (for gtk)
 qemu_uefi=1
 # Copy EFI vars to QEMU: 1 or 0
 audio_backend="pipewire"  # pa, alsa, pipewire, or none

@@ -20,6 +20,8 @@ class GnomeProfile(Profile):
 		return super().packages + [
 			'gnome',
 			'gnome-tweaks',
+			'gnome-shell-extensions',
+			'gnome-browser-connector',
 			'xdg-utils',
 		]
 
