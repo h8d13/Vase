@@ -183,7 +183,7 @@ def ask_additional_packages_to_install(preset: list[str] = []) -> list[str]:
 	Validates packages against pacman database.
 	"""
 	header = 'Enter additional packages to install (comma-separated)\n\n'
-	header += 'Examples: vim, htop, firefox, neofetch\n'
+	header += 'Examples: btop, firefox, fastfetch\n'
 	header += 'Package names will be validated against pacman database.\n'
 
 	preset_text = ', '.join(preset) if preset else ''
