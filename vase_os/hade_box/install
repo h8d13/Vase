@@ -61,10 +61,48 @@ if [ -d "/run/archiso" ]; then
             # Backup original full mirrorlist before filtering
             cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
 
+            # Spinner function
+            spinner() {
+                spinner_chars=("𜱼" "𜱽" "𜱾")
+                while :; do
+                    # Typewriter effect - print faces one by one
+                    for char in "${spinner_chars[@]}"; do
+                        echo -n "$char"
+                        sleep 0.2
+                    done
+                    # Erase faces
+                    for ((i=0; i<${#spinner_chars[@]}; i++)); do
+                        echo -ne "\r    \r"
+                        sleep 0.3
+                    done
+                    # Normal spinning
+                    for ((i=0; i<3; i++)); do
+                        echo -n "${spinner_chars[$i]}"
+                        sleep 0.2
+                        echo -ne "\r"
+                    done
+                done
+            }
+
+            # Start spinner in background
+            spinner &
+            spinner_pid=$!
+
             # Run reflector to get fast HTTPS mirrors
-            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
+            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null
+            reflector_exit=$?
+
+            # Stop spinner
+            kill $spinner_pid 2>/dev/null
+            wait $spinner_pid 2>/dev/null
+            echo -ne "\r    \r"  # Clear spinner
+
+            # Check result
+            if [ $reflector_exit -eq 0 ]; then
+                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors"
+            else
                 postop "Reflector failed, using original mirrorlist"
+            fi
         else
             postop "Reflector not found, using default mirrorlist"
         fi
