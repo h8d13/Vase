@@ -2,8 +2,6 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-. "$SCRIPT_DIR/anim"
-
 . "$SCRIPT_DIR/../../util_f"
 # Source constants if they exist
 if file_ex "$SCRIPT_DIR/../../..."; then
