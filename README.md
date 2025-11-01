@@ -4,7 +4,7 @@
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.5-darkgreen" alt="Arch_Linux"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.6-darkgreen" alt="Arch_Linux"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Plasma-6.5.1-darkgreen" alt="Plasma"></a>
@@ -20,7 +20,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-1517-blue" alt="Git_Clones"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-1637-blue" alt="Git_Clones"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Frameworks-6.19.0-blue" alt="Frameworks"></a>
@@ -29,7 +29,7 @@
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.15 | <strong>Tested:</strong> 2025-10-24 11:34:24 | <strong>Size:</strong> 2.3GiB
+<strong>Version:</strong> 0.0.15 | <strong>Tested:</strong> 2025-11-01 12:05:16 | <strong>Size:</strong> 2.3GiB
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 
