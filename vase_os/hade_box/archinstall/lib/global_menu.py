@@ -426,11 +426,7 @@ class GlobalMenu(AbstractMenu[None]):
 		if item.value:
 			from .models.bootloader import GrubConfiguration
 			config: GrubConfiguration = item.value
-			output = f'OS Prober: {"Enabled" if config.enable_os_prober else "Disabled"}\n'
-			if config.enable_os_prober:
-				output += f'Remember last OS: {"Yes" if config.remember_last_selection else "No"}\n'
-			else:
-				output += f'Menu visibility: {"Hidden (ESC to show)" if config.hide_menu else "Visible"}'
+			output += f'Menu visibility: {"Hidden (ESC to show)" if config.hide_menu else "Visible"}'
 
 			# Only show timeout if menu is visible
 			if not config.hide_menu:
@@ -483,7 +479,6 @@ class GlobalMenu(AbstractMenu[None]):
 
 			if efi_partition.fs_type not in [FilesystemType.Fat12, FilesystemType.Fat16, FilesystemType.Fat32]:
 				return 'ESP must be formatted as a FAT filesystem'
-
 
 		return None
 

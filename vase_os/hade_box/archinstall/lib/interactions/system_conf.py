@@ -59,7 +59,7 @@ def ask_for_bootloader(preset: Bootloader | None) -> Bootloader | None:
 	else:
 		# UEFI mode: all bootloaders supported
 		options = [Bootloader.Systemd, Bootloader.Grub]
-		default = Bootloader.Systemd
+		default = Bootloader.Grub
 
 	items = [MenuItem(o.value, value=o) for o in options]
 	group = MenuItemGroup(items)
