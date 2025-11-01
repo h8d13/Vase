@@ -83,7 +83,6 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 ╚═══════════════════════════════════════╝
 EOF
 
-
 if file_ex "$PROFILE_LIST"; then
     info "Creating local package repository for fat profile packages..."
 
