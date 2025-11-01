@@ -1,21 +1,51 @@
 from __future__ import annotations
 
+import sys
 from enum import Enum
 from dataclasses import dataclass
 
+from ..hardware import SysInfo
+from ..output import warn
+
 class Bootloader(Enum):
 	Grub = 'Grub'
+	Systemd = 'Systemd-boot'
+	Efistub = 'Efistub'
+	Limine = 'Limine'
+
+	def has_uki_support(self) -> bool:
+		"""Check if bootloader supports Unified Kernel Images"""
+		match self:
+			case Bootloader.Efistub | Bootloader.Limine | Bootloader.Systemd:
+				return True
+			case _:
+				return False
 
 	def json(self) -> str:
 		return self.value
 
 	@classmethod
 	def get_default(cls) -> Bootloader:
-		return Bootloader.Grub
+		"""Get default bootloader based on system capabilities"""
+		if SysInfo.has_uefi():
+			return Bootloader.Systemd
+		else:
+			return Bootloader.Grub
 
 	@classmethod
 	def from_arg(cls, bootloader: str, skip_boot: bool) -> Bootloader:
-		return Bootloader.Grub
+		"""Parse bootloader from user input"""
+		# Support old configuration files
+		bootloader = bootloader.capitalize()
+
+		bootloader_options = [e.value for e in Bootloader]
+
+		if bootloader not in bootloader_options:
+			values = ', '.join(bootloader_options)
+			warn(f'Invalid bootloader value "{bootloader}". Allowed values: {values}')
+			sys.exit(1)
+
+		return Bootloader(bootloader)
 
 @dataclass
 class GrubConfiguration:

@@ -1041,6 +1041,88 @@ class Installer:
 		#else:
 			#debug('All environment variables already exist in /etc/environment')
 
+	def _add_systemd_bootloader(
+		self,
+		boot_partition: PartitionModification,
+		root: PartitionModification,
+		efi_partition: PartitionModification | None,
+		uki_enabled: bool = False,
+	) -> None:
+		debug('Installing systemd bootloader')
+
+		self.pacman.strap('efibootmgr')
+
+		if not SysInfo.has_uefi():
+			raise HardwareIncompatibilityError('Systemd-boot requires UEFI')
+
+		if not efi_partition:
+			raise ValueError('Could not detect EFI system partition')
+		elif not efi_partition.mountpoint:
+			raise ValueError('EFI system partition is not mounted')
+
+		bootctl_options = []
+
+		if boot_partition != efi_partition:
+			bootctl_options.append(f'--esp-path={efi_partition.mountpoint}')
+			bootctl_options.append(f'--boot-path={boot_partition.mountpoint}')
+
+		# Get systemd version to handle EFI variables correctly
+		systemd_pkg = installed_package('systemd')
+
+		if systemd_pkg is not None:
+			systemd_version = systemd_pkg.version
+		else:
+			systemd_version = '257'  # Safety fallback
+
+		try:
+			# Force EFI variables since bootctl detects arch-chroot
+			# as a container environment since v257 and skips them silently
+			# https://github.com/systemd/systemd/issues/36174
+			if systemd_version >= '258':
+				self.arch_chroot(f'bootctl --variables=yes {" ".join(bootctl_options)} install')
+			else:
+				self.arch_chroot(f'bootctl {" ".join(bootctl_options)} install')
+		except SysCallError:
+			if systemd_version >= '258':
+				# Fallback: try without touching EFI variables
+				self.arch_chroot(f'bootctl --variables=no {" ".join(bootctl_options)} install')
+			else:
+				self.arch_chroot(f'bootctl --no-variables {" ".join(bootctl_options)} install')
+
+		# Loader configuration in ESP/loader/loader.conf
+		loader_conf = self.target / efi_partition.relative_mountpoint / 'loader/loader.conf'
+		loader_conf.parent.mkdir(parents=True, exist_ok=True)
+
+		default_kernel = self.kernels[0]
+		if uki_enabled:
+			default_entry = f'arch-{default_kernel}.efi'
+		else:
+			entry_name = self.init_time + '_{kernel}{variant}.conf'
+			default_entry = entry_name.format(kernel=default_kernel, variant='')
+			self._create_bls_entries(boot_partition, root, entry_name)
+
+		default = f'default {default_entry}'
+
+		# Create or modify loader.conf
+		try:
+			loader_data = loader_conf.read_text().splitlines()
+		except FileNotFoundError:
+			loader_data = [
+				default,
+				'timeout 15',
+			]
+		else:
+			for index, line in enumerate(loader_data):
+				if line.startswith('default'):
+					loader_data[index] = default
+				elif line.startswith('#timeout'):
+					# Add default timeout to support dual-boot
+					loader_data[index] = line.removeprefix('#')
+
+		loader_conf.write_text('\n'.join(loader_data) + '\n')
+
+		self._helper_flags['bootloader'] = 'systemd'
+
 	def _add_grub_bootloader(
 		self,
 		boot_partition: PartitionModification,
@@ -1274,13 +1356,225 @@ class Installer:
 
 		self._helper_flags['bootloader'] = 'grub'
 
-	def add_bootloader(self, bootloader: Bootloader, grub_config: GrubConfiguration | None = None) -> None:
+	def _add_limine_bootloader(
+		self,
+		boot_partition: PartitionModification,
+		efi_partition: PartitionModification | None,
+		root: PartitionModification,
+		uki_enabled: bool = False,
+	) -> None:
+		debug('Installing Limine bootloader')
+
+		self.pacman.strap('limine')
+
+		info(f'Limine boot partition: {boot_partition.dev_path}')
+
+		limine_path = self.target / 'usr' / 'share' / 'limine'
+		config_path = None
+		hook_command = None
+
+		if SysInfo.has_uefi():
+			self.pacman.strap('efibootmgr')
+
+			if not efi_partition:
+				raise ValueError('Could not detect efi partition')
+			elif not efi_partition.mountpoint:
+				raise ValueError('EFI partition is not mounted')
+
+			info(f'Limine EFI partition: {efi_partition.dev_path}')
+
+			parent_dev_path = device_handler.get_parent_device_path(efi_partition.safe_dev_path)
+			is_target_usb = (
+				SysCommand(
+					f'udevadm info --no-pager --query=property --property=ID_BUS --value --name={parent_dev_path}',
+				).decode()
+				== 'usb'
+			)
+
+			try:
+				efi_dir_path = self.target / efi_partition.mountpoint.relative_to('/') / 'EFI'
+				efi_dir_path_target = efi_partition.mountpoint / 'EFI'
+				if is_target_usb:
+					efi_dir_path = efi_dir_path / 'BOOT'
+					efi_dir_path_target = efi_dir_path_target / 'BOOT'
+				else:
+					efi_dir_path = efi_dir_path / 'limine'
+					efi_dir_path_target = efi_dir_path_target / 'limine'
+
+				efi_dir_path.mkdir(parents=True, exist_ok=True)
+
+				for file in ('BOOTIA32.EFI', 'BOOTX64.EFI'):
+					shutil.copy(limine_path / file, efi_dir_path)
+			except Exception as err:
+				raise DiskError(f'Failed to install Limine in {self.target}{efi_partition.mountpoint}: {err}')
+
+			config_path = efi_dir_path / 'limine.conf'
+
+			hook_command = (
+				f'/usr/bin/cp /usr/share/limine/BOOTIA32.EFI {efi_dir_path_target}/ && /usr/bin/cp /usr/share/limine/BOOTX64.EFI {efi_dir_path_target}/'
+			)
+
+			if not is_target_usb:
+				# Create EFI boot menu entry for Limine
+				try:
+					with open('/sys/firmware/efi/fw_platform_size') as fw_platform_size:
+						efi_bitness = fw_platform_size.read().strip()
+				except Exception as err:
+					raise OSError(f'Could not determine EFI bitness: {err}')
+
+				if efi_bitness == '64':
+					loader_path = '/EFI/limine/BOOTX64.EFI'
+				elif efi_bitness == '32':
+					loader_path = '/EFI/limine/BOOTIA32.EFI'
+				else:
+					raise ValueError(f'EFI bitness is neither 32 nor 64 bits. Found "{efi_bitness}".')
+
+				try:
+					SysCommand(
+						'efibootmgr'
+						' --create'
+						f' --disk {parent_dev_path}'
+						f' --part {efi_partition.partn}'
+						' --label "Arch Linux Limine Bootloader"'
+						f' --loader {loader_path}'
+						' --unicode'
+						' --verbose',
+					)
+				except Exception as err:
+					raise ValueError(f'efibootmgr failed: {err}')
+		else:
+			boot_limine_path = self.target / 'boot' / 'limine'
+			boot_limine_path.mkdir(parents=True, exist_ok=True)
+
+			config_path = boot_limine_path / 'limine.conf'
+
+			parent_dev_path = device_handler.get_parent_device_path(boot_partition.safe_dev_path)
+
+			if unique_path := device_handler.get_unique_path_for_device(parent_dev_path):
+				parent_dev_path = unique_path
+
+			try:
+				# limine-bios.sys contains stage 3 code
+				shutil.copy(limine_path / 'limine-bios.sys', boot_limine_path)
+
+				# Deploy stage 1 and 2
+				self.arch_chroot(f'limine bios-install {parent_dev_path}', peek_output=True)
+			except Exception as err:
+				raise DiskError(f'Failed to install Limine on {parent_dev_path}: {err}')
+
+			hook_command = f'/usr/bin/limine bios-install {parent_dev_path} && /usr/bin/cp /usr/share/limine/limine-bios.sys /boot/limine/'
+
+		# Create pacman hook to update Limine
+		hook_contents = textwrap.dedent(
+			f'''\
+			[Trigger]
+			Operation = Install
+			Operation = Upgrade
+			Type = Package
+			Target = limine
+
+			[Action]
+			Description = Deploying Limine after upgrade...
+			When = PostTransaction
+			Exec = /bin/sh -c "{hook_command}"
+			''',
+		)
+
+		hooks_dir = self.target / 'etc' / 'pacman.d' / 'hooks'
+		hooks_dir.mkdir(parents=True, exist_ok=True)
+
+		hook_path = hooks_dir / '99-limine.hook'
+		hook_path.write_text(hook_contents)
+
+		kernel_params = ' '.join(self._get_kernel_params(root))
+		config_contents = 'timeout: 5\n'
+
+		path_root = 'boot()'
+		if efi_partition and boot_partition != efi_partition:
+			path_root = f'uuid({boot_partition.partuuid})'
+
+		for kernel in self.kernels:
+			for variant in ('', '-fallback'):
+				if uki_enabled:
+					entry = [
+						'protocol: efi',
+						f'path: boot():/EFI/Linux/arch-{kernel}.efi',
+						f'cmdline: {kernel_params}',
+					]
+				else:
+					entry = [
+						'protocol: linux',
+						f'path: {path_root}:/vmlinuz-{kernel}',
+						f'cmdline: {kernel_params}',
+						f'module_path: {path_root}:/initramfs-{kernel}{variant}.img',
+					]
+
+				config_contents += f'\n/Arch Linux ({kernel}{variant})\n'
+				config_contents += '\n'.join([f'    {it}' for it in entry]) + '\n'
+
+		config_path.write_text(config_contents)
+
+		self._helper_flags['bootloader'] = 'limine'
+
+	def _add_efistub_bootloader(
+		self,
+		boot_partition: PartitionModification,
+		root: PartitionModification,
+		uki_enabled: bool = False,
+	) -> None:
+		debug('Installing efistub bootloader')
+
+		self.pacman.strap('efibootmgr')
+
+		if not SysInfo.has_uefi():
+			raise HardwareIncompatibilityError('Efistub requires UEFI')
+
+		if not uki_enabled:
+			loader = '/vmlinuz-{kernel}'
+
+			entries = (
+				'initrd=/initramfs-{kernel}.img',
+				*self._get_kernel_params(root),
+			)
+
+			cmdline = [' '.join(entries)]
+		else:
+			loader = '/EFI/Linux/arch-{kernel}.efi'
+			cmdline = []
+
+		parent_dev_path = device_handler.get_parent_device_path(boot_partition.safe_dev_path)
+
+		cmd_template = (
+			'efibootmgr',
+			'--create',
+			'--disk',
+			str(parent_dev_path),
+			'--part',
+			str(boot_partition.partn),
+			'--label',
+			'Arch Linux ({kernel})',
+			'--loader',
+			loader,
+			'--unicode',
+			*cmdline,
+			'--verbose',
+		)
+
+		for kernel in self.kernels:
+			# Setup the firmware entry
+			cmd = [arg.format(kernel=kernel) for arg in cmd_template]
+			SysCommand(cmd)
+
+		self._helper_flags['bootloader'] = 'efistub'
+
+	def add_bootloader(self, bootloader: Bootloader, grub_config: GrubConfiguration | None = None, uki_enabled: bool = False) -> None:
 		"""
 		Adds a bootloader to the installation instance.
-		Only GRUB bootloader is supported.
+		Supports: GRUB, systemd-boot, Limine, and Efistub.
 
 		:param bootloader: Type of bootloader to be added
-		:param grub_config: Optional GRUB configuration settings
+		:param grub_config: Optional GRUB configuration settings (GRUB only)
+		:param uki_enabled: Enable Unified Kernel Images (systemd-boot, Limine, Efistub)
 		"""
 
 		efi_partition = self._get_efi_partition()
@@ -1295,7 +1589,15 @@ class Installer:
 
 		info(f'Adding bootloader {bootloader.value} to {boot_partition.dev_path}')
 
-		self._add_grub_bootloader(boot_partition, root, efi_partition, grub_config)
+		match bootloader:
+			case Bootloader.Systemd:
+				self._add_systemd_bootloader(boot_partition, root, efi_partition, uki_enabled)
+			case Bootloader.Grub:
+				self._add_grub_bootloader(boot_partition, root, efi_partition, grub_config)
+			case Bootloader.Efistub:
+				self._add_efistub_bootloader(boot_partition, root, uki_enabled)
+			case Bootloader.Limine:
+				self._add_limine_bootloader(boot_partition, efi_partition, root, uki_enabled)
 
 	def add_additional_packages(self, packages: str | list[str]) -> None:
 		return self.pacman.strap(packages)
