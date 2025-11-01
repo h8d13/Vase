@@ -17,12 +17,16 @@ class ApplicationHandler:
 		if app_config and app_config.bluetooth_config and app_config.bluetooth_config.enabled:
 			BluetoothApp().install(install_session)
 
-		# Always install PipeWire (only audio option for KDE)
+		# Install audio server if configured (default is PipeWire)
 		from archinstall.lib.models.application import Audio, AudioConfiguration
-		AudioApp().install(
-			install_session,
-			AudioConfiguration(audio=Audio.PIPEWIRE),
-			users,
-		)
+		if app_config and app_config.audio_config:
+			audio_config = app_config.audio_config
+		else:
+			# Default to PipeWire if not configured
+			audio_config = AudioConfiguration(audio=Audio.PIPEWIRE)
+
+		# Only install if user didn't select "No audio"
+		if audio_config.audio != Audio.NO_AUDIO:
+			AudioApp().install(install_session, audio_config, users)
 
 application_handler = ApplicationHandler()

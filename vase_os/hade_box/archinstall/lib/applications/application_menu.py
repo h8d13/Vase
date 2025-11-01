@@ -49,7 +49,7 @@ class ApplicationMenu(AbstractSubMenu[ApplicationConfiguration]):
 			is_enabled = bluetooth_item.value.enabled
 			bluetooth_item._value_modified = is_enabled  # Only modified if enabled
 		
-		# Audio: always PipeWire, always show D (never modified)
+		# Audio: PipeWire (default) or No audio
 		audio_item = MenuItem(
 			text=('Audio'),
 			action=select_audio,
@@ -60,7 +60,11 @@ class ApplicationMenu(AbstractSubMenu[ApplicationConfiguration]):
 		audio_item.default_value = AudioConfiguration(audio=Audio.PIPEWIRE)
 		if audio_item.value is None:
 			audio_item.value = audio_item.default_value
-		audio_item._value_modified = False  # Always show D since only one option
+			audio_item._value_modified = False
+		else:
+			# Check if current value matches default (PipeWire)
+			is_pipewire = audio_item.value.audio == Audio.PIPEWIRE
+			audio_item._value_modified = not is_pipewire  # Modified if not PipeWire
 		
 		return [bluetooth_item, audio_item]
 
@@ -108,7 +112,28 @@ def select_bluetooth(preset: BluetoothConfiguration | None) -> BluetoothConfigur
 
 def select_audio(preset: AudioConfiguration | None = None) -> AudioConfiguration | None:
 	"""
-	KDE installer - PipeWire only
+	Audio server selection - PipeWire or No audio
 	"""
-	# Always return PipeWire configuration for KDE
-	return AudioConfiguration(audio=Audio.PIPEWIRE)
+	audio_items = [
+		MenuItem(Audio.PIPEWIRE.value, value=Audio.PIPEWIRE),
+		MenuItem(Audio.NO_AUDIO.value, value=Audio.NO_AUDIO),
+	]
+	group = MenuItemGroup(audio_items, sort_items=False)
+
+	if preset:
+		group.set_selected_by_value(preset.audio)
+
+	result = SelectMenu[Audio](
+		group,
+		header=('Select audio server'),
+		alignment=Alignment.CENTER,
+		allow_skip=True,
+	).run()
+
+	match result.type_:
+		case ResultType.Selection:
+			return AudioConfiguration(audio=result.get_value())
+		case ResultType.Skip:
+			return preset
+		case _:
+			raise ValueError('Unhandled result type')
