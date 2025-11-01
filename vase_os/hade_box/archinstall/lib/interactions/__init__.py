@@ -8,6 +8,7 @@ from .disk_conf import (
 )
 from .general_conf import (
 	add_number_of_parallel_downloads,
+	ask_additional_packages_to_install,
 	ask_for_a_timezone,
 	ask_hostname,
 	ask_ntp,
@@ -20,6 +21,7 @@ __all__ = [
 	'ManualNetworkConfig',
 	'UserList',
 	'add_number_of_parallel_downloads',
+	'ask_additional_packages_to_install',
 	'ask_for_a_timezone',
 	'ask_for_additional_users',
 	'ask_for_bootloader',

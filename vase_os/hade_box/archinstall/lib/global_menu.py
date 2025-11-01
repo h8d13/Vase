@@ -150,6 +150,13 @@ class GlobalMenu(AbstractMenu[None]):
 				key='app_config',
 			),
 			MenuItem(
+				text=('Additional packages'),
+				action=self._select_additional_packages,
+				value=[],
+				preview_action=self._prev_additional_pkgs,
+				key='packages',
+			),
+			MenuItem(
 				text=('Hostname'),
 				value='archlinux',
 				action=ask_hostname,
@@ -360,6 +367,16 @@ class GlobalMenu(AbstractMenu[None]):
 			output += f'Audio: {Audio.PIPEWIRE.value} (default)\n'
 
 		return output.rstrip('\n')
+
+	def _prev_additional_pkgs(self, item: MenuItem) -> str | None:
+		if item.value and len(item.value) > 0:
+			packages = item.value
+			return f'Additional packages ({len(packages)}):\n' + ', '.join(packages)
+		return 'No additional packages'
+
+	def _select_additional_packages(self, preset: list[str]) -> list[str]:
+		from .interactions.general_conf import ask_additional_packages_to_install
+		return ask_additional_packages_to_install(preset)
 
 	def _prev_tz(self, item: MenuItem) -> str | None:
 		if item.value:

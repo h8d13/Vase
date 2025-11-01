@@ -177,6 +177,74 @@ def ask_post_installation(elapsed_time: float | None = None) -> PostInstallation
 		case _:
 			raise ValueError('Post installation action not handled')
 
+def ask_additional_packages_to_install(preset: list[str] = []) -> list[str]:
+	"""
+	Simple comma-separated package input with validation.
+	Validates packages against pacman database.
+	"""
+	header = 'Enter additional packages to install (comma-separated)\n\n'
+	header += 'Examples: vim, htop, firefox, neofetch\n'
+	header += 'Package names will be validated against pacman database.\n'
+
+	preset_text = ', '.join(preset) if preset else ''
+
+	def validator(text: str | None) -> str | None:
+		"""Validate comma-separated package names against pacman database"""
+		if not text or not text.strip():
+			return None  # Empty is valid (no packages)
+
+		# Split and clean package names
+		packages = [pkg.strip() for pkg in text.split(',') if pkg.strip()]
+
+		# Check for invalid characters in package names first
+		# Valid: alphanumeric, dash, underscore, plus, dot
+		import re
+		for pkg in packages:
+			if not re.match(r'^[a-zA-Z0-9._+-]+$', pkg):
+				return f'Invalid package name format: {pkg}'
+
+		# Validate packages exist in pacman database
+		from ..general import SysCommand
+		invalid_packages = []
+
+		for pkg in packages:
+			try:
+				# Check if package exists in pacman database (local + sync)
+				# pacman -Ss returns 1 if package not found
+				result = SysCommand(f'pacman -Ss "^{pkg}$"')
+				if not result.exit_code == 0 or not result.decode().strip():
+					invalid_packages.append(pkg)
+			except Exception:
+				invalid_packages.append(pkg)
+
+		if invalid_packages:
+			return f'Package(s) not found: {", ".join(invalid_packages)}'
+
+		return None  # Valid
+
+	result = EditMenu(
+		'Additional packages',
+		header=header,
+		alignment=Alignment.CENTER,
+		allow_skip=True,
+		allow_reset=True,
+		validator=validator,
+		default_text=preset_text,
+	).input()
+
+	match result.type_:
+		case ResultType.Skip:
+			return preset
+		case ResultType.Reset:
+			return []
+		case ResultType.Selection:
+			text = result.text()
+			if not text or not text.strip():
+				return []
+			# Split, clean, and return list
+			packages = [pkg.strip() for pkg in text.split(',') if pkg.strip()]
+			return packages
+
 def ask_abort() -> None:
 	prompt = ('Do you really want to abort?') + '\n'
 	group = MenuItemGroup.yes_no()
