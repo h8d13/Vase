@@ -42,7 +42,7 @@ if [ -d "/run/archiso" ]; then
     # Check internet connectivity before proceeding
     preop "Checking internet connectivity..."
     if ping -c 3 google.com >/dev/null 2>&1; then
-        reop "Internet connection verified"
+        preop "Internet connection verified"
     else
         postop "No internet connection detected!"
         echo ""
@@ -66,7 +66,7 @@ if [ -d "/run/archiso" ]; then
 
             # Run reflector to get fast HTTPS mirrors
             reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-                reop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
+                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
                 postop "Reflector failed, using original mirrorlist"
         else
             postop "Reflector not found, using default mirrorlist"
