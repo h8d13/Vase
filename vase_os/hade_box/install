@@ -69,7 +69,7 @@ if [ -d "/run/archiso" ]; then
     grep "^Server = " /etc/pacman.d/mirrorlist | head -5 | while read line; do
         preop "  $line"
     done
-
+    sleep 5
     # Backup reflector's result for caching
     if [ ! -f /etc/pacman.d/mirrorlist.reflector_result ]; then
         cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.reflector_result 2>/dev/null || true
