@@ -10,13 +10,11 @@ from ..output import warn
 class Bootloader(Enum):
 	Grub = 'Grub'
 	Systemd = 'Systemd-boot'
-	Efistub = 'Efistub'
-	Limine = 'Limine'
 
 	def has_uki_support(self) -> bool:
 		"""Check if bootloader supports Unified Kernel Images"""
 		match self:
-			case Bootloader.Efistub | Bootloader.Limine | Bootloader.Systemd:
+			case Bootloader.Systemd:
 				return True
 			case _:
 				return False
