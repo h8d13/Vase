@@ -44,7 +44,41 @@ def select_kernel(preset: list[str] = []) -> list[str]:
 			return result.get_values()
 
 def ask_for_bootloader(preset: Bootloader | None) -> Bootloader | None:
-	return Bootloader.Grub
+	"""
+	Select bootloader - systemd-boot (UEFI), GRUB (BIOS/UEFI), Limine, or Efistub
+	"""
+	options = []
+	default = None
+	header = None
+
+	if not SysInfo.has_uefi():
+		# BIOS mode: only GRUB and Limine support it
+		options = [Bootloader.Grub, Bootloader.Limine]
+		default = Bootloader.Grub
+		header = 'UEFI not detected. Only GRUB and Limine support BIOS boot.\n'
+	else:
+		# UEFI mode: all bootloaders supported
+		options = [Bootloader.Systemd, Bootloader.Grub, Bootloader.Limine, Bootloader.Efistub]
+		default = Bootloader.Systemd
+
+	items = [MenuItem(o.value, value=o) for o in options]
+	group = MenuItemGroup(items)
+	group.set_default_by_value(default)
+	group.set_focus_by_value(preset if preset else default)
+
+	result = SelectMenu[Bootloader](
+		group,
+		header=header,
+		alignment=Alignment.CENTER,
+		frame=FrameProperties.min('Bootloader'),
+		allow_skip=True,
+	).run()
+
+	match result.type_:
+		case ResultType.Skip:
+			return preset if preset else default
+		case ResultType.Selection:
+			return result.get_value()
 
 def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubConfiguration:
 	"""

@@ -112,6 +112,14 @@ class GlobalMenu(AbstractMenu[None]):
 				key='disk_config',
 			),
 			MenuItem(
+				text=('Bootloader'),
+				value=Bootloader.get_default(),
+				action=self._select_bootloader,
+				preview_action=self._prev_bootloader,
+				mandatory=True,
+				key='bootloader',
+			),
+			MenuItem(
 				text=('Grub2 configuration'),
 				action=lambda preset: ask_for_grub_configuration(preset),
 				preview_action=self._prev_grub_config,
@@ -409,6 +417,11 @@ class GlobalMenu(AbstractMenu[None]):
 			return f'Kernel: {kernel}'
 		return None
 
+	def _prev_bootloader(self, item: MenuItem) -> str | None:
+		if item.value is not None:
+			return f'Bootloader: {item.value.value}'
+		return None
+
 	def _prev_grub_config(self, item: MenuItem) -> str | None:
 		if item.value:
 			from .models.bootloader import GrubConfiguration
@@ -442,7 +455,7 @@ class GlobalMenu(AbstractMenu[None]):
 		boot_partition: PartitionModification | None = None
 		efi_partition: PartitionModification | None = None
 
-		bootloader = Bootloader.Grub
+		bootloader = self._item_group.find_by_key('bootloader').value
 
 		if disk_config := self._item_group.find_by_key('disk_config').value:
 			for layout in disk_config.device_modifications:
@@ -470,6 +483,10 @@ class GlobalMenu(AbstractMenu[None]):
 
 			if efi_partition.fs_type not in [FilesystemType.Fat12, FilesystemType.Fat16, FilesystemType.Fat32]:
 				return 'ESP must be formatted as a FAT filesystem'
+
+		if bootloader == Bootloader.Limine:
+			if boot_partition.fs_type not in [FilesystemType.Fat12, FilesystemType.Fat16, FilesystemType.Fat32]:
+				return 'Limine does not support booting with a non-FAT boot partition'
 
 		return None
 
@@ -531,6 +548,10 @@ class GlobalMenu(AbstractMenu[None]):
 			self._config.disk_config = disk_config
 
 		return disk_config
+
+	def _select_bootloader(self, preset: Bootloader | None) -> Bootloader | None:
+		from .interactions.system_conf import ask_for_bootloader
+		return ask_for_bootloader(preset)
 
 	def _select_profile(self, current_profile: ProfileConfiguration | None) -> ProfileConfiguration | None:
 		from .profile.profile_menu import ProfileMenu
