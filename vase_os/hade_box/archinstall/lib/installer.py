@@ -428,7 +428,7 @@ class Installer:
 
 			# Regenerate initramfs
 			try:
-				SysCommand(f'arch-chroot {self.target} mkinitcpio -P')
+				SysCommand(f'arch-chroot -S {self.target} mkinitcpio -P')
 				info('[PAN_DORA] ✓ mkinitcpio configured for portable boot')
 			except SysCallError as err:
 				warn(f'[PAN_DORA] Failed to regenerate initramfs: {err}')
@@ -503,7 +503,7 @@ class Installer:
 			return False
 
 		try:
-			SysCommand(f'arch-chroot {self.target} locale-gen')
+			SysCommand(f'arch-chroot -S {self.target} locale-gen')
 		except SysCallError as e:
 			error(f'Failed to run locale-gen on target: {e}')
 			return False
@@ -519,7 +519,7 @@ class Installer:
 
 		if (Path('/usr') / 'share' / 'zoneinfo' / zone).exists():
 			(Path(self.target) / 'etc' / 'localtime').unlink(missing_ok=True)
-			SysCommand(f'arch-chroot {self.target} ln -s /usr/share/zoneinfo/{zone} /etc/localtime')
+			SysCommand(f'arch-chroot -S {self.target} ln -s /usr/share/zoneinfo/{zone} /etc/localtime')
 			return True
 
 		else:
@@ -552,17 +552,17 @@ class Installer:
 			except SysCallError as err:
 				raise ServiceException(f'Unable to start service {service}: {err}')
 
-	def run_command(self, cmd: str, *args: str, **kwargs: str) -> SysCommand:
-		return SysCommand(f'arch-chroot {self.target} {cmd}')
+	def run_command(self, cmd: str, peek_output: bool = False) -> SysCommand:
+		return SysCommand(f'arch-chroot -S {self.target} {cmd}', peek_output=peek_output)
 
-	def arch_chroot(self, cmd: str, run_as: str | None = None) -> SysCommand:
+	def arch_chroot(self, cmd: str, run_as: str | None = None, peek_output: bool = False) -> SysCommand:
 		if run_as:
 			cmd = f'su - {run_as} -c {shlex.quote(cmd)}'
 
-		return self.run_command(cmd)
+		return self.run_command(cmd, peek_output=peek_output)
 
 	def drop_to_shell(self) -> None:
-		subprocess.check_call(f'arch-chroot {self.target}', shell=True)
+		subprocess.check_call(f'arch-chroot -S {self.target}', shell=True)
 
 	def configure_nic(self, nic: Nic) -> None:
 		conf = nic.as_systemd_config()
@@ -589,7 +589,7 @@ class Installer:
 
 		try:
 			info('Running mkinitcpio quietly...')
-			SysCommand(f'arch-chroot {self.target} mkinitcpio {" ".join(flags)}')
+			SysCommand(f'arch-chroot -S {self.target} mkinitcpio {" ".join(flags)}')
 			info('mkinitcpio completed successfully')
 			return True
 		except SysCallError as e:
@@ -674,7 +674,7 @@ class Installer:
 			self.set_keyboard_language(locale_config.kb_layout)
 
 		# TODO: Use python functions for this
-		SysCommand(f'arch-chroot {self.target} chmod 700 /root')
+		SysCommand(f'arch-chroot -S {self.target} chmod 700 /root')
 
 		if mkinitcpio and not self.mkinitcpio(['-P']):
 			error('Error generating initramfs (continuing anyway)')
@@ -703,6 +703,7 @@ class Installer:
 			for config_name, mountpoint in snapper.items():
 				command = [
 					'arch-chroot',
+					'-S',
 					str(self.target),
 					'snapper',
 					'--no-dbus',
@@ -1209,6 +1210,7 @@ class Installer:
 
 		command = [
 			'arch-chroot',
+			'-S',
 			str(self.target),
 			'grub-install',
 			#'--debug',
@@ -1262,7 +1264,7 @@ class Installer:
 
 		try:
 			SysCommand(
-				f'arch-chroot {self.target} grub-mkconfig -o {boot_dir}/grub/grub.cfg',
+				f'arch-chroot -S {self.target} grub-mkconfig -o {boot_dir}/grub/grub.cfg',
 			)
 		except SysCallError as err:
 			raise DiskError(f'Could not configure GRUB: {err}')
@@ -1341,7 +1343,7 @@ class Installer:
 		# Upgrade all packages to latest versions (prevents version mismatches with day-old ISOs)
 		info('Upgrading all packages to latest versions...')
 		try:
-			SysCommand(f'arch-chroot {self.target} pacman -Syu --noconfirm --needed', peek_output=True)
+			SysCommand(f'arch-chroot -S {self.target} pacman -Syu --noconfirm --needed', peek_output=True)
 		except Exception as e:
 			warn(f'Package upgrade failed: {e}')
 
@@ -1375,7 +1377,7 @@ class Installer:
 
 		info(f'Creating user {user.username}')
 
-		cmd = f'arch-chroot {self.target} useradd -m'
+		cmd = f'arch-chroot -S {self.target} useradd -m'
 
 		if user.sudo:
 			cmd += ' -G wheel'
@@ -1390,7 +1392,7 @@ class Installer:
 		self.set_user_password(user)
 
 		for group in user.groups:
-			SysCommand(f'arch-chroot {self.target} gpasswd -a {user.username} {group}')
+			SysCommand(f'arch-chroot -S {self.target} gpasswd -a {user.username} {group}')
 
 		if user.sudo:
 			self.enable_sudo(user)
@@ -1405,7 +1407,7 @@ class Installer:
 			return False
 
 		input_data = f'{user.username}:{enc_password}'.encode()
-		cmd = ['arch-chroot', str(self.target), 'chpasswd', '--encrypted']
+		cmd = ['arch-chroot', '-S', str(self.target), 'chpasswd', '--encrypted']
 
 		try:
 			run(cmd, input_data=input_data)
@@ -1418,7 +1420,7 @@ class Installer:
 		info(f'Setting shell for {user} to {shell}')
 
 		try:
-			SysCommand(f'arch-chroot {self.target} sh -c "chsh -s {shell} {user}"')
+			SysCommand(f'arch-chroot -S {self.target} sh -c "chsh -s {shell} {user}"')
 			return True
 		except SysCallError:
 			return False
@@ -1426,7 +1428,7 @@ class Installer:
 	def chown(self, owner: str, path: str, options: list[str] = []) -> bool:
 		cleaned_path = path.replace("'", "\\'")
 		try:
-			SysCommand(f"arch-chroot {self.target} sh -c 'chown {' '.join(options)} {owner} {cleaned_path}'")
+			SysCommand(f"arch-chroot -S {self.target} sh -c 'chown {' '.join(options)} {owner} {cleaned_path}'")
 			return True
 		except SysCallError:
 			return False
@@ -1522,6 +1524,6 @@ def run_custom_user_commands(commands: list[str], installation: Installer) -> No
 		with open(chroot_path, 'w') as user_script:
 			user_script.write(command)
 
-		SysCommand(f'arch-chroot {installation.target} bash {script_path}')
+		SysCommand(f'arch-chroot -S {installation.target} bash {script_path}')
 
 		os.unlink(chroot_path)

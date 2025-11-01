@@ -48,7 +48,6 @@ class GfxPackage(Enum):
 	QemuGuestAgent = 'qemu-guest-agent'
 	VulkanSwrast = 'vulkan-swrast'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
-	VirglRenderer = 'virglrenderer'
 	VulkanIntel = 'vulkan-intel'
 	VulkanRadeon = 'vulkan-radeon'
 	VulkanNouveau = 'vulkan-nouveau'
