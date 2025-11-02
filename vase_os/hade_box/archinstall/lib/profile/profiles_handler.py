@@ -161,6 +161,10 @@ class ProfileHandler:
 		"""
 		Install display manager based on greeter type
 		"""
+		# Skip installation if no greeter is selected
+		if greeter == GreeterType.NoGreeter:
+			return
+
 		packages = [greeter.value]
 
 		# Lightdm requires a greeter interface

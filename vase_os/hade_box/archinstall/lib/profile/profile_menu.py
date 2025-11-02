@@ -195,7 +195,8 @@ class ProfileMenu(AbstractSubMenu[ProfileConfiguration]):
 
 	def _prev_greeter(self, item: MenuItem) -> str | None:
 		if item.value:
-			return f'Greeter: {item.value.value}'
+			greeter_name = item.value.value if item.value.value else 'None'
+			return f'Greeter: {greeter_name}'
 		return None
 
 	def _preview_profile(self, item: MenuItem) -> str | None:
@@ -220,7 +221,12 @@ def select_greeter(
 	preset: GreeterType | None = None,
 ) -> GreeterType | None:
 	if not profile or profile.is_greeter_supported():
-		items = [MenuItem(greeter.value, value=greeter) for greeter in GreeterType]
+		items = [
+			MenuItem(
+				greeter.value if greeter.value else 'None',
+				value=greeter
+			) for greeter in GreeterType
+		]
 		group = MenuItemGroup(items, sort_items=True)
 
 		default: GreeterType | None = None

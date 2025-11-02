@@ -11,10 +11,11 @@ class MinimalProfile(Profile):
 			packages=[],
 			services=[],
 			support_gfx_driver=False,
+			support_greeter=True,
 		)
 
 	@property
 	@override
 	def default_greeter_type(self) -> GreeterType | None:
-		# No display manager needed for CLI-only install
-		return None
+		# Default to no display manager for CLI-only install
+		return GreeterType.NoGreeter
