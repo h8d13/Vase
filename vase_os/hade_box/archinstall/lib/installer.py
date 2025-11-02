@@ -1213,28 +1213,6 @@ class Installer:
 				else:
 					config += f'\n# Boot timeout\nGRUB_TIMEOUT={grub_config.timeout}\n'
 
-			# Configure remember last selection
-			if grub_config.remember_last_selection:
-				# Set GRUB_DEFAULT=saved
-				if 'GRUB_DEFAULT=' in config:
-					config = re.sub(
-						r'#?\s*GRUB_DEFAULT=.*',
-						'\nGRUB_DEFAULT=saved',
-						config
-					)
-				else:
-					config += '\n# Remember last\nGRUB_DEFAULT=saved\n'
-
-				# Enable GRUB_SAVEDEFAULT
-				if 'GRUB_SAVEDEFAULT=' in config:
-					config = re.sub(
-						r'#?\s*GRUB_SAVEDEFAULT=.*',
-						'\nGRUB_SAVEDEFAULT=true',
-						config
-					)
-				else:
-					config += 'GRUB_SAVEDEFAULT=true\n'
-
 			# Configure custom colors
 			if grub_config.enable_custom_colors:
 				# Enable and set color normal

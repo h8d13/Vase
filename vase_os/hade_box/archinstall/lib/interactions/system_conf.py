@@ -173,42 +173,6 @@ def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubC
 		case ResultType.Selection:
 			config.hide_menu = result.get_value()
 
-		# Ask about remembering last selection (only useful with OS prober)
-		#remember_options = [
-			#MenuItem(
-				#text='Enabled',
-				#value=True,
-				#preview_action=lambda x: 'GRUB will remember your last boot choice.\nNext boot will default to the same OS you selected.\nUseful for dual-boot systems with a preferred OS.'
-			#),
-			#MenuItem(
-				#text='Disabled',
-				#value=False,
-				#preview_action=lambda x: 'GRUB will always boot the first entry by default.\nConsistent behavior regardless of previous selection.\nRecommended for single-user systems.'
-			#)
-		#]
-
-		#group = MenuItemGroup(remember_options, sort_items=False)
-		#group.set_focus_by_value(preset.remember_last_selection)
-
-		#result = SelectMenu[bool](
-			#group,
-			#header='Remember last selected OS for next boot?\n',
-			#allow_skip=True,
-			#alignment=Alignment.CENTER,
-			#orientation=Orientation.HORIZONTAL,
-			#columns=2,
-			#frame=FrameProperties.min('GRUB Memory'),
-			#preview_size='auto',
-			#preview_style=PreviewStyle.BOTTOM,
-			#preview_frame=FrameProperties(('Info'), h_frame_style=FrameStyle.MIN),
-		#).run()
-
-		#match result.type_:
-			#case ResultType.Skip:
-				#config.remember_last_selection = preset.remember_last_selection
-			#case ResultType.Selection:
-				#config.remember_last_selection = result.get_value()
-
 	# Ask about timeout (unless menu is hidden)
 	if not config.hide_menu:
 		timeout_options = [

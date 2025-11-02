@@ -16,6 +16,7 @@ class GreeterType(Enum):
 	Sddm = 'sddm'
 	Gdm = 'gdm'
 	Lightdm = 'lightdm'
+	NoGreeter = ''
 
 class SelectResult(Enum):
 	NewSelection = auto()
