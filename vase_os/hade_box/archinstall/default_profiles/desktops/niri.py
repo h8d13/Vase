@@ -12,7 +12,7 @@ class NiriProfile(Profile):
 	def __init__(self) -> None:
 		super().__init__(
 			'Niri',
-			ProfileType.WindowMgr,
+			ProfileType.DesktopEnv,
 			packages=[],
 			services=[],
 			support_gfx_driver=True,
