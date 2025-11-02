@@ -64,6 +64,7 @@ class ArchConfig:
 	network_config: NetworkConfiguration | None = None
 	bootloader: Bootloader = field(default_factory=lambda: Bootloader.Grub)
 	grub_config: GrubConfiguration | None = None
+	uki_enabled: bool = False  # Enable Unified Kernel Images for systemd-boot
 	app_config: ApplicationConfiguration | None = None
 	auth_config: AuthenticationConfiguration | None = None
 	hostname: str = 'archlinux'
@@ -110,6 +111,7 @@ class ArchConfig:
 			'removable_media': self.removable_media,
 			'bootloader': self.bootloader.json() if self.bootloader else None,
 			'grub_config': self.grub_config.__dict__ if self.grub_config else None,
+			'uki_enabled': self.uki_enabled,
 			'app_config': self.app_config.json() if self.app_config else None,
 			'auth_config': self.auth_config.json() if self.auth_config else None,
 		}
@@ -180,6 +182,9 @@ class ArchConfig:
 
 		if grub_config_args := args_config.get('grub_config', None):
 			arch_config.grub_config = GrubConfiguration(**grub_config_args)
+
+		if uki_enabled := args_config.get('uki_enabled', None):
+			arch_config.uki_enabled = uki_enabled
 
 		# deprecated: backwards compatibility
 		audio_config_args = args_config.get('audio_config', None)

@@ -20,7 +20,7 @@ from .interactions.general_conf import (
 	ask_ntp,
 )
 from .interactions.network_menu import ask_to_configure_network
-from .interactions.system_conf import ask_for_grub_configuration, select_kernel
+from .interactions.system_conf import ask_for_grub_configuration, ask_for_uki, select_kernel
 from .locale.locale_menu import LocaleMenu
 from .menu.abstract_menu import CONFIG_KEY, AbstractMenu
 from .mirrors import MirrorMenu
@@ -45,9 +45,12 @@ class GlobalMenu(AbstractMenu[None]):
 		)
 
 		super().__init__(self._item_group, config=arch_config)
-		
+
 		# Mark items with default values AFTER config sync
 		self._mark_defaults()
+
+		# Set initial bootloader-specific config visibility
+		self._sync_bl_config_visibility()
 
 	def _mark_defaults(self) -> None:
 		"""Mark menu items with default values"""
@@ -88,7 +91,110 @@ class GlobalMenu(AbstractMenu[None]):
 				# Item not found, skip
 				pass
 
+	def _sync_bl_config_visibility(self, bootloader: Bootloader | None = None) -> None:
+		"""Add or remove bootloader-specific config items based on bootloader selection"""
+		try:
+			# If bootloader not provided, get it from the menu item
+			if bootloader is None:
+				bootloader_item = self._item_group.find_by_key('bootloader')
+				bootloader = bootloader_item.value
+
+			# Get bootloader_item for positioning
+			bootloader_item = self._item_group.find_by_key('bootloader')
+
+			# Check if grub_config item exists
+			grub_config_exists = False
+			try:
+				self._item_group.find_by_key('grub_config')
+				grub_config_exists = True
+			except ValueError:
+				grub_config_exists = False
+
+			# Check if uki_enabled item exists
+			uki_config_exists = False
+			try:
+				self._item_group.find_by_key('uki_enabled')
+				uki_config_exists = True
+			except ValueError:
+				uki_config_exists = False
+
+			# Manage GRUB config visibility
+			if bootloader == Bootloader.Grub and not grub_config_exists:
+				# Add GRUB config item after bootloader item
+				grub_config_item = MenuItem(
+					text=('Grub2 configuration'),
+					action=lambda preset: ask_for_grub_configuration(preset),
+					preview_action=self._prev_grub_config,
+					value=None,
+					key='grub_config',
+				)
+
+				# Find bootloader position and insert after it
+				bootloader_index = self._item_group._menu_items.index(bootloader_item)
+				self._item_group._menu_items.insert(bootloader_index + 1, grub_config_item)
+
+				# Clear cached items
+				if hasattr(self._item_group, 'items'):
+					delattr(self._item_group, 'items')
+
+			elif bootloader != Bootloader.Grub and grub_config_exists:
+				# Remove GRUB config item
+				grub_config_item = self._item_group.find_by_key('grub_config')
+				self._item_group._menu_items.remove(grub_config_item)
+
+				# Clear cached items
+				if hasattr(self._item_group, 'items'):
+					delattr(self._item_group, 'items')
+
+			# Manage UKI config visibility
+			if bootloader == Bootloader.Systemd and not uki_config_exists:
+				# Add UKI config item after bootloader item (or after GRUB config if present)
+				uki_config_item = MenuItem(
+					text=('Unified Kernel Images (UKI)'),
+					action=lambda preset: ask_for_uki(preset),
+					preview_action=self._prev_uki_config,
+					value=False,  # Default: disabled
+					key='uki_enabled',
+				)
+
+				# Find bootloader position and insert after it
+				bootloader_index = self._item_group._menu_items.index(bootloader_item)
+				self._item_group._menu_items.insert(bootloader_index + 1, uki_config_item)
+
+				# Clear cached items
+				if hasattr(self._item_group, 'items'):
+					delattr(self._item_group, 'items')
+
+			elif bootloader != Bootloader.Systemd and uki_config_exists:
+				# Remove UKI config item
+				uki_config_item = self._item_group.find_by_key('uki_enabled')
+				self._item_group._menu_items.remove(uki_config_item)
+
+				# Clear cached items
+				if hasattr(self._item_group, 'items'):
+					delattr(self._item_group, 'items')
+
+		except ValueError:
+			# Bootloader item not found, skip
+			pass
+
 	def _get_menu_options(self) -> list[MenuItem]:
+		# Check current bootloader selection to determine if GRUB config should be shown
+		current_bootloader = None
+		if hasattr(self, '_item_group'):
+			try:
+				current_bootloader = self._item_group.find_by_key('bootloader').value
+			except (ValueError, AttributeError):
+				pass
+
+		# If no current selection, check the config
+		if current_bootloader is None and hasattr(self, '_arch_config'):
+			current_bootloader = self._arch_config.bootloader
+
+		# Default to GRUB if still None
+		if current_bootloader is None:
+			current_bootloader = Bootloader.get_default()
+
 		menu_options = [
 			# Language menu removed - English only
 			MenuItem(
@@ -119,13 +225,33 @@ class GlobalMenu(AbstractMenu[None]):
 				mandatory=True,
 				key='bootloader',
 			),
-			MenuItem(
-				text=('Grub2 configuration'),
-				action=lambda preset: ask_for_grub_configuration(preset),
-				preview_action=self._prev_grub_config,
-				value=None,
-				key='grub_config',
-			),
+		]
+
+		# Only add GRUB configuration if GRUB is selected
+		if current_bootloader == Bootloader.Grub:
+			menu_options.append(
+				MenuItem(
+					text=('Grub2 configuration'),
+					action=lambda preset: ask_for_grub_configuration(preset),
+					preview_action=self._prev_grub_config,
+					value=None,
+					key='grub_config',
+				)
+			)
+
+		# Only add UKI configuration if systemd-boot is selected
+		if current_bootloader == Bootloader.Systemd:
+			menu_options.append(
+				MenuItem(
+					text=('Unified Kernel Images (UKI)'),
+					action=lambda preset: ask_for_uki(preset),
+					preview_action=self._prev_uki_config,
+					value=False,  # Default: disabled
+					key='uki_enabled',
+				)
+			)
+
+		menu_options.extend([
 			MenuItem(
 				text=('Kernels'),
 				value=['linux'],
@@ -217,7 +343,7 @@ class GlobalMenu(AbstractMenu[None]):
 				action=self._handle_abort,
 				key=f'{CONFIG_KEY}_abort',
 			),
-		]
+		])
 
 		return menu_options
 
@@ -443,13 +569,20 @@ class GlobalMenu(AbstractMenu[None]):
 		if item.value:
 			from .models.bootloader import GrubConfiguration
 			config: GrubConfiguration = item.value
-			output += f'Menu visibility: {"Hidden (ESC to show)" if config.hide_menu else "Visible"}'
+			output = f'Menu visibility: {"Hidden (ESC to show)" if config.hide_menu else "Visible"}'
 
 			# Only show timeout if menu is visible
 			if not config.hide_menu:
 				output += f'\nTimeout: {config.timeout} seconds'
 
 			return output
+		return None
+
+	def _prev_uki_config(self, item: MenuItem) -> str | None:
+		if item.value is True:
+			return 'UKI: Enabled (Unified Kernel Images)'
+		elif item.value is False:
+			return 'UKI: Disabled (Traditional BLS entries)'
 		return None
 
 	def _validate_bootloader(self) -> str | None:
@@ -557,7 +690,12 @@ class GlobalMenu(AbstractMenu[None]):
 
 	def _select_bootloader(self, preset: Bootloader | None) -> Bootloader | None:
 		from .interactions.system_conf import ask_for_bootloader
-		return ask_for_bootloader(preset)
+		result = ask_for_bootloader(preset)
+
+		# Update bootloader-specific config visibility based on NEW selection
+		self._sync_bl_config_visibility(bootloader=result)
+
+		return result
 
 	def _select_profile(self, current_profile: ProfileConfiguration | None) -> ProfileConfiguration | None:
 		from .profile.profile_menu import ProfileMenu

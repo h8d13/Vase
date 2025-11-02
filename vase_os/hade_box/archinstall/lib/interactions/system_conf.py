@@ -80,6 +80,54 @@ def ask_for_bootloader(preset: Bootloader | None) -> Bootloader | None:
 		case ResultType.Selection:
 			return result.get_value()
 
+def ask_for_uki(preset: bool = False) -> bool:
+	"""
+	Ask user if they want to enable Unified Kernel Images (UKI).
+
+	UKI bundles kernel + initramfs + cmdline into a single signed EFI binary,
+	enabling Secure Boot support and simplifying the boot chain.
+
+	Only applicable for systemd-boot.
+	"""
+	title = 'Enable Unified Kernel Images (UKI)?'
+
+	# Create menu items with explanations
+	options = [
+		MenuItem(
+			text='Enabled',
+			value=True,
+			preview_action=lambda x: (
+				'UKI Mode:\n'
+				'• Bundles kernel + initramfs + cmdline into single .efi file\n'
+			)
+		),
+		MenuItem(
+			text='Disabled (default)',
+			value=False,
+			preview_action=lambda x: (
+				'Traditional Boot Loader Specification (BLS):\n'
+				'• Separate kernel, initramfs, and config files\n'
+			)
+		),
+	]
+
+	group = MenuItemGroup(options, sort_items=False)
+	group.set_focus_by_value(preset)
+
+	result = SelectMenu(
+		group,
+		header=title,
+		allow_skip=False,
+		preview_size=0.4,
+		preview_style=PreviewStyle.BOTTOM
+	).run()
+
+	match result.type_:
+		case ResultType.Skip:
+			return preset
+		case ResultType.Selection:
+			return result.get_value()
+
 def ask_for_grub_configuration(preset: GrubConfiguration | None = None) -> GrubConfiguration:
 	"""
 	Configure GRUB bootloader options

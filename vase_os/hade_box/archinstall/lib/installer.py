@@ -1341,6 +1341,69 @@ class Installer:
 
 		self._helper_flags['bootloader'] = 'grub'
 
+	def _config_uki(
+		self,
+		root: PartitionModification,
+		efi_partition: PartitionModification | None,
+	) -> None:
+		"""
+		Configure Unified Kernel Images (UKI) for systemd-boot.
+
+		UKI bundles kernel + initramfs + cmdline into a single signed EFI binary,
+		enabling Secure Boot and simplifying the boot chain.
+		"""
+		if not efi_partition or not efi_partition.mountpoint:
+			raise ValueError(f'Could not detect ESP at mountpoint {self.target}')
+
+		# Set up kernel command line in /etc/kernel/cmdline
+		# This file is read by mkinitcpio when building UKIs
+		with open(self.target / 'etc/kernel/cmdline', 'w') as cmdline:
+			kernel_parameters = self._get_kernel_params(root)
+			cmdline.write(' '.join(kernel_parameters) + '\n')
+
+		diff_mountpoint = None
+
+		# Handle non-standard ESP mount points (e.g., /boot instead of /efi)
+		if efi_partition.mountpoint != Path('/efi'):
+			diff_mountpoint = str(efi_partition.mountpoint)
+
+		# Regex patterns for modifying mkinitcpio preset files
+		image_re = re.compile('(.+_image="/([^"]+).+\n)')  # Match traditional image lines
+		uki_re = re.compile('#((.+_uki=")/[^/]+(.+\n))')   # Match commented UKI lines
+
+		# Modify .preset files for each kernel
+		for kernel in self.kernels:
+			preset = self.target / 'etc/mkinitcpio.d' / (kernel + '.preset')
+			config = preset.read_text().splitlines(True)
+
+			for index, line in enumerate(config):
+				# Comment out traditional image generation (redundant with UKI)
+				if m := image_re.match(line):
+					image = self.target / m.group(2)
+					image.unlink(missing_ok=True)  # Delete existing image if present
+					config[index] = '#' + m.group(1)
+
+				# Uncomment UKI generation line and set correct ESP path
+				elif m := uki_re.match(line):
+					if diff_mountpoint:
+						config[index] = m.group(2) + diff_mountpoint + m.group(3)
+					else:
+						config[index] = m.group(1)
+
+				# Enable default options for UKI
+				elif line.startswith('#default_options='):
+					config[index] = line.removeprefix('#')
+
+			preset.write_text(''.join(config))
+
+		# Create directory for UKI files on ESP
+		uki_dir = self.target / efi_partition.relative_mountpoint / 'EFI/Linux'
+		uki_dir.mkdir(parents=True, exist_ok=True)
+
+		# Build the UKIs using mkinitcpio
+		if not self.mkinitcpio(['-P']):
+			error('Error generating initramfs (continuing anyway)')
+
 	def add_bootloader(self, bootloader: Bootloader, grub_config: GrubConfiguration | None = None, uki_enabled: bool = False) -> None:
 		"""
 		Adds a bootloader to the installation instance.
@@ -1362,6 +1425,14 @@ class Installer:
 			raise ValueError(f'Could not detect root at mountpoint {self.target}')
 
 		info(f'Adding bootloader {bootloader.value} to {boot_partition.dev_path}')
+
+		# Configure UKI if enabled (systemd-boot only)
+		if uki_enabled:
+			if bootloader != Bootloader.Systemd:
+				warn('UKI is only supported with systemd-boot, ignoring uki_enabled flag')
+			else:
+				info('Configuring Unified Kernel Images (UKI)')
+				self._config_uki(root, efi_partition)
 
 		match bootloader:
 			case Bootloader.Systemd:
