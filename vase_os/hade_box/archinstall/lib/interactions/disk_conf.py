@@ -166,14 +166,41 @@ def select_disk_config(preset: DiskLayoutConfiguration | None = None) -> DiskLay
 
 	return None
 
-def _boot_partition(sector_size: SectorSize, using_gpt: bool) -> PartitionModification:
+def _select_boot_size(sector_size: SectorSize) -> Size:
+	"""Prompt user to select boot partition size"""
+	items = [
+		MenuItem('512 MiB', value=Size(512, Unit.MiB, sector_size)),
+		MenuItem('1 GiB (default)', value=Size(1, Unit.GiB, sector_size)),
+		MenuItem('2 GiB', value=Size(2, Unit.GiB, sector_size)),
+		MenuItem('4 GiB', value=Size(4, Unit.GiB, sector_size)),
+	]
+
+	group = MenuItemGroup(items, sort_items=False)
+	group.set_default_by_value(Size(1, Unit.GiB, sector_size))
+
+	result = SelectMenu[Size](
+		group,
+		header='Select boot partition size:\n',
+		alignment=Alignment.CENTER,
+		frame=FrameProperties.min('Boot size'),
+		allow_skip=False,
+	).run()
+
+	match result.type_:
+		case ResultType.Selection:
+			return result.get_value()
+		case _:
+			return Size(1, Unit.GiB, sector_size)
+
+def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None = None) -> PartitionModification:
+	if size is None:
+		size = Size(1, Unit.GiB, sector_size)
+
 	flags = [PartitionFlag.BOOT]
-	size = Size(1, Unit.GiB, sector_size)
 	start = Size(1, Unit.MiB, sector_size)
 	if using_gpt:
 		flags.append(PartitionFlag.ESP)
 
-	# boot partition
 	return PartitionModification(
 		status=ModificationStatus.Create,
 		type=PartitionType.Primary,
@@ -310,7 +337,9 @@ def suggest_single_disk_layout(
 
 	# Used for reference: https://wiki.archlinux.org/title/partitioning
 
-	boot_partition = _boot_partition(sector_size, using_gpt)
+	# Ask for boot partition size
+	boot_size = _select_boot_size(sector_size)
+	boot_partition = _boot_partition(sector_size, using_gpt, boot_size)
 	device_modification.add_partition(boot_partition)
 
 	# Add swap partition as partition 2 if configured
@@ -461,8 +490,9 @@ def suggest_multi_disk_layout(
 
 	using_gpt = device_handler.partition_table.is_gpt()
 
-	# add boot partition to the root device
-	boot_partition = _boot_partition(root_device_sector_size, using_gpt)
+	# Ask for boot partition size and add to root device
+	boot_size = _select_boot_size(root_device_sector_size)
+	boot_partition = _boot_partition(root_device_sector_size, using_gpt, boot_size)
 	root_device_modification.add_partition(boot_partition)
 
 	# Add swap partition as partition 2 if configured
