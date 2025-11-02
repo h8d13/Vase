@@ -150,7 +150,7 @@ class GlobalMenu(AbstractMenu[None]):
 			if bootloader == Bootloader.Systemd and not uki_config_exists:
 				# Add UKI config item after bootloader item (or after GRUB config if present)
 				uki_config_item = MenuItem(
-					text=('Unified Kernel Images (UKI)'),
+					text=('Unified Kernel Imgs'),
 					action=lambda preset: ask_for_uki(preset),
 					preview_action=self._prev_uki_config,
 					value=False,  # Default: disabled
@@ -243,7 +243,7 @@ class GlobalMenu(AbstractMenu[None]):
 		if current_bootloader == Bootloader.Systemd:
 			menu_options.append(
 				MenuItem(
-					text=('Unified Kernel Images (UKI)'),
+					text=('Unified Kernel Imgs'),
 					action=lambda preset: ask_for_uki(preset),
 					preview_action=self._prev_uki_config,
 					value=False,  # Default: disabled
