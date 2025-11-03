@@ -78,7 +78,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		swap_item.set_as_default()
 
 		return [
-			swap_item,
 			MenuItem(
 				text=('Partitioning'),
 				action=self._select_disk_layout_config,
@@ -86,6 +85,7 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 				preview_action=self._prev_disk_layouts,
 				key='disk_config',
 			),
+			swap_item,
 			MenuItem(
 				text='Btrfs snapshots',
 				action=self._select_btrfs_snapshots,
@@ -385,15 +385,15 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 			else:
 				info(f'Disk will be wiped - skipping space validation')
 
-			# Create swap partition - we want it as partition 2 (after boot)
-			# Find the boot partition (should be first)
+			# Create swap partition after all boot-related partitions
+			# Find the LAST boot-related partition (handles both standard /boot and separate ESP+/boot)
 			boot_partition = None
 			boot_index = -1
 			for i, part in enumerate(device_mod.partitions):
 				if part.is_boot() or part.is_efi():
 					boot_partition = part
 					boot_index = i
-					break
+					# Don't break - keep looking to find the LAST boot-related partition
 
 			if boot_partition:
 				# Calculate swap position after boot partition
@@ -422,9 +422,9 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 						swap_end = part.start + part.length
 						info(f'Moved partition {i} from {old_start.value} to {part.start.value} sectors')
 
-				# Insert swap as second partition (after boot)
+				# Insert swap after the last boot-related partition
 				device_mod.partitions.insert(boot_index + 1, swap_partition)
-				info(f'Added {size_str} swap partition as partition 2 after boot partition')
+				info(f'Added {size_str} swap partition after boot partition(s)')
 			else:
 				# No boot partition found, fallback to adding at end
 				start_position = Size(last_end_sectors, Unit.sectors, sector_size)
@@ -476,7 +476,7 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		return None
 
 	def _create_swap_partition(self, swap_config: 'SwapConfiguration', existing_partitions: list) -> 'PartitionModification | None':
-		"""Create a swap partition positioned as partition 2 (after boot partition)"""
+		"""Create a swap partition positioned after all boot-related partitions"""
 		from ..models.device import PartitionModification, PartitionFlag, FilesystemType, Size, Unit, ModificationStatus, SectorSize, PartitionType
 
 		if not swap_config:
