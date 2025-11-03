@@ -200,7 +200,7 @@ def _select_separate_esp(using_gpt: bool) -> bool:
 
 	prompt = ('Would you like to use a separate ESP partition?\n')
 	prompt += ('Merged: /boot is the ESP (simpler, recommended)\n')
-	prompt += ('Separate: /boot/efi for ESP, /boot for kernels (advanced needs reconfiguration for snapshots)\n')
+	prompt += ('Separate: /efi for ESP, /boot for kernels (advanced needs reconfiguration for snapshots)\n')
 
 	items = [
 		MenuItem('Standard (recommended)', value=False),
@@ -225,7 +225,7 @@ def _select_separate_esp(using_gpt: bool) -> bool:
 			return False
 
 def _esp_partition(sector_size: SectorSize) -> PartitionModification:
-	"""Create a separate ESP partition (512 MiB, mounted at /boot/efi)"""
+	"""Create a separate ESP partition (512 MiB, mounted at /efi)"""
 	flags = [PartitionFlag.ESP]
 	start = Size(1, Unit.MiB, sector_size)
 	size = Size(512, Unit.MiB, sector_size)
@@ -235,7 +235,7 @@ def _esp_partition(sector_size: SectorSize) -> PartitionModification:
 		type=PartitionType.Primary,
 		start=start,
 		length=size,
-		mountpoint=Path('/boot/efi'),
+		mountpoint=Path('/efi'),
 		fs_type=FilesystemType.Fat32,
 		flags=flags,
 	)
