@@ -1,6 +1,6 @@
 #... strucs
 # This file is an absolute mess but everything is declared here
-EDITOR=vim
+EDITOR="${EDITOR:-vim}"
 
 ################## ISO CREATION
 vase_v="0.0.16" # For motd / github page
