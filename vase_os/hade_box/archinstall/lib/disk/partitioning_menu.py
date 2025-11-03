@@ -298,13 +298,18 @@ class PartitioningList(ListManager[DiskSegment]):
 							partition.flags = []
 							partition.set_flag(PartitionFlag.BOOT)
 							if self._using_gpt:
-								# Check if there's already an ESP partition (e.g., mounted at /efi)
+								# Check if systemd-boot is selected AND there's already a separate ESP partition
 								# If so, mark /boot as XBOOTLDR instead of ESP
+								from ..args import arch_config_handler
+								from ..models.bootloader import Bootloader
+
+								bootloader = arch_config_handler.config.bootloader
 								has_separate_esp = any(
 									p.mountpoint and p.mountpoint != new_mountpoint and PartitionFlag.ESP in p.flags
 									for p in data if isinstance(p.segment, PartitionModification)
 								)
-								if has_separate_esp:
+
+								if bootloader == Bootloader.Systemd and has_separate_esp:
 									partition.set_flag(PartitionFlag.XBOOTLDR)
 								else:
 									partition.set_flag(PartitionFlag.ESP)
@@ -350,7 +355,7 @@ class PartitioningList(ListManager[DiskSegment]):
 		else:
 			part_mods = self.get_part_mods(data)
 			index = data.index(entry)
-			part_mods.insert(index, self._create_new_partition(entry.segment))
+			part_mods.insert(index, self._create_new_partition(entry.segment, part_mods))
 			data = self.as_segments(part_mods)
 
 		return data
@@ -519,7 +524,7 @@ class PartitioningList(ListManager[DiskSegment]):
 		assert size
 		return size
 
-	def _create_new_partition(self, free_space: FreeSpace) -> PartitionModification:
+	def _create_new_partition(self, free_space: FreeSpace, existing_parts: list[PartitionModification] = []) -> PartitionModification:
 		length = self._prompt_size(free_space)
 
 		fs_type = self._prompt_partition_fs_type()
@@ -540,7 +545,21 @@ class PartitioningList(ListManager[DiskSegment]):
 		if partition.mountpoint == Path('/boot'):
 			partition.set_flag(PartitionFlag.BOOT)
 			if self._using_gpt:
-				partition.set_flag(PartitionFlag.ESP)
+				# Check if systemd-boot is selected AND there's already a separate ESP partition
+				# If so, mark /boot as XBOOTLDR instead of ESP
+				from ..args import arch_config_handler
+				from ..models.bootloader import Bootloader
+
+				bootloader = arch_config_handler.config.bootloader
+				has_separate_esp = any(
+					PartitionFlag.ESP in p.flags and p.mountpoint != mountpoint
+					for p in existing_parts
+				)
+
+				if bootloader == Bootloader.Systemd and has_separate_esp:
+					partition.set_flag(PartitionFlag.XBOOTLDR)
+				else:
+					partition.set_flag(PartitionFlag.ESP)
 		elif partition.is_swap():
 			partition.mountpoint = None
 			partition.flags = []
