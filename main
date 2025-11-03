@@ -250,7 +250,6 @@ if exec_args "EXTRACT_LOGS_UPLOAD"; then
 fi
 obanner "PERMS CHECK"
 if im_groot; then
-    "./${vase_p_deps}"
     # TUI with args
     if exec_args "TUI"; then
         # unquoted so that we can pass several args
@@ -269,6 +268,7 @@ if im_groot; then
 
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
+        "./${vase_p_deps}"
         
         rcw "echo \"${vm_d}/: \$(du -sh \"./${zl_d}/${vm_d}/\" | cut -f1) (\$(find \"./${zl_d}/${vm_d}/\" -type f | wc -l))\""
         rcw "echo \"c/: \$(du -sh \"./${zl_d}/c/\" | cut -f1) (\$(find \"./${zl_d}/c/\" -type f | wc -l))\""
