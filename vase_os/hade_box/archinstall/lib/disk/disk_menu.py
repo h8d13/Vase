@@ -39,7 +39,8 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 					size=swap_config.get('size', '4G')
 				)
 			# else assume it's already a SwapConfiguration object
-		# else: keep swap_config as None to avoid showing checkmark for unconfigured default
+		else:
+			swap_config = SwapConfiguration()
 
 		if not disk_layout_config:
 			self._disk_menu_config = DiskMenuConfig(
