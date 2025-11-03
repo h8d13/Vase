@@ -609,7 +609,8 @@ class Installer:
 		mountpoint: Path | None,
 	) -> None:
 		if (pkg := fs_type.installation_pkg) is not None:
-			self._base_packages.append(pkg)
+			if pkg not in self._base_packages:
+				self._base_packages.append(pkg)
 
 		# https://github.com/archlinux/archinstall/issues/1837
 		if fs_type.fs_type_mount == 'btrfs':
