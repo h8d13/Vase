@@ -248,7 +248,6 @@ if exec_args "EXTRACT_LOGS_UPLOAD"; then
     preop "Extracting and uploading installer logs..."
     "./${hb_d}/extract_logs" upload && exit
 fi
-obanner "PERMS CHECK"
 if im_groot; then
     # TUI with args
     if exec_args "TUI"; then
@@ -262,6 +261,7 @@ if im_groot; then
     fi 
     # Use reop for regular operation green output
     if im_sudo; then
+        obanner "PERMS CHECK"
         info "Running as elevated user..."
         info "Session type: $(gui_what)"
         gui_som "$SUDO_USER" #export XDG for sudo user
@@ -269,7 +269,7 @@ if im_groot; then
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
         "./${vase_p_deps}"
-        
+
         rcw "echo \"${vm_d}/: \$(du -sh \"./${zl_d}/${vm_d}/\" | cut -f1) (\$(find \"./${zl_d}/${vm_d}/\" -type f | wc -l))\""
         rcw "echo \"c/: \$(du -sh \"./${zl_d}/c/\" | cut -f1) (\$(find \"./${zl_d}/c/\" -type f | wc -l))\""
 

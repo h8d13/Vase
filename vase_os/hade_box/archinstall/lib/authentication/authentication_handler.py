@@ -12,7 +12,11 @@ class AuthenticationHandler:
 		auth_config: AuthenticationConfiguration,
 		hostname: str,
 	) -> None:
-		# KDE installer - no U2F setup needed
-		pass
+		# Lock root account if requested
+		if auth_config.lock_root:
+			from archinstall.lib.output import info
+			from archinstall.lib.general import SysCommand
+			info('Locking root account')
+			SysCommand(f'arch-chroot -S {install_session.target} passwd -l root')
 
 auth_handler = AuthenticationHandler()

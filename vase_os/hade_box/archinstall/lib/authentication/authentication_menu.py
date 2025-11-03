@@ -46,6 +46,13 @@ class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 				preview_action=self._prev_users,
 				key='users',
 			),
+			MenuItem(
+				text=('Lock root account'),
+				action=self._toggle_lock_root,
+				preview_action=self._prev_lock_root,
+				value=False,
+				key='lock_root',
+			),
 		]
 
 	def _create_user_account(self, preset: list[User] | None = None) -> list[User]:
@@ -65,6 +72,15 @@ class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 			password: Password = item.value
 			return f'Root password: {password.hidden()}'
 		return None
+
+	def _toggle_lock_root(self, preset: bool) -> bool:
+		"""Toggle lock root account setting"""
+		return not preset
+
+	def _prev_lock_root(self, item: MenuItem) -> str | None:
+		if item.value:
+			return 'Root account will be locked (sudo users only)'
+		return 'Root account will remain unlocked'
 
 def select_root_password(preset: str | None = None) -> Password | None:
 	password = get_password(text='Root password', allow_skip=True)

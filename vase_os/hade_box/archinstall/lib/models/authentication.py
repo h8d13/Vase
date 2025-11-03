@@ -10,6 +10,7 @@ class AuthenticationSerialization(TypedDict):
 class AuthenticationConfiguration:
 	root_enc_password: Password | None = None
 	users: list[User] = field(default_factory=list)
+	lock_root: bool = False
 
 	@staticmethod
 	def parse_arg(args: dict[str, Any]) -> 'AuthenticationConfiguration':
