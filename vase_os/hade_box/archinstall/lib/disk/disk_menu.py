@@ -191,18 +191,18 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 					# Create a properly positioned swap partition for preview
 					swap_partition = self._create_swap_partition(current_swap_config, mod.partitions)
 					if swap_partition:
-						# Insert swap as second partition (after boot) for preview
-						boot_index = -1
+						# Find the last boot-related partition (ESP or /boot)
+						# In separate ESP mode: ESP (partition 0) + /boot (partition 1)
+						# In standard mode: /boot as ESP (partition 0)
+						insert_index = 0
 						for i, part in enumerate(partitions_to_show):
 							if part.is_boot() or part.is_efi():
-								boot_index = i
-								break
+								insert_index = i + 1
 
-						if boot_index >= 0:
-							# Insert after boot partition
-							partitions_to_show.insert(boot_index + 1, swap_partition)
+						# Insert swap after the last boot-related partition
+						if insert_index < len(partitions_to_show):
+							partitions_to_show.insert(insert_index, swap_partition)
 						else:
-							# No boot partition, add at end
 							partitions_to_show.append(swap_partition)
 
 				# create partition table
@@ -496,17 +496,18 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 
 		sector_size = SectorSize.default()
 
-		# Find the boot partition (should be first)
-		boot_partition = None
+		# Find the LAST boot-related partition (handles both standard and separate ESP mode)
+		# In separate ESP mode: ESP first, then /boot - we want to position after /boot
+		# In standard mode: /boot is ESP - we want to position after it
+		last_boot_partition = None
 		for partition in existing_partitions:
 			if partition.is_boot() or partition.is_efi():
-				boot_partition = partition
-				break
+				last_boot_partition = partition
 
-		if boot_partition:
-			# Position swap right after boot partition
-			boot_end = boot_partition.start + boot_partition.length
-			start_position = boot_end  # Start right after boot partition
+		if last_boot_partition:
+			# Position swap right after the last boot-related partition
+			boot_end = last_boot_partition.start + last_boot_partition.length
+			start_position = boot_end
 		else:
 			# No boot partition found, fallback to calculating position after all existing partitions
 			if existing_partitions:
