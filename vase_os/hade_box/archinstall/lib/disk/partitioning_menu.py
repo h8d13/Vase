@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import override
 
+from archinstall.lib.args import arch_config_handler
+from archinstall.lib.models.bootloader import Bootloader
 from archinstall.lib.models.device import (
 	BtrfsMountOption,
 	DeviceModification,
@@ -300,9 +302,6 @@ class PartitioningList(ListManager[DiskSegment]):
 							if self._using_gpt:
 								# Check if systemd-boot is selected AND there's already a separate ESP partition
 								# If so, mark /boot as XBOOTLDR instead of ESP
-								from ..args import arch_config_handler
-								from ..models.bootloader import Bootloader
-
 								bootloader = arch_config_handler.config.bootloader
 								has_separate_esp = any(
 									p.mountpoint and p.mountpoint != new_mountpoint and PartitionFlag.ESP in p.flags
@@ -547,9 +546,6 @@ class PartitioningList(ListManager[DiskSegment]):
 			if self._using_gpt:
 				# Check if systemd-boot is selected AND there's already a separate ESP partition
 				# If so, mark /boot as XBOOTLDR instead of ESP
-				from ..args import arch_config_handler
-				from ..models.bootloader import Bootloader
-
 				bootloader = arch_config_handler.config.bootloader
 				has_separate_esp = any(
 					PartitionFlag.ESP in p.flags and p.mountpoint != mountpoint

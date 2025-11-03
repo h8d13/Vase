@@ -4,6 +4,7 @@ from archinstall.lib.args import arch_config_handler
 from archinstall.lib.disk.device_handler import device_handler
 from archinstall.lib.disk.partitioning_menu import manual_partitioning
 from archinstall.lib.menu.menu_helper import MenuHelper
+from archinstall.lib.models.bootloader import Bootloader
 from archinstall.lib.models.device import (
 	BDevice,
 	BtrfsMountOption,
@@ -254,8 +255,6 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 		fs_type = filesystem_type if filesystem_type else FilesystemType.Ext4
 		# Add XBOOTLDR flag for systemd-boot when using separate ESP
 		if using_gpt:
-			from ..args import arch_config_handler
-			from ..models.bootloader import Bootloader
 			if arch_config_handler.config.bootloader == Bootloader.Systemd:
 				flags.append(PartitionFlag.XBOOTLDR)
 	else:

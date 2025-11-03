@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 
+from archinstall.lib.general import SysCommand
 from archinstall.lib.models.authentication import AuthenticationConfiguration
+from archinstall.lib.output import info
 
 if TYPE_CHECKING:
 	from archinstall.lib.installer import Installer
@@ -14,8 +16,6 @@ class AuthenticationHandler:
 	) -> None:
 		# Lock root account if requested
 		if auth_config.lock_root:
-			from archinstall.lib.output import info
-			from archinstall.lib.general import SysCommand
 			info('Locking root account')
 			SysCommand(f'arch-chroot -S {install_session.target} passwd -l root')
 
