@@ -39,6 +39,8 @@ Usernames are more flexible:
 
 - Can go deeper into it by looking into `apparmor` & `firejail/fail2ban/bubblewrap` & `flatseal`
 
+- You can also lock root if you've created a sudo user properly using `sudo passwd -l root` (Similar to how Fedora installer handles root.)
+
 ## Daily builds !
 
 We have two types of releases `STDs` when it's only smaller changes and `ISOs` when is a major release. 
