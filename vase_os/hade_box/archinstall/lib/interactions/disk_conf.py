@@ -199,8 +199,8 @@ def _select_separate_esp(using_gpt: bool) -> bool:
 		return False
 
 	prompt = ('Would you like to use a separate ESP partition?\n')
-	prompt += ('Merged: /boot is the ESP (simpler, recommended)\n')
-	prompt += ('Separate: /efi for ESP, /boot for kernels (advanced needs reconfiguration for snapshots)\n')
+	prompt += ('Merged: /boot is the ESP (simpler, default)\n')
+	prompt += ('Separate: /efi for ESP, /boot for kernels\n')
 
 	items = [
 		MenuItem('Standard (recommended)', value=False),
