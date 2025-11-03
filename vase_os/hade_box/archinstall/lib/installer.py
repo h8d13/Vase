@@ -843,18 +843,6 @@ class Installer:
 		# See https://github.com/Antynea/grub-btrfs?tab=readme-ov-file#-using-timeshift-with-systemd
 		debug('Configuring grub-btrfsd service')
 
-		# Check if using separate ESP (/efi) vs standard (/boot as ESP)
-		efi_partition = self._get_efi_partition()
-		if efi_partition and efi_partition.mountpoint == Path('/efi'):
-			# Separate ESP mode: configure grub-btrfs to look in /efi/grub
-			debug('Separate ESP detected, configuring GRUB_BTRFS_GRUB_DIRNAME=/efi/grub')
-			grub_btrfs_config = self.target / 'etc/default/grub-btrfs/config'
-			grub_btrfs_config.parent.mkdir(parents=True, exist_ok=True)
-
-			config_content = 'GRUB_BTRFS_GRUB_DIRNAME="/efi/grub"\n'
-			grub_btrfs_config.write_text(config_content)
-			grub_btrfs_config.chmod(0o644)
-
 		# https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#id-1.14.3
 		systemd_dir = self.target / 'etc/systemd/system/grub-btrfsd.service.d'
 		systemd_dir.mkdir(parents=True, exist_ok=True)
@@ -874,18 +862,6 @@ class Installer:
 
 	def _configure_grub_btrfsd_snapper(self) -> None:
 		debug('Configuring grub-btrfsd service for snapper')
-
-		# Check if using separate ESP (/efi) vs standard (/boot as ESP)
-		efi_partition = self._get_efi_partition()
-		if efi_partition and efi_partition.mountpoint == Path('/efi'):
-			# Separate ESP mode: configure grub-btrfs to look in /efi/grub
-			debug('Separate ESP detected, configuring GRUB_BTRFS_GRUB_DIRNAME=/efi/grub')
-			grub_btrfs_config = self.target / 'etc/default/grub-btrfs/config'
-			grub_btrfs_config.parent.mkdir(parents=True, exist_ok=True)
-
-			config_content = 'GRUB_BTRFS_GRUB_DIRNAME="/efi/grub"\n'
-			grub_btrfs_config.write_text(config_content)
-			grub_btrfs_config.chmod(0o644)
 
 		# https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#id-1.14.3
 		systemd_dir = self.target / 'etc/systemd/system/grub-btrfsd.service.d'
