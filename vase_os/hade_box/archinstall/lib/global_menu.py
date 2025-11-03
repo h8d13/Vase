@@ -221,6 +221,7 @@ class GlobalMenu(AbstractMenu[None]):
 				mandatory=True,
 				key='auth_config',
 			),
+			bootloader_item,
 			MenuItem(
 				text=('Disk configuration'),
 				action=self._select_disk_config,
@@ -228,32 +229,11 @@ class GlobalMenu(AbstractMenu[None]):
 				mandatory=True,
 				key='disk_config',
 			),
-			bootloader_item,
 		]
 
-		# Only add GRUB configuration if GRUB is selected
-		if current_bootloader == Bootloader.Grub:
-			menu_options.append(
-				MenuItem(
-					text=('Grub2 configuration'),
-					action=lambda preset: ask_for_grub_configuration(preset),
-					preview_action=self._prev_grub_config,
-					value=None,
-					key='grub_config',
-				)
-			)
-
-		# Only add UKI configuration if systemd-boot is selected
-		if current_bootloader == Bootloader.Systemd:
-			menu_options.append(
-				MenuItem(
-					text=('Unified Kernel Imgs'),
-					action=lambda preset: ask_for_uki(preset),
-					preview_action=self._prev_uki_config,
-					value=False,  # Default: disabled
-					key='uki_enabled',
-				)
-			)
+		# Note: Bootloader-specific configurations (GRUB config, UKI) are dynamically
+		# added/removed by _sync_bl_config_visibility() which inserts them right after
+		# the bootloader menu item based on user selection
 
 		# Create additional packages menu item and mark empty list as default to show 'D'
 		additional_packages_item = MenuItem(

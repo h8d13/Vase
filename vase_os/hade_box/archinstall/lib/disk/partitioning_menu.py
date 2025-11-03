@@ -298,7 +298,16 @@ class PartitioningList(ListManager[DiskSegment]):
 							partition.flags = []
 							partition.set_flag(PartitionFlag.BOOT)
 							if self._using_gpt:
-								partition.set_flag(PartitionFlag.ESP)
+								# Check if there's already an ESP partition (e.g., mounted at /efi)
+								# If so, mark /boot as XBOOTLDR instead of ESP
+								has_separate_esp = any(
+									p.mountpoint and p.mountpoint != new_mountpoint and PartitionFlag.ESP in p.flags
+									for p in data if isinstance(p.segment, PartitionModification)
+								)
+								if has_separate_esp:
+									partition.set_flag(PartitionFlag.XBOOTLDR)
+								else:
+									partition.set_flag(PartitionFlag.ESP)
 						if partition.is_home():
 							partition.flags = []
 							partition.set_flag(PartitionFlag.LINUX_HOME)
