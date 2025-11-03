@@ -173,6 +173,7 @@ def _select_boot_size(sector_size: SectorSize) -> Size:
 		MenuItem('1 GiB (default)', value=Size(1, Unit.GiB, sector_size)),
 		MenuItem('2 GiB', value=Size(2, Unit.GiB, sector_size)),
 		MenuItem('4 GiB', value=Size(4, Unit.GiB, sector_size)),
+		MenuItem('8 GiB', value=Size(8, Unit.GiB, sector_size)),
 	]
 
 	group = MenuItemGroup(items, sort_items=False)
@@ -192,14 +193,70 @@ def _select_boot_size(sector_size: SectorSize) -> Size:
 		case _:
 			return Size(1, Unit.GiB, sector_size)
 
-def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None = None) -> PartitionModification:
+def _select_separate_esp(using_gpt: bool) -> bool:
+	"""Prompt user if they want ESP on a separate partition (GPT only)"""
+	if not using_gpt:
+		return False
+
+	prompt = ('Would you like to use a separate ESP partition?\n')
+	prompt += ('Standard: /boot is the ESP (simpler, recommended)\n')
+	prompt += ('Separate: /boot/efi for ESP, /boot for kernels (advanced)')
+
+	items = [
+		MenuItem('Standard (recommended)', value=False),
+		MenuItem('Separate ESP (advanced)', value=True),
+	]
+
+	group = MenuItemGroup(items, sort_items=False)
+	group.set_default_by_value(False)
+
+	result = SelectMenu[bool](
+		group,
+		header=prompt,
+		alignment=Alignment.CENTER,
+		frame=FrameProperties.min('ESP Configuration'),
+		allow_skip=False,
+	).run()
+
+	match result.type_:
+		case ResultType.Selection:
+			return result.get_value()
+		case _:
+			return False
+
+def _esp_partition(sector_size: SectorSize) -> PartitionModification:
+	"""Create a separate ESP partition (512 MiB, mounted at /boot/efi)"""
+	flags = [PartitionFlag.ESP]
+	start = Size(1, Unit.MiB, sector_size)
+	size = Size(512, Unit.MiB, sector_size)
+
+	return PartitionModification(
+		status=ModificationStatus.Create,
+		type=PartitionType.Primary,
+		start=start,
+		length=size,
+		mountpoint=Path('/boot/efi'),
+		fs_type=FilesystemType.Fat32,
+		flags=flags,
+	)
+
+def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None = None, separate_esp: bool = False, filesystem_type: FilesystemType | None = None) -> PartitionModification:
+	"""Create boot partition. If separate_esp=True, this is a regular boot partition using user's chosen FS, otherwise it's the ESP (FAT32)"""
 	if size is None:
 		size = Size(1, Unit.GiB, sector_size)
 
 	flags = [PartitionFlag.BOOT]
 	start = Size(1, Unit.MiB, sector_size)
-	if using_gpt:
-		flags.append(PartitionFlag.ESP)
+
+	# Determine filesystem type and flags based on separate_esp setting
+	if separate_esp:
+		# When using separate ESP, /boot uses the same filesystem as root (user's choice)
+		fs_type = filesystem_type if filesystem_type else FilesystemType.Ext4
+	else:
+		# Standard mode: /boot is the ESP (FAT32)
+		fs_type = FilesystemType.Fat32
+		if using_gpt:
+			flags.append(PartitionFlag.ESP)
 
 	return PartitionModification(
 		status=ModificationStatus.Create,
@@ -207,7 +264,7 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 		start=start,
 		length=size,
 		mountpoint=Path('/boot'),
-		fs_type=FilesystemType.Fat32,
+		fs_type=fs_type,
 		flags=flags,
 	)
 
@@ -337,12 +394,27 @@ def suggest_single_disk_layout(
 
 	# Used for reference: https://wiki.archlinux.org/title/partitioning
 
+	# Ask if user wants separate ESP (GPT only)
+	use_separate_esp = _select_separate_esp(using_gpt)
+
+	# Create ESP partition if using separate ESP mode
+	if use_separate_esp:
+		esp_partition = _esp_partition(sector_size)
+		device_modification.add_partition(esp_partition)
+		# Boot partition comes after ESP
+		next_start = esp_partition.start + esp_partition.length
+	else:
+		next_start = Size(1, Unit.MiB, sector_size)
+
 	# Ask for boot partition size
 	boot_size = _select_boot_size(sector_size)
-	boot_partition = _boot_partition(sector_size, using_gpt, boot_size)
+	boot_partition = _boot_partition(sector_size, using_gpt, boot_size, separate_esp=use_separate_esp, filesystem_type=filesystem_type)
+	# Adjust boot partition start if ESP came first
+	if use_separate_esp:
+		boot_partition.start = next_start
 	device_modification.add_partition(boot_partition)
 
-	# Add swap partition as partition 2 if configured
+	# Add swap partition as partition 3 (or 2 if no separate ESP) if configured
 	swap_partition = None
 	if swap_config and swap_config.swap_type == 'partition':
 		swap_start = boot_partition.start + boot_partition.length
@@ -490,12 +562,27 @@ def suggest_multi_disk_layout(
 
 	using_gpt = device_handler.partition_table.is_gpt()
 
+	# Ask if user wants separate ESP (GPT only)
+	use_separate_esp = _select_separate_esp(using_gpt)
+
+	# Create ESP partition if using separate ESP mode
+	if use_separate_esp:
+		esp_partition = _esp_partition(root_device_sector_size)
+		root_device_modification.add_partition(esp_partition)
+		# Boot partition comes after ESP
+		next_start = esp_partition.start + esp_partition.length
+	else:
+		next_start = Size(1, Unit.MiB, root_device_sector_size)
+
 	# Ask for boot partition size and add to root device
 	boot_size = _select_boot_size(root_device_sector_size)
-	boot_partition = _boot_partition(root_device_sector_size, using_gpt, boot_size)
+	boot_partition = _boot_partition(root_device_sector_size, using_gpt, boot_size, separate_esp=use_separate_esp, filesystem_type=filesystem_type)
+	# Adjust boot partition start if ESP came first
+	if use_separate_esp:
+		boot_partition.start = next_start
 	root_device_modification.add_partition(boot_partition)
 
-	# Add swap partition as partition 2 if configured
+	# Add swap partition as partition 3 (or 2 if no separate ESP) if configured
 	swap_partition = None
 	if swap_config and swap_config.swap_type == 'partition':
 		# Parse swap size
