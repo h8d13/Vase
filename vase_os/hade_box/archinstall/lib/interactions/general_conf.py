@@ -13,8 +13,8 @@ from ..locale.utils import list_timezones
 from ..output import warn
 
 class PostInstallationAction(Enum):
-	EXIT = ('Exit archinstall')
-	REBOOT = ('Reboot system')
+	EXIT = ('Exit vase/archinstall')
+	REBOOT = ('Reboot system. Do not forget to change boot order and remove USB medium.')
 	CHROOT = ('Chroot into installation for post-installation configurations')
 
 def ask_ntp(preset: bool = True) -> bool:
