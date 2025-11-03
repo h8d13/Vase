@@ -185,9 +185,6 @@ if exec_args "UPDATE"; then
     git submodule update --init --recursive
     check_updates && exit
 fi
-if exec_args "DEPS"; then
-    "./${vase_d}/mindeps" check && exit
-fi
 if exec_args "GRUB"; then
     grub_args="$(get_grub_cmd)"
     # Extract first arg after -g flag
