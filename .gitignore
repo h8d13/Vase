@@ -16,6 +16,7 @@ __pycache__/*
 __pycache__
 /.directory
 /archinstall_og
+/archinstall_xtract
 /znotes.md
 /traffic
 /traffic.json
