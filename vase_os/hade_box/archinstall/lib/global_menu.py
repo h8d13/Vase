@@ -682,6 +682,9 @@ class GlobalMenu(AbstractMenu[None]):
 		from .interactions.system_conf import ask_for_bootloader
 		result = ask_for_bootloader(preset)
 
+		# Immediately sync bootloader to config so disk partitioning can see it
+		self._config.bootloader = result
+
 		# Update bootloader-specific config visibility based on NEW selection
 		self._sync_bl_config_visibility(bootloader=result)
 
