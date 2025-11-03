@@ -1,6 +1,6 @@
 # Maintainer: Hadean <hadean-eon-dev@proton.me>
 pkgname=vase-git
-pkgver=0014
+pkgver=0016
 pkgrel=1
 pkgdesc="VaseOS - Arch Linux testing suite and installation platform"
 arch=('x86_64')
@@ -10,11 +10,6 @@ depends=('base' 'git' 'gnupg' 'jq' 'python' 'curl' 'wget' 'tree')
 makedepends=('archiso' 'squashfs-tools' 'arch-install-scripts')
 source=("${pkgname}::git+https://github.com/h8d13/Vase.git")
 sha256sums=('SKIP')
-
-pkgver() {
-    cd "$pkgname"
-    grep '^vase_v=' ... | cut -d'"' -f2 | tr -d '.'
-}
 
 prepare() {
     cd "$pkgname"
