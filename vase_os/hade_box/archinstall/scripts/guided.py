@@ -176,7 +176,6 @@ def perform_installation(mountpoint: Path) -> None:
 		if config.auth_config:
 			if config.auth_config.users:
 				installation.create_users(config.auth_config.users)
-				auth_handler.setup_auth(installation, config.auth_config, config.hostname)
 
 		mandatory_package = ['git']
 		installation.add_additional_packages(mandatory_package)
@@ -220,6 +219,10 @@ def perform_installation(mountpoint: Path) -> None:
 		installation.genfstab()
 
 		debug(f'Disk states after installing:\n{disk_layouts()}')
+
+		# Lock root account as the very last step if requested
+		if config.auth_config:
+			auth_handler.setup_auth(installation, config.auth_config, config.hostname)
 
 		# Calculate installation time
 		elapsed_time = time.time() - start_time
