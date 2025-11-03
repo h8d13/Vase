@@ -252,6 +252,12 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 	if separate_esp:
 		# When using separate ESP, /boot uses the same filesystem as root (user's choice)
 		fs_type = filesystem_type if filesystem_type else FilesystemType.Ext4
+		# Add XBOOTLDR flag for systemd-boot when using separate ESP
+		if using_gpt:
+			from ..args import arch_config_handler
+			from ..models.bootloader import Bootloader
+			if arch_config_handler.config.bootloader == Bootloader.Systemd:
+				flags.append(PartitionFlag.XBOOTLDR)
 	else:
 		# Standard mode: /boot is the ESP (FAT32)
 		fs_type = FilesystemType.Fat32
