@@ -255,6 +255,27 @@ class GlobalMenu(AbstractMenu[None]):
 				)
 			)
 
+		# Create additional packages menu item and mark empty list as default to show 'D'
+		additional_packages_item = MenuItem(
+			text=('Additional packages'),
+			action=self._select_additional_packages,
+			value=[],
+			preview_action=self._prev_additional_pkgs,
+			key='packages',
+		)
+		additional_packages_item.set_as_default()
+
+		# Create mirrors menu item and mark empty config as default to show 'D'
+		mirrors_item = MenuItem(
+			text=('Mirrors and repos'),
+			action=self._mirror_configuration,
+			value=MirrorConfiguration(),
+			preview_action=self._prev_mirror_config,
+			mandatory=True,
+			key='mirror_config',
+		)
+		mirrors_item.set_as_default()
+
 		menu_options.extend([
 			MenuItem(
 				text=('Kernels'),
@@ -279,13 +300,7 @@ class GlobalMenu(AbstractMenu[None]):
 				preview_action=self._prev_applications,
 				key='app_config',
 			),
-			MenuItem(
-				text=('Additional packages'),
-				action=self._select_additional_packages,
-				value=[],
-				preview_action=self._prev_additional_pkgs,
-				key='packages',
-			),
+			additional_packages_item,
 			MenuItem(
 				text=('Hostname'),
 				value='archlinux',
@@ -321,13 +336,7 @@ class GlobalMenu(AbstractMenu[None]):
 				preview_action=self._prev_ntp,
 				key='ntp',
 			),
-			MenuItem(
-				text=('Mirrors and repos'),
-				action=self._mirror_configuration,
-				preview_action=self._prev_mirror_config,
-				mandatory=True,
-				key='mirror_config',
-			),
+			mirrors_item,
 			MenuItem(
 				text=('Live medium'),
 				value=self._arch_config.removable_media,
