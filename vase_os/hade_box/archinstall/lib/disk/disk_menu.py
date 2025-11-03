@@ -557,7 +557,7 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		elif swap_config.swap_type == 'swapfile':
 			return f"Swap: {swap_config.size} file"
 		elif swap_config.swap_type == 'zram':
-			return "Swap: zram (compressed RAM)"
+			return f"Swap: zram {swap_config.size} (compressed RAM)"
 
 		return None
 
