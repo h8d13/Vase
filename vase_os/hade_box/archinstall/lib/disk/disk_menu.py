@@ -67,14 +67,18 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		)
 
 	def _define_menu_options(self) -> list[MenuItem]:
+		swap_item = MenuItem(
+			text='Swap configuration',
+			action=self._select_swap_config,
+			value=self._disk_menu_config.swap_config,
+			preview_action=self._prev_swap_config,
+			key='swap_config',
+		)
+		# Mark the default swap config as default (zram) to show 'D' instead of checkmark
+		swap_item.set_as_default()
+
 		return [
-			MenuItem(
-				text='Swap configuration',
-				action=self._select_swap_config,
-				value=self._disk_menu_config.swap_config,
-				preview_action=self._prev_swap_config,
-				key='swap_config',
-			),
+			swap_item,
 			MenuItem(
 				text=('Partitioning'),
 				action=self._select_disk_layout_config,
