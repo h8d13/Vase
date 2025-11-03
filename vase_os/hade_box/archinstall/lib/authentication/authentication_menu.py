@@ -27,21 +27,24 @@ class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 			allow_reset=True,
 		)
 
+		# Mark lock_root as default after sync (False = unlocked is default)
+		lock_root_item = self._item_group.find_by_key('lock_root')
+		lock_root_item.set_as_default()
+
 	@override
 	def run(self, additional_title: str | None = None) -> AuthenticationConfiguration:
 		super().run(additional_title=additional_title)
 		return self._auth_config
 
 	def _define_menu_options(self) -> list[MenuItem]:
-		# Create lock root menu item and mark default to show 'D' instead of checkmark
+		# Create lock root menu item - don't set value, let it sync from config
+		# Then mark the synced value as default to show 'D' for False
 		lock_root_item = MenuItem(
 			text=('Lock root account'),
 			action=self._toggle_lock_root,
 			preview_action=self._prev_lock_root,
-			value=False,
 			key='lock_root',
 		)
-		lock_root_item.set_as_default()
 
 		return [
 			MenuItem(
