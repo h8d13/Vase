@@ -230,6 +230,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		else:
 			size = swap_config.size or '4G'
 
-		return f'zram: {size} compressed swap in RAM\nFast performance, no disk wear.\nRecommended for most systems.'
+		return f'zram: {size} compressed swap in RAM\nFast performance, no disk wear.\n'
 
 
