@@ -265,17 +265,6 @@ class GlobalMenu(AbstractMenu[None]):
 		)
 		additional_packages_item.set_as_default()
 
-		# Create mirrors menu item and mark empty config as default to show 'D'
-		mirrors_item = MenuItem(
-			text=('Mirrors and repos'),
-			action=self._mirror_configuration,
-			value=MirrorConfiguration(),
-			preview_action=self._prev_mirror_config,
-			mandatory=True,
-			key='mirror_config',
-		)
-		mirrors_item.set_as_default()
-
 		menu_options.extend([
 			MenuItem(
 				text=('Kernels'),
@@ -336,7 +325,13 @@ class GlobalMenu(AbstractMenu[None]):
 				preview_action=self._prev_ntp,
 				key='ntp',
 			),
-			mirrors_item,
+			MenuItem(
+				text=('Mirrors and repos'),
+				action=self._mirror_configuration,
+				preview_action=self._prev_mirror_config,
+				mandatory=True,
+				key='mirror_config',
+			),
 			MenuItem(
 				text=('Live medium'),
 				value=self._arch_config.removable_media,
