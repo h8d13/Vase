@@ -170,11 +170,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 			output_partition = '{}: {}\n'.format(('Configuration'), disk_layout_conf.config_type.display_msg())
 			output_btrfs = ''
 
-			# Add swap configuration info if relevant
-			swap_info = self._get_swap_info_for_preview()
-			if swap_info:
-				output_partition += f'\n{swap_info}\n'
-
 			for mod in device_mods:
 				# Show actual partitions plus swap if configured
 				partitions_to_show = list(mod.partitions)
