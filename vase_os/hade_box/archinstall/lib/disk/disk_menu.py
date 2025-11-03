@@ -106,11 +106,6 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 			self._disk_menu_config.swap_config = swap_item.value
 
 		if self._disk_menu_config.disk_config:
-			# Handle swap partition creation if needed
-			if self._disk_menu_config.swap_config and self._disk_menu_config.swap_config.swap_type == 'partition':
-				self._ensure_swap_partition_exists()
-
-
 			# Only set btrfs_options if the configuration actually has btrfs volumes
 			if self._disk_menu_config.disk_config.has_default_btrfs_vols():
 				self._disk_menu_config.disk_config.btrfs_options = BtrfsOptions(snapshot_config=self._disk_menu_config.btrfs_snapshot_config)
