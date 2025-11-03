@@ -309,35 +309,6 @@ class Installer:
 			options = mount_options + [f'subvol={subvol.name}']
 			device_handler.mount(dev_path, mountpoint, options=options)
 
-	def add_swapfile(self, size: str = '4G', enable_resume: bool = True, file: str = '/swapfile') -> None:
-		if file[:1] != '/':
-			file = f'/{file}'
-		if len(file.strip()) <= 0 or file == '/':
-			raise ValueError(f'The filename for the swap file has to be a valid path, not: {self.target}{file}')
-
-		SysCommand(f'dd if=/dev/zero of={self.target}{file} bs={size} count=1')
-		SysCommand(f'chmod 0600 {self.target}{file}')
-		SysCommand(f'mkswap {self.target}{file}')
-
-		self._fstab_entries.append(f'{file} none swap defaults 0 0')
-
-		if enable_resume:
-			resume_uuid = SysCommand(f'findmnt -no UUID -T {self.target}{file}').decode()
-			resume_offset = (
-				SysCommand(
-					f'filefrag -v {self.target}{file}',
-				)
-				.decode()
-				.split('0:', 1)[1]
-				.split(':', 1)[1]
-				.split('..', 1)[0]
-				.strip()
-			)
-
-			self._hooks.append('resume')
-			self._kernel_params.append(f'resume=UUID={resume_uuid}')
-			self._kernel_params.append(f'resume_offset={resume_offset}')
-
 	def post_install_check(self, *args: str, **kwargs: str) -> list[str]:
 		return [step for step, flag in self._helper_flags.items() if flag is False]
 
@@ -748,79 +719,36 @@ class Installer:
 			kind = str(kind)
 		kind = kind.lower().strip()
 
-		# Default to zram for empty string or unrecognized values
-		if kind == 'zram' or kind == '' or kind not in ['swapfile', 'partition', 'none']:
-			if kind not in ['zram', '']:
-				info('Unrecognized swap type, defaulting to zram')
-			info('Setting up swap on zram')
-			self.pacman.strap('zram-generator')
+		# Only zram is supported (modern approach)
+		info('Setting up swap on zram')
+		self.pacman.strap('zram-generator')
 
-			# We could use the default example below, but maybe not the best idea: https://github.com/archlinux/archinstall/pull/678#issuecomment-962124813
-			# zram_example_location = '/usr/share/doc/zram-generator/zram-generator.conf.example'
-			# shutil.copy2(f"{self.target}{zram_example_location}", f"{self.target}/usr/lib/systemd/zram-generator.conf")
-			# Parse size to MB for zram-size (e.g., "4G" -> 4096)
-			size_mb = 4096  # default
-			try:
-				import re
-				match = re.match(r'(\d+)([KMGT]?)', size.upper())
-				if match:
-					value, unit = match.groups()
-					value = int(value)
-					# Convert to MB
-					if unit == 'G':
-						size_mb = value * 1024
-					elif unit == 'M':
-						size_mb = value
-					elif unit == 'K':
-						size_mb = max(1, value // 1024)
-					elif unit == 'T':
-						size_mb = value * 1024 * 1024
-			except Exception:
-				pass
-
-			with open(f'{self.target}/etc/systemd/zram-generator.conf', 'w') as zram_conf:
-				zram_conf.write('[zram0]\n')
-				zram_conf.write(f'zram-size = {size_mb}\n')
-
-			self.enable_service('systemd-zram-setup@zram0.service')
-			self._zram_enabled = True
-
-		elif kind == 'swapfile':
-			info(f'Setting up swapfile ({size})')
-			swapfile_path = f'{self.target}/swapfile'
-
-			# Create swapfile with specified size
-			self.arch_chroot(f'fallocate -l {size} /swapfile')
-			self.arch_chroot('chmod 600 /swapfile')
-			self.arch_chroot('mkswap /swapfile')
-
-			# Add swapfile to fstab
-			self._fstab_entries.append('/swapfile none swap defaults 0 0')
-
-		elif kind == 'partition':
-			info('Configuring swap partitions for fstab')
-			# Swap partitions are already activated during partition mounting
-			# but they need to be added to fstab for automatic mounting on boot
-			swap_partitions = []
-			for layout in self._disk_config.device_modifications:
-				for part_mod in layout.partitions:
-					if part_mod.is_swap():
-						swap_partitions.append(part_mod)
-
-			if swap_partitions:
-				info(f'Adding {len(swap_partitions)} swap partition(s) to fstab')
-				for swap_part in swap_partitions:
-					# Add swap partition to fstab for permanent mounting
-					self._fstab_entries.append(f'{swap_part.dev_path} none swap defaults 0 0')
-					info(f'Added swap partition {swap_part.dev_path} to fstab')
-			else:
-				warn('No swap partitions found in disk configuration.')
-				info('Make sure to create a swap partition in the disk layout, or use "zram" or "swapfile" options instead.')
-
-		elif kind == 'none':
-			info('No swap configured')
-			# Explicitly disable any swap setup
+		# Parse size to MB for zram-size (e.g., "4G" -> 4096)
+		size_mb = 4096  # default
+		try:
+			import re
+			match = re.match(r'(\d+)([KMGT]?)', size.upper())
+			if match:
+				value, unit = match.groups()
+				value = int(value)
+				# Convert to MB
+				if unit == 'G':
+					size_mb = value * 1024
+				elif unit == 'M':
+					size_mb = value
+				elif unit == 'K':
+					size_mb = max(1, value // 1024)
+				elif unit == 'T':
+					size_mb = value * 1024 * 1024
+		except Exception:
 			pass
+
+		with open(f'{self.target}/etc/systemd/zram-generator.conf', 'w') as zram_conf:
+			zram_conf.write('[zram0]\n')
+			zram_conf.write(f'zram-size = {size_mb}\n')
+
+		self.enable_service('systemd-zram-setup@zram0.service')
+		self._zram_enabled = True
 
 	def _get_efi_partition(self) -> PartitionModification | None:
 		for layout in self._disk_config.device_modifications:

@@ -518,12 +518,8 @@ class GlobalMenu(AbstractMenu[None]):
 				if isinstance(swap_config, SwapConfiguration):
 					if swap_config.swap_type == 'none':
 						output += ('Swap: Disabled') + '\n'
-					elif swap_config.swap_type == 'zram':
-						output += ('Swap: ZRAM ({})\n').format(swap_config.size)
-					elif swap_config.swap_type == 'swapfile':
-						output += ('Swap: Swapfile ({})\n').format(swap_config.size)
 					else:
-						output += ('Swap: {}').format(swap_config.swap_type) + '\n'
+						output += ('Swap: ZRAM ({})\n').format(swap_config.size)
 
 			if disk_layout_conf.btrfs_options:
 				btrfs_options = disk_layout_conf.btrfs_options

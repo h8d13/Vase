@@ -199,7 +199,7 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		return ('Snapshot type: {}').format(snapshot_config.snapshot_type.value)
 
 	def _select_swap_config(self, preset: 'SwapConfiguration | None') -> 'SwapConfiguration':
-		from ..interactions.system_conf import ask_for_swap, ask_for_swap_size
+		from ..interactions.system_conf import ask_for_swap_size
 		from ..args import SwapConfiguration
 
 		if not preset:
@@ -207,20 +207,15 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 		elif isinstance(preset, dict):
 			# Handle dict from JSON deserialization
 			preset = SwapConfiguration(
-				swap_type=preset.get('swap_type', 'zram'),
+				swap_type='zram',
 				size=preset.get('size', '4G')
 			)
 
-		# Use the existing swap configuration UI
-		swap_type = ask_for_swap(preset.swap_type)
+		# Only ask for swap size - always use zram (modern approach)
+		size = ask_for_swap_size(preset.size)
 
-		# Ask for size for all swap types except 'none'
-		size = preset.size
-		if swap_type != 'none':
-			size = ask_for_swap_size(preset.size)
-
-		# Create new SwapConfiguration with the selected type and size
-		new_config = SwapConfiguration(swap_type=swap_type, size=size)
+		# Create new SwapConfiguration with zram type and selected size
+		new_config = SwapConfiguration(swap_type='zram', size=size)
 		return new_config
 
 	def _prev_swap_config(self, item: MenuItem) -> str | None:
@@ -231,21 +226,10 @@ class DiskLayoutConfigurationMenu(AbstractSubMenu[DiskLayoutConfiguration]):
 
 		# Handle different types of swap config
 		if isinstance(swap_config, dict):
-			swap_type = swap_config.get('swap_type', 'zram')
 			size = swap_config.get('size', '4G')
 		else:
-			swap_type = swap_config.swap_type
 			size = swap_config.size or '4G'
 
-		if swap_type == 'zram':
-			return 'Compressed swap in RAM using zram.\nFast performance, no disk wear.\nRecommended for most systems.'
-		elif swap_type == 'swapfile':
-			return f'Traditional swap file on filesystem.\nSize: {size}\nEasy to resize later.'
-		elif swap_type == 'partition':
-			return f'Dedicated swap partition on disk.\nSize: {size}\nTraditional Linux approach.\nWill appear in partition table when disk is configured.'
-		elif swap_type == 'none':
-			return 'No swap configured.\nOnly recommended for systems with abundant RAM.'
-
-		return None
+		return f'zram: {size} compressed swap in RAM\nFast performance, no disk wear.\nRecommended for most systems.'
 
 

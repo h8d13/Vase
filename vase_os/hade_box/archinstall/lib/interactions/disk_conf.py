@@ -379,24 +379,6 @@ def suggest_single_disk_layout(
 
 	available_space = available_space.align()
 
-	# Reserve space for swap partition if configured
-	swap_size = Size(0, Unit.B, sector_size)
-	if swap_config and swap_config.swap_type == 'partition':
-		try:
-			# Parse swap size (e.g., "4G" -> 4 GiB)
-			import re
-			size_str = swap_config.size or '4G'
-			match = re.match(r'(\d+)([KMGT]?)', size_str.upper())
-			if match:
-				value, unit_str = match.groups()
-				value = int(value)
-				unit_map = {'': Unit.B, 'K': Unit.KiB, 'M': Unit.MiB, 'G': Unit.GiB, 'T': Unit.TiB}
-				unit = unit_map.get(unit_str, Unit.GiB)
-				swap_size = Size(value, unit, sector_size)
-		except Exception:
-			# Default to 4GB if parsing fails
-			swap_size = Size(4, Unit.GiB, sector_size)
-
 	# Used for reference: https://wiki.archlinux.org/title/partitioning
 
 	# Ask if user wants separate ESP (GPT only)
@@ -419,21 +401,6 @@ def suggest_single_disk_layout(
 		boot_partition.start = next_start
 	device_modification.add_partition(boot_partition)
 
-	# Add swap partition as partition 3 (or 2 if no separate ESP) if configured
-	swap_partition = None
-	if swap_config and swap_config.swap_type == 'partition':
-		swap_start = boot_partition.start + boot_partition.length
-		swap_partition = PartitionModification(
-			status=ModificationStatus.Create,
-			type=PartitionType.Primary,
-			start=swap_start,
-			length=swap_size,
-			fs_type=FilesystemType.LinuxSwap,
-			mountpoint=None,
-			flags=[PartitionFlag.SWAP],
-		)
-		device_modification.add_partition(swap_partition)
-
 	if separate_home is False or using_subvolumes or total_size < min_size_to_allow_home_part:
 		using_home_partition = False
 	elif separate_home:
@@ -453,17 +420,13 @@ def suggest_single_disk_layout(
 
 		using_home_partition = result.item() == MenuItem.yes()
 
-	# root partition
-	if swap_partition:
-		root_start = swap_partition.start + swap_partition.length
-	else:
-		root_start = boot_partition.start + boot_partition.length
+	# root partition starts right after boot partition
+	root_start = boot_partition.start + boot_partition.length
 
 	# Set a size for / (/root)
 	if using_home_partition:
 		root_length = process_root_partition_size(total_size, sector_size)
 	else:
-		# No need to reserve space for swap since it's already created as partition 2
 		root_length = available_space - root_start
 
 	root_partition = PartitionModification(
@@ -485,7 +448,6 @@ def suggest_single_disk_layout(
 		# But we want to be able to reuse data between re-installs..
 		# A second partition for /home would be nice if we have the space for it
 		home_start = root_partition.start + root_partition.length
-		# No need to reserve space for swap since it's already created as partition 2
 		home_length = available_space - home_start
 
 		flags = []
@@ -587,41 +549,8 @@ def suggest_multi_disk_layout(
 		boot_partition.start = next_start
 	root_device_modification.add_partition(boot_partition)
 
-	# Add swap partition as partition 3 (or 2 if no separate ESP) if configured
-	swap_partition = None
-	if swap_config and swap_config.swap_type == 'partition':
-		# Parse swap size
-		size_str = swap_config.size or '4G'
-		try:
-			import re
-			match = re.match(r'(\d+)([KMGT]?)', size_str.upper())
-			if match:
-				value, unit_str = match.groups()
-				value = int(value)
-				unit_map = {'': Unit.B, 'K': Unit.KiB, 'M': Unit.MiB, 'G': Unit.GiB, 'T': Unit.TiB}
-				unit = unit_map.get(unit_str, Unit.GiB)
-				swap_size = Size(value, unit, root_device_sector_size)
-			else:
-				swap_size = Size(4, Unit.GiB, root_device_sector_size)
-		except:
-			swap_size = Size(4, Unit.GiB, root_device_sector_size)
-
-		swap_start = boot_partition.start + boot_partition.length
-		swap_partition = PartitionModification(
-			status=ModificationStatus.Create,
-			type=PartitionType.Primary,
-			start=swap_start,
-			length=swap_size,
-			fs_type=FilesystemType.LinuxSwap,
-			mountpoint=None,
-			flags=[PartitionFlag.SWAP],
-		)
-		root_device_modification.add_partition(swap_partition)
-
-	if swap_partition:
-		root_start = swap_partition.start + swap_partition.length
-	else:
-		root_start = boot_partition.start + boot_partition.length
+	# Root partition starts right after boot partition
+	root_start = boot_partition.start + boot_partition.length
 	root_length = root_device.device_info.total_size - root_start
 
 	if using_gpt:
