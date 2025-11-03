@@ -33,6 +33,16 @@ class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 		return self._auth_config
 
 	def _define_menu_options(self) -> list[MenuItem]:
+		# Create lock root menu item and mark default to show 'D' instead of checkmark
+		lock_root_item = MenuItem(
+			text=('Lock root account'),
+			action=self._toggle_lock_root,
+			preview_action=self._prev_lock_root,
+			value=False,
+			key='lock_root',
+		)
+		lock_root_item.set_as_default()
+
 		return [
 			MenuItem(
 				text=('Root password'),
@@ -46,13 +56,7 @@ class AuthenticationMenu(AbstractSubMenu[AuthenticationConfiguration]):
 				preview_action=self._prev_users,
 				key='users',
 			),
-			MenuItem(
-				text=('Lock root account'),
-				action=self._toggle_lock_root,
-				preview_action=self._prev_lock_root,
-				value=False,
-				key='lock_root',
-			),
+			lock_root_item,
 		]
 
 	def _create_user_account(self, preset: list[User] | None = None) -> list[User]:
