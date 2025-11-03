@@ -157,7 +157,7 @@ class ProfileHandler:
 		# KDE installer - no tailored profiles
 		return []
 
-	def install_greeter(self, install_session: 'Installer', greeter: GreeterType) -> None:
+	def install_greeter(self, install_session: 'Installer', greeter: GreeterType, profile: Profile | None = None) -> None:
 		"""
 		Install display manager based on greeter type
 		"""
@@ -170,6 +170,10 @@ class ProfileHandler:
 		# Lightdm requires a greeter interface
 		if greeter == GreeterType.Lightdm:
 			packages.append('lightdm-gtk-greeter')
+
+		# SDDM with plasma_minimal requires sddm-kcm for KDE settings integration
+		if greeter == GreeterType.Sddm and profile and profile.name == 'plasma_minimal':
+			packages.append('sddm-kcm')
 
 		install_session.add_additional_packages(packages)
 		install_session.enable_service([greeter.value])
@@ -201,7 +205,7 @@ class ProfileHandler:
 			self.install_gfx_driver(install_session, profile_config.gfx_driver)
 
 		if profile_config.greeter:
-			self.install_greeter(install_session, profile_config.greeter)
+			self.install_greeter(install_session, profile_config.greeter, profile)
 
 	def _import_profile_from_url(self, url: str) -> None:
 		"""
