@@ -31,7 +31,6 @@ When no args are provided shows help
 
 ```
 --update                   # -u   # Checks git for updates & pull submodules
---check-deps               # -c   # Check build deps
 
 --tui-menu                 # -t   # Checks for deps and launches TUI
 --extract-logs             # -xl  # Extract installer logs
@@ -46,7 +45,6 @@ When no args are provided shows help
 --isomod                   # -i   # Create iso default `iso_profiles/plasma_profile.conf`
 --flash <device>           # -f   # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>        # -w   # Complete workflow
---dev                      # -d   # Development mode flag entry
 --grub <args>              # -g   # GRUB utilities -h for help
 --bench <type>             # -b   # Run benchmarks: io, cpu, gpu
 

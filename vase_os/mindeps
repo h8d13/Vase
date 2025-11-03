@@ -2,44 +2,40 @@
 # VaseOS Internal Dependencies Documentation
 # This file documents all tools used internally by Vase components
 # Use this to verify the vasebuild profile has everything needed
-#
-# Usage: ./mindeps [check]
-#   check - Verify all dependencies are installed
+. "$(dirname "$0")/../util_f"
+. "$(dirname "$0")/../..."
+
+MISSING=()
+# Core packages (checks with pacman)
+PACKAGES="git archiso gnupg squashfs-tools jq tree"
+
+preop "Checking BUILD packages..."
+for pkg in $PACKAGES; do
+    if ! to_devnull pacman -Qi "$pkg"; then
+        postop "Missing: $pkg"
+        MISSING+=("$pkg")
+    else
+        version=$(pacman -Qi "$pkg" 2>/dev/null | grep "^Version" | awk '{print $3}')
+        preop "Found: $pkg ($version)"
+    fi
+done
+
+if [ ${#MISSING[@]} -gt 0 ]; then
+    echo ""
+    warn "Missing packages: ${MISSING[*]}"
+    warn "Install with: sudo pacman -S ${MISSING[*]}"
+    exit 1
+else
+    echo ""
+    info "All dependencies satisfied! Might still need to generate GPG keys for signing if using -w."
+    exit 0
+fi
 
 # Categories:
-# [BUILD] - ISO creation (iso_mod)
-# [VM] - VM testing (has it's own dep check ./zazu_lago/setup_vms)
-# [INSTALL] - Installer runtime (hade_box/install, altodeps)
-# [UTIL] - Utilities (traffic, upd_rm, benchmarks)
+# [BUILD] - ISO creation (iso_mod) 
+# [VM] - VM testing (has it's own dep check ./zazu_lago/setup_vms and env)
+# [INSTALL] - Installer runtime Host-2-Target installs (hade_box/install, altodeps)
 # [CORE] - Core system dependencies
-
-if [ "$1" = "check" ]; then
-    echo "Checking VaseOS build dependencies..."
-    MISSING=()
-
-    # Core packages (check with pacman)
-    PACKAGES="base git archiso gnupg squashfs-tools jq tree curl wget"
-
-    for pkg in $PACKAGES; do
-        if pacman -Qi "$pkg" &>/dev/null; then
-            echo "✓ $pkg"
-        else
-            echo "✗ $pkg (missing)"
-            MISSING+=("$pkg")
-        fi
-    done
-
-    if [ ${#MISSING[@]} -gt 0 ]; then
-        echo ""
-        echo "Missing packages: ${MISSING[*]}"
-        echo "Install with: sudo pacman -S ${MISSING[*]}"
-        exit 1
-    else
-        echo ""
-        echo "All dependencies satisfied!"
-        exit 0
-    fi
-fi
 
 # Build-time Dependencies (ISO Creation)
 # ========================================
@@ -51,9 +47,6 @@ fi
 # [BUILD] tar                        - Archive creation for airootfs
 # [BUILD] sed, awk, grep             - Text processing for configs
 # [BUILD] squashfs-tools             - ISO compression (via mkarchiso)
-
-# Utility Dependencies
-# ========================================
 # [UTIL] jq                          - JSON parsing 
 # [UTIL] curl, wget                  - HTTP requests (GitHub API)
 # [UTIL] tree                        - Directory structure output (optional)
