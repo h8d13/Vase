@@ -156,6 +156,8 @@ class GlobalMenu(AbstractMenu[None]):
 					value=False,  # Default: disabled
 					key='uki_enabled',
 				)
+				# Mark as default to show 'D' instead of checkmark when disabled
+				uki_config_item.set_as_default()
 
 				# Find bootloader position and insert after it
 				bootloader_index = self._item_group._menu_items.index(bootloader_item)
