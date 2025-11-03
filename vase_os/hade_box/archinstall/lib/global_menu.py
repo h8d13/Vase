@@ -195,6 +195,17 @@ class GlobalMenu(AbstractMenu[None]):
 		if current_bootloader is None:
 			current_bootloader = Bootloader.get_default()
 
+		# Create bootloader menu item and mark default to show 'D' instead of checkmark
+		bootloader_item = MenuItem(
+			text=('Bootloader'),
+			value=Bootloader.get_default(),
+			action=self._select_bootloader,
+			preview_action=self._prev_bootloader,
+			mandatory=True,
+			key='bootloader',
+		)
+		bootloader_item.set_as_default()
+
 		menu_options = [
 			# Language menu removed - English only
 			MenuItem(
@@ -217,14 +228,7 @@ class GlobalMenu(AbstractMenu[None]):
 				mandatory=True,
 				key='disk_config',
 			),
-			MenuItem(
-				text=('Bootloader'),
-				value=Bootloader.get_default(),
-				action=self._select_bootloader,
-				preview_action=self._prev_bootloader,
-				mandatory=True,
-				key='bootloader',
-			),
+			bootloader_item,
 		]
 
 		# Only add GRUB configuration if GRUB is selected
