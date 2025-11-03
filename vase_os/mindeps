@@ -22,8 +22,8 @@ done
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     echo ""
-    warn "Missing packages: ${MISSING[*]}"
-    warn "Install with: sudo pacman -S ${MISSING[*]}"
+    info "Missing packages: ${MISSING[*]}"
+    info "Install with: sudo pacman -S ${MISSING[*]}"
     exit 1
 else
     echo ""
