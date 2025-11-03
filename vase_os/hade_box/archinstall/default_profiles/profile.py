@@ -7,9 +7,9 @@ if TYPE_CHECKING:
 	from ..lib.installer import Installer
 
 class ProfileType(Enum):
-	# Only Desktop/KDE Plasma support
-	Desktop = 'Desktop'
-	DesktopEnv = 'Desktop Environment'
+	Desktop = 'Desktop' # Top level
+	DesktopEnv = 'Desktop Environment'  # All desktop types
+	Minimal = 'Minimal'  # Server/CLI profiles with no GUI no extra installs 
 
 class GreeterType(Enum):
 	# Display managers for desktop environments
