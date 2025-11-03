@@ -170,7 +170,7 @@ def _select_boot_size(sector_size: SectorSize) -> Size:
 	"""Prompt user to select boot partition size"""
 	items = [
 		MenuItem('512 MiB', value=Size(512, Unit.MiB, sector_size)),
-		MenuItem('1 GiB (default)', value=Size(1, Unit.GiB, sector_size)),
+		MenuItem('1 GiB', value=Size(1, Unit.GiB, sector_size)),
 		MenuItem('2 GiB', value=Size(2, Unit.GiB, sector_size)),
 		MenuItem('4 GiB', value=Size(4, Unit.GiB, sector_size)),
 		MenuItem('8 GiB', value=Size(8, Unit.GiB, sector_size)),
