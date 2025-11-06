@@ -94,6 +94,25 @@ else # Always check full deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
+# Clean up any stale pacman locks from previous cancelled installs
+if [ -f /var/lib/pacman/db.lck ]; then
+    preop "Removing stale pacman lock from previous session..."
+    rm -f /var/lib/pacman/db.lck
+fi
+
+# Verify mirrorlist has valid servers before syncing
+mirror_count=$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo "0")
+if [ "$mirror_count" -eq 0 ]; then
+    postop "Mirrorlist is empty! Restoring from backup..."
+    if [ -f /etc/pacman.d/mirrorlist.original ]; then
+        cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist
+        postop "Restored $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) mirrors from backup"
+    else
+        postop "ERROR: No backup mirrorlist found! Cannot proceed."
+        exit 1
+    fi
+fi
+
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database... & Checking up to date."
 pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
