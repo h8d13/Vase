@@ -4,7 +4,7 @@
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.6-darkgreen" alt="Arch_Linux"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.7-darkred" alt="Arch_Linux"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Plasma-6.5.1-darkgreen" alt="Plasma"></a>
@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUI_Status"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/TUI_Status-Failing-darkred" alt="TUI_Status"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Qt-6.10.0-darkgreen" alt="Qt"></a>
@@ -20,7 +20,7 @@
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-1845-blue" alt="Git_Clones"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-2394-blue" alt="Git_Clones"></a>
         </td>
         <td>
             <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Frameworks-6.19.0-blue" alt="Frameworks"></a>
