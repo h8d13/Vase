@@ -164,8 +164,8 @@ class GfxDriver(Enum):
 				# This minimal setup caused Mesa errors because of missing libs.
 				# Now split into separate QEMU/KVM and VirtualBox drivers with proper packages.
 
-		# Add nvidia-prime if hybrid graphics detected (Intel + Nvidia)
-		if self.is_nvidia() and SysInfo.has_intel_graphics():
+		# Add nvidia-prime if hybrid graphics detected (Intel/AMD iGPU + Nvidia dGPU) # Very common cases in many laptops
+		if self.is_nvidia() and (SysInfo.has_intel_graphics() or SysInfo.has_amd_graphics()):
 			packages.append(GfxPackage.NvidiaPrime)
 
 		return packages
