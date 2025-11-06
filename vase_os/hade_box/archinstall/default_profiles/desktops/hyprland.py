@@ -35,6 +35,9 @@ class HyprlandProfile(Profile):
 			'dolphin',
 			'wofi',
 			'waybar',
+			'noto-fonts',
+			'noto-fonts-emoji',
+			'otf-font-awesome',
 			'xdg-desktop-portal-hyprland',
 			'qt5-wayland',
 			'qt6-wayland',
@@ -42,11 +45,6 @@ class HyprlandProfile(Profile):
 			'grim',
 			'slurp',
 			'xorg-xwayland',
-			'noto-fonts',
-			'noto-fonts-emoji',
-			'ttf-liberation',
-			'otf-font-awesome',
-			'ttf-jetbrains-mono',
 			'xdg-utils',
 		] + additional
 
