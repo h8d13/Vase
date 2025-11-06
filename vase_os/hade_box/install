@@ -13,6 +13,35 @@ if [ "$EUID" -ne 0 ]; then
     echo "Error: This script must be run as root"
     exit 1
 fi
+
+# Function to run reflector and update mirrorlist
+run_reflector() {
+    preop "Running reflector to fetch fast HTTPS mirrors..."
+
+    # Backup original mirrorlist if not already backed up
+    if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
+        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
+    fi
+
+    # Run reflector
+    if command -v reflector >/dev/null 2>&1; then
+        if reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null; then
+            local mirror_count="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
+            postop "Reflector success: ${mirror_count} mirrors configured"
+            return 0
+        else
+            postop "Reflector failed, restoring backup..."
+            if [ -f /etc/pacman.d/mirrorlist.original ]; then
+                cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist
+            fi
+            return 1
+        fi
+    else
+        postop "Reflector not found"
+        return 1
+    fi
+}
+
 preop "HADE_BOOT - ARCHINSTALL"
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
@@ -51,23 +80,14 @@ if [ -d "/run/archiso" ]; then
         exit 1
     fi
     # Arch disabled reflector.service auto-run - run it manually for fast mirrors
-    # Skip if reflector already ran (user restarted installer)
-    current_mirrors=$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo "999")
-    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "$current_mirrors" -lt 100 ]; then
+    # Skip if reflector already ran successfully (user restarted installer)
+    current_mirrors="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
+
+    # Only run reflector if mirrorlist seems stale/empty or this is first run
+    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "${current_mirrors}" -ge 10 ] 2>/dev/null && [ "${current_mirrors}" -le 50 ] 2>/dev/null; then
         preop "Reflector already ran ($current_mirrors mirrors), skipping..."
     else
-        preop "Filtering mirrors with reflector (HTTPS, latest 20, sorted by speed)..."
-        if command -v reflector >/dev/null 2>&1; then
-            # Backup original full mirrorlist before filtering
-            cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
-
-            # Run reflector to get fast HTTPS mirrors
-            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
-                postop "Reflector failed, using original mirrorlist"
-        else
-            postop "Reflector not found, using default mirrorlist"
-        fi
+        run_reflector
     fi
 else # Always check full deps when not running with ISO
    	preop "Running from live system. Checking deps..."
@@ -76,9 +96,27 @@ else # Always check full deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
+# Clean up any stale pacman locks from previous cancelled installs
+if [ -f /var/lib/pacman/db.lck ]; then
+    preop "Removing stale pacman lock from previous session..."
+    rm -f /var/lib/pacman/db.lck
+fi
+
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database... & Checking up to date."
-pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring || postop "Database sync failed (continuing anyway)"
+if pacman -Sy --noconfirm 2>&1; then
+    # Sync successful, update keyring
+    pacman -S --needed archlinux-keyring --noconfirm || postop "Keyring update failed (continuing anyway)"
+else
+    # Sync failed - likely mirror issue, run reflector and retry
+    postop "Database sync failed! Running reflector to fix mirrors..."
+    if run_reflector; then
+        preop "Retrying database sync..."
+        pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring --noconfirm || postop "Database sync still failed (continuing anyway)"
+    else
+        postop "Could not fix mirrors! Continuing anyway..."
+    fi
+fi
 
 export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 python -B -m archinstall "$@"

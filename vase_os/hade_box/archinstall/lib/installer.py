@@ -1055,7 +1055,7 @@ class Installer:
 
 	def _add_grub_bootloader(
 		self,
-		boot_partition: PartitionModification,
+		boot_partition: PartitionModification | None,
 		root: PartitionModification,
 		efi_partition: PartitionModification | None,
 		grub_config: GrubConfiguration | None = None,
@@ -1179,7 +1179,10 @@ class Installer:
 
 		grub_default.write_text(config)
 
-		info(f'GRUB boot partition: {boot_partition.dev_path}')
+		if boot_partition:
+			info(f'GRUB boot partition: {boot_partition.dev_path}')
+		else:
+			info(f'GRUB using root /boot directory (no separate boot partition)')
 
 		boot_dir = Path('/boot')
 
@@ -1200,7 +1203,7 @@ class Installer:
 			self.pacman.strap('efibootmgr')
 
 			boot_dir_arg = []
-			if boot_partition.mountpoint and boot_partition.mountpoint != boot_dir:
+			if boot_partition and boot_partition.mountpoint and boot_partition.mountpoint != boot_dir:
 				boot_dir_arg.append(f'--boot-directory={boot_partition.mountpoint}')
 				boot_dir = boot_partition.mountpoint
 
@@ -1222,6 +1225,10 @@ class Installer:
 				except SysCallError as err:
 					raise DiskError(f'Could not install GRUB to {self.target}{efi_partition.mountpoint}: {err}')
 		else:
+			# BIOS mode - requires a boot partition
+			if not boot_partition:
+				raise ValueError('BIOS mode requires a boot partition')
+
 			info(f'GRUB boot partition: {boot_partition.dev_path}')
 
 			parent_dev_path = device_handler.get_parent_device_path(boot_partition.safe_dev_path)
@@ -1319,20 +1326,29 @@ class Installer:
 
 		:param bootloader: Type of bootloader to be added
 		:param grub_config: Optional GRUB configuration settings (GRUB only)
-		:param uki_enabled: Enable Unified Kernel Images (systemd-boot)
+		:param uki_enabled: Enable Unified Kernel Images (systemd-boot only)
 		"""
 
 		efi_partition = self._get_efi_partition()
 		boot_partition = self._get_boot_partition()
 		root = self._get_root()
 
+		# GRUB with separate ESP can use root's /boot directory (no separate /boot partition needed)
+		# systemd-boot always requires a /boot partition (either ESP or XBOOTLDR)
 		if boot_partition is None:
-			raise ValueError(f'Could not detect boot at mountpoint {self.target}')
+			if bootloader == Bootloader.Grub and efi_partition is not None:
+				# Valid: GRUB + separate ESP, kernels will be in root's /boot
+				info(f'Using root partition /boot directory (no separate /boot partition)')
+			else:
+				raise ValueError(f'Could not detect boot at mountpoint {self.target}')
 
 		if root is None:
 			raise ValueError(f'Could not detect root at mountpoint {self.target}')
 
-		info(f'Adding bootloader {bootloader.value} to {boot_partition.dev_path}')
+		if boot_partition:
+			info(f'Adding bootloader {bootloader.value} to {boot_partition.dev_path}')
+		else:
+			info(f'Adding bootloader {bootloader.value} (using root /boot)')
 
 		# Configure UKI if enabled (systemd-boot only)
 		if uki_enabled:
@@ -1344,6 +1360,8 @@ class Installer:
 
 		match bootloader:
 			case Bootloader.Systemd:
+				if boot_partition is None:
+					raise ValueError('systemd-boot requires a /boot partition')
 				self._add_systemd_bootloader(boot_partition, root, efi_partition, uki_enabled)
 			case Bootloader.Grub:
 				self._add_grub_bootloader(boot_partition, root, efi_partition, grub_config)
