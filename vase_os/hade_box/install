@@ -80,9 +80,15 @@ if [ -d "/run/archiso" ]; then
             fi
 
             # Run reflector to get fast HTTPS mirrors
-            reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null && \
-                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors" || \
-                postop "Reflector failed, using original mirrorlist"
+            if reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null; then
+                postop "Reflector filtered to $(grep -c '^Server = ' /etc/pacman.d/mirrorlist) fast mirrors"
+            else
+                postop "Reflector failed, restoring original mirrorlist..."
+                # Restore from backup if reflector failed
+                if [ -f /etc/pacman.d/mirrorlist.original ]; then
+                    cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist
+                fi
+            fi
         else
             postop "Reflector not found, using default mirrorlist"
         fi
