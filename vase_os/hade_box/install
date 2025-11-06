@@ -52,13 +52,13 @@ if [ -d "/run/archiso" ]; then
     fi
     # Arch disabled reflector.service auto-run - run it manually for fast mirrors
     # Skip if reflector already ran successfully (user restarted installer)
-    current_mirrors=$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo "0")
+    current_mirrors="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
 
     # Only skip reflector if:
     # 1. Original backup exists (reflector ran at least once)
     # 2. Current mirrorlist has reasonable number of filtered mirrors (10-30 range)
     # 3. Current mirrorlist is valid (can be parsed)
-    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "$current_mirrors" -ge 10 ] && [ "$current_mirrors" -le 50 ]; then
+    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "${current_mirrors}" -ge 10 ] 2>/dev/null && [ "${current_mirrors}" -le 50 ] 2>/dev/null; then
         # Verify current mirrorlist is actually valid by checking it has content
         if grep -q '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null; then
             preop "Reflector already ran ($current_mirrors mirrors), skipping..."
@@ -66,12 +66,12 @@ if [ -d "/run/archiso" ]; then
             # Mirrorlist exists but is corrupted, restore from backup and run reflector
             postop "Mirrorlist corrupted, restoring from backup..."
             cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist 2>/dev/null || true
-            current_mirrors="999"  # Force reflector to run
+            current_mirrors=999  # Force reflector to run
         fi
     fi
 
     # Run reflector if needed (first run or corrupted mirrorlist)
-    if [ "$current_mirrors" -lt 10 ] || [ "$current_mirrors" -gt 50 ]; then
+    if [ "${current_mirrors}" -lt 10 ] 2>/dev/null || [ "${current_mirrors}" -gt 50 ] 2>/dev/null; then
         preop "Filtering mirrors with reflector (HTTPS, latest 20, sorted by speed)..."
         if command -v reflector >/dev/null 2>&1; then
             # Backup original full mirrorlist before filtering (only if not already backed up)
@@ -101,8 +101,8 @@ if [ -f /var/lib/pacman/db.lck ]; then
 fi
 
 # Verify mirrorlist has valid servers before syncing
-mirror_count=$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo "0")
-if [ "$mirror_count" -eq 0 ]; then
+mirror_count="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
+if [ "${mirror_count}" -eq 0 ] 2>/dev/null; then
     postop "Mirrorlist is empty! Restoring from backup..."
     if [ -f /etc/pacman.d/mirrorlist.original ]; then
         cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist
