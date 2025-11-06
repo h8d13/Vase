@@ -33,7 +33,7 @@ if [ ${#MISSING[@]} -gt 0 ]; then
     exit 1
 else
     echo ""
-    info "All dependencies satisfied! Might still need to generate GPG keys for signing if using -w."
+    info "All dependencies satisfied!"
     exit 0
 fi
 
