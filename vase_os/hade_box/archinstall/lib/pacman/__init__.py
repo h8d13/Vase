@@ -49,12 +49,6 @@ class Pacman:
 			except Exception as err:
 				error(f'{error_message}: {err}')
 
-				# Display extracted error messages if available
-				if hasattr(err, 'error_messages') and err.error_messages:
-					warn('Detected errors in command output:')
-					for err_msg in err.error_messages[:10]:  # Limit to 10 messages
-						warn(f'  {err_msg}')
-
 				# Check if error is mirror-related (no servers configured)
 				if 'no servers configured' in str(err).lower() and mirrorlist_backup.exists() and not backup_attempted:
 					warn('No servers configured - attempting to restore mirrorlist from backup...')

@@ -79,9 +79,6 @@ class Installer:
 			'bootloader': None,
 		}
 
-		# Track installation errors/warnings
-		self._installation_errors: list[str] = []
-
 		# Store graphics driver configuration for kernel parameter detection
 		self._gfx_driver: GfxDriver | None = None
 
@@ -140,28 +137,14 @@ class Installer:
 		self.sync()
 
 		if not (missing_steps := self.post_install_check()):
-			if self._installation_errors:
-				warn('Installation completed but some errors were detected:')
-				for err in self._installation_errors:
-					warn(f' - {err}')
-				warn(f'\nLog files temporarily available at {logger.directory}.')
-				warn('The system may still boot, but some features might not work correctly.')
-				warn('You may reboot when ready.')
-				return False
-			else:
-				msg = f'Installation completed without any errors.\nLog files temporarily available at {logger.directory}.\nYou may reboot when ready.\n'
-				log(msg, fg='green')
-				return True
+			msg = f'Installation completed without any errors.\nLog files temporarily available at {logger.directory}.\nYou may reboot when ready.\n'
+			log(msg, fg='green')
+			return True
 		else:
 			warn('Some required steps were not successfully installed/configured before leaving the installer:')
 
 			for step in missing_steps:
 				warn(f' - {step}')
-
-			if self._installation_errors:
-				warn('\nAdditionally, the following errors were detected:')
-				for err in self._installation_errors:
-					warn(f' - {err}')
 
 			warn(f'Detailed error logs can be found at: {logger.directory}')
 
@@ -582,13 +565,6 @@ class Installer:
 			info('mkinitcpio completed successfully')
 			return True
 		except SysCallError as e:
-			error('mkinitcpio failed with errors:')
-			if e.error_messages:
-				for err_msg in e.error_messages:
-					error(f'  {err_msg}')
-					self._installation_errors.append(f'mkinitcpio: {err_msg}')
-			else:
-				self._installation_errors.append('mkinitcpio failed (see logs for details)')
 			if e.worker_log:
 				log(e.worker_log.decode())
 			return False
