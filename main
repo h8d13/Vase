@@ -197,29 +197,31 @@ if exec_args "GRUB"; then
         "./${gl_d}/grome_lum" "$grub_flag" $grub_rest && exit
     fi
 fi
-if exec_args "BENCH"; then
-    bench_type="$(get_bench_cmd)"
-    case "$bench_type" in
-        io)
-            preop "Starting I/O benchmark..."
-            "./${ch_d}/bench_io" && exit
-            ;;
-        cpu)
-            preop "Starting CPU benchmark..."
-            "./${ch_d}/bench_cpu" && exit
-            ;;
-        gpu)
-            preop "Starting GPU benchmark..."
-            "./${ch_d}/bench_gpu" && exit
-            ;;
-        *)
-            die "Unknown bench type: $bench_type. Use: io, cpu, or gpu"
-            ;;
-    esac
-fi
-if exec_args "CLONE"; then
-    preop "Cloning running system to bootable ISO..."
-    cd "./${ch_d}" && ./arch-clone && exit
+if exec_args "BRANCH" || exec_args "BRANCH_TUI"; then
+    branch_name="$(get_branch_name)"
+
+    if [ -z "$branch_name" ]; then
+        die "No branch name specified. Usage: -b <branch> or -bt <branch>"
+    fi
+
+    # Check if branch exists
+    if ! git rev-parse --verify "$branch_name" >/dev/null 2>&1; then
+        die "Branch '$branch_name' does not exist"
+    fi
+
+    # Switch to branch
+    preop "Switching to branch: $branch_name"
+    git checkout "$branch_name" || die "Failed to switch to branch $branch_name"
+    postop "Switched to branch: $(git branch --show-current)"
+
+    # If -bt flag, set TUI flag so it gets picked up by TUI handler below
+    if exec_args "BRANCH_TUI"; then
+        TUI=1
+        preop "Will launch TUI on branch: $branch_name"
+        # Don't exit here, let it fall through to TUI handling below
+    else
+        exit
+    fi
 fi
 if exec_args "EDIT_CONF"; then
     preop "Editing config file"
