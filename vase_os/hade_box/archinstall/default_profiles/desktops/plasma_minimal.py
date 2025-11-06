@@ -24,6 +24,7 @@ class PlasmaMinimalProfile(Profile):
 			'plasma-desktop',
 			'konsole',
 			'plasma-workspace',
+			'sddm-kcm',
 			'xdg-utils',
 		]
 

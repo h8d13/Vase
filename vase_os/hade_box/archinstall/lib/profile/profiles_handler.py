@@ -172,10 +172,6 @@ class ProfileHandler:
 		if greeter == GreeterType.Lightdm:
 			packages.append('lightdm-gtk-greeter')
 
-		# SDDM with plasma_minimal requires sddm-kcm for KDE settings integration
-		if greeter == GreeterType.Sddm and profile.name == 'plasma_minimal':
-			packages.append('sddm-kcm')
-
 		install_session.add_additional_packages(packages)
 		install_session.enable_service([greeter.value])
 
