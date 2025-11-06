@@ -246,11 +246,6 @@ def guided() -> None:
 	if not arch_config_handler.args.silent:
 		ask_user_questions()
 
-	# Store pandora script path for later (will be copied to target during installation)
-	import os
-	if pandora_script := os.environ.get('PANDORA_SCRIPT'):
-		arch_config_handler.config.pandora_script = pandora_script
-
 	config = ConfigurationOutput(arch_config_handler.config)
 	config.write_debug()
 

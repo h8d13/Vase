@@ -35,7 +35,7 @@
 
 ---
 
-## VaseOS - Arch KDE 🏺
+## VaseOS - Arch 🏺
 
 A testing suite to run VMs and development platform to perform Archlinux system installations. 
 

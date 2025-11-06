@@ -5,9 +5,18 @@ Check that when flashing it you use `mbr/gpt` appropriate to hardware. Usually g
 
 - BIOS Options errors
   - Secure boot: Off or Other OS (In some case that can allow for simple grub os-prober integration to other OSes.)
-  - Check that SATA mode is correct (usually AHCPI)
+  - Check that SATA mode is correct (usually AHCI)
 
 For full secure-boot setup: [Wiki](https://wiki.archlinux.org/title/GRUB#Secure_Boot_support)
+
+You can also fix this manually in terminal before install if you desire `$ timed
+`$ timedatectl set-timezone Asia/Honk_Kong`
+
+Sometimes if the CMOS battery of a BIOS is dead, the issue is that your preferred settings can get reset. And cause issues for example older BIOS can reset to `Octane RST` for SATA Mode / Same for clock.
+
+- Error with `chmod /root`
+
+This can mean the disk is unreachable by archinstall, you can try resetting this disk to a linux compatible format (and/or unlocked) before isntallation.
 
 # Common Issues
 

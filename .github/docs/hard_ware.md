@@ -28,6 +28,12 @@ Product Name: GP72 6QE
 
 You can also use `lspci | grep "Something"`
 
+`$ cat /sys/firmware/efi/fw_platform_size`
+
+It will return 64 for a 64-bit (x64) UEFI or 32 for a 32-bit (IA32) UEFI. If the file does not exist, you have not booted in UEFI mode.
+
+`lsmod | grep "KVM"` to see if you can use QEMU features.
+
 ## Basics
 
   ### HW TABLE

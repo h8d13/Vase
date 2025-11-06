@@ -2,12 +2,11 @@
 
 ----
 
-An unofficial **stripped-down version** of the official archinstall that **is only for KDE Plasma**.
+An unofficial **stripped-down version** of the official archinstall.
+
 > Primary goal was to make it easier to test for devs, and also remove complexity from codebase so that I could expand on sections I wanted for my use cases or installs.
 
-This is a modified version (fork) of [archinstall](https://github.com/archlinux/archinstall), originally developed by the Arch Linux team. Which has many more up-to-date features like UKI, systemd-boot, disk encryption, etc.
-
-This version is for users who know they want KDE and it's dependencies **(NetworkManager, Pipewire, and SDDM)**.
+This is a modified version (fork) of [archinstall](https://github.com/archlinux/archinstall), originally developed by the Arch Linux team. Which has many more up-to-date features like disk encryption.
 
 ## Installation
 
@@ -59,11 +58,12 @@ After running the script it will restart one last time. **And you are done!**
 Install logs can be found inside `vase_os/hade_box/logs` 
 There are `install.log`,`cmd_output.txt` and `cmd_history.txt` avaible but contain more verbose info.
 
+
+`$ ./main -xl` will show you post install logs INFO/DEBUG prints
+
+`$ ./main -xlu` will upload them to 0x0.st and return a short URL for you to upload or consult.
+
 And post install logs `vase_os/kaes_arch`
-
-We also have a helper to extract logs: `vase_os/hade_box/extract_logs` this will return a URL with a short ex: `https://0x0.st/KjFo.log`
-
-For more info see main post-install repo: [KAES-ARCH](https://github.com/h8d13/KAES-ARCH)
 
 ### Modifications
 
