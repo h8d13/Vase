@@ -1,4 +1,12 @@
 #!/bin/bash
+. "$(dirname "$0")/../../util_f"
+. "$(dirname "$0")/../../..."
+
+if file_ex "${rel}${p_lib}/${rcw_file}"; then
+    # Source wrapper
+    . "${rel}${p_lib}/${rcw_file}"
+fi
+
 # Flash ISO to USB drive
 if [ -z "$1" ] || [ -z "$2" ]; then
     echo "Usage: sudo ./main -f <device>"
@@ -22,17 +30,17 @@ if [ ! -b "$DEVICE" ]; then
     exit 1
 fi
 
-echo "WARNING: This will erase all data on $DEVICE"
-lsblk 
-echo "ISO: $ISO"
+warn "This will erase all data on $DEVICE"
+lsblk
+info "ISO: $ISO"
 read -p "Continue? (y/N): " confirm
 
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Aborted"
+    postop "Aborted"
     exit 0
 fi
 
-echo "Flashing ISO to $DEVICE..."
+preop "Flashing ISO to $DEVICE..."
 dd if="$ISO" of="$DEVICE" bs=4M status=progress oflag=sync
 sync
 

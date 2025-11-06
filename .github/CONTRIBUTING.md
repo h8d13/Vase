@@ -2,7 +2,7 @@
 
 ## Get started helping out !
 
-Create a testing user on your existing install. We have a script called `setup_vb` in the repo made for this.
+Create a testing user on your existing install. With sudo and `gpp` key if planning to distribute ISOs.
 
 - Create your first ISO: modify `vase_os/zazu_lago/iso_profiles/fat.conf` & `vase_os/zazu_lago/iso_mod`
 - Run `sudo ./main -i` find in 'a' folder (dev drive) you newly created ISO.
