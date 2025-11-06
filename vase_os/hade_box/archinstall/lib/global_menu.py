@@ -510,7 +510,7 @@ class GlobalMenu(AbstractMenu[None]):
 		disk_layout_conf: DiskLayoutConfiguration | None = item.value
 
 		if disk_layout_conf:
-			output = ('Configuration type: {}').format(disk_layout_conf.config_type.display_msg()) + '\n'
+			output = ''
 
 			# Display swap configuration
 			swap_config = getattr(self._config, 'swap', None)
@@ -526,7 +526,7 @@ class GlobalMenu(AbstractMenu[None]):
 				if btrfs_options.snapshot_config:
 					output += ('Btrfs snapshot type: {}').format(btrfs_options.snapshot_config.snapshot_type.value) + '\n'
 
-			return output
+			return output if output else 'Single disk, default layout'
 
 		return None
 
@@ -606,8 +606,15 @@ class GlobalMenu(AbstractMenu[None]):
 		if root_partition is None:
 			return 'Root partition not found'
 
+		# When using GRUB with separate ESP (mounted at /efi), /boot partition is optional
+		# GRUB can install directly to ESP and load kernels from root partition
 		if boot_partition is None:
-			return 'Boot partition not found'
+			# Check if we have GRUB + separate ESP configuration
+			if bootloader == Bootloader.Grub and efi_partition is not None:
+				# This is valid: GRUB with separate ESP, no /boot needed
+				pass
+			else:
+				return 'Boot partition not found'
 
 		if SysInfo.has_uefi():
 			if efi_partition is None:

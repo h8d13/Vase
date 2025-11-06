@@ -2,7 +2,6 @@ from pathlib import Path
 
 from archinstall.lib.args import arch_config_handler
 from archinstall.lib.disk.device_handler import device_handler
-from archinstall.lib.disk.partitioning_menu import manual_partitioning
 from archinstall.lib.menu.menu_helper import MenuHelper
 from archinstall.lib.models.bootloader import Bootloader
 from archinstall.lib.models.device import (
@@ -76,94 +75,43 @@ def select_devices(preset: list[BDevice] | None = []) -> list[BDevice]:
 
 			return selected_devices
 
-def get_default_partition_layout(
-	devices: list[BDevice],
-	filesystem_type: FilesystemType | None = None,
-	swap_config: 'SwapConfiguration | None' = None,
-) -> list[DeviceModification]:
-	if len(devices) == 1:
-		device_modification = suggest_single_disk_layout(
-			devices[0],
-			filesystem_type=filesystem_type,
-			swap_config=swap_config,
-		)
-		return [device_modification]
-	else:
-		return suggest_multi_disk_layout(
-			devices,
-			filesystem_type=filesystem_type,
-			swap_config=swap_config,
-		)
-
-def _manual_partitioning(
-	preset: list[DeviceModification],
-	devices: list[BDevice],
-) -> list[DeviceModification]:
-	modifications = []
-	for device in devices:
-		mod = next(filter(lambda x: x.device == device, preset), None)
-		if not mod:
-			mod = DeviceModification(device, wipe=False)
-
-		if device_mod := manual_partitioning(mod, device_handler.partition_table):
-			modifications.append(device_mod)
-
-	return modifications
-
 def select_disk_config(preset: DiskLayoutConfiguration | None = None) -> DiskLayoutConfiguration | None:
-	default_layout = DiskLayoutType.Default.display_msg()
-	manual_mode = DiskLayoutType.Manual.display_msg()
+	"""
+	Simplified disk configuration - default layout only (single disk).
+	Removed multi-disk and manual partitioning options.
+	"""
+	preset_devices = [mod.device for mod in preset.device_modifications] if preset else []
+	devices = select_devices(preset_devices)
 
-	items = [
-		MenuItem(default_layout, value=default_layout),
-		MenuItem(manual_mode, value=manual_mode),
-	]
-	group = MenuItemGroup(items, sort_items=False)
+	if not devices:
+		return None
 
-	if preset:
-		group.set_selected_by_value(preset.config_type.display_msg())
+	# Only support single disk
+	if len(devices) > 1:
+		from archinstall.tui.curses_menu import SelectMenu
+		from archinstall.tui.menu_item import MenuItem, MenuItemGroup
+		from archinstall.tui.types import Alignment
 
-	result = SelectMenu[str](
-		group,
-		allow_skip=True,
-		alignment=Alignment.CENTER,
-		frame=FrameProperties.min('Disk configuration type'),
-		allow_reset=True,
-	).run()
+		items = [MenuItem('Continue')]
+		group = MenuItemGroup(items)
+		SelectMenu(
+			group,
+			header='Only single disk installations are supported.\nPlease select one device.',
+			alignment=Alignment.CENTER,
+		).run()
+		return None
 
-	match result.type_:
-		case ResultType.Skip:
-			return preset
-		case ResultType.Reset:
-			return None
-		case ResultType.Selection:
-			selection = result.get_value()
+	# New single disk only since adding disks post-install is trivial
+	device_modification = suggest_single_disk_layout(
+		devices[0],
+		filesystem_type=None,
+	)
 
-			preset_devices = [mod.device for mod in preset.device_modifications] if preset else []
-			devices = select_devices(preset_devices)
-
-			if not devices:
-				return None
-
-			if result.get_value() == default_layout:
-				# Get swap configuration from global config if available
-				from ..args import arch_config_handler
-				swap_config = getattr(arch_config_handler.config, 'swap', None)
-				modifications = get_default_partition_layout(devices, swap_config=swap_config)
-				if modifications:
-					return DiskLayoutConfiguration(
-						config_type=DiskLayoutType.Default,
-						device_modifications=modifications,
-					)
-			elif result.get_value() == manual_mode:
-				preset_mods = preset.device_modifications if preset else []
-				modifications = _manual_partitioning(preset_mods, devices)
-
-				if modifications:
-					return DiskLayoutConfiguration(
-						config_type=DiskLayoutType.Manual,
-						device_modifications=modifications,
-					)
+	if device_modification:
+		return DiskLayoutConfiguration(
+			config_type=DiskLayoutType.Default,
+			device_modifications=[device_modification],
+		)
 
 	return None
 
@@ -200,8 +148,8 @@ def _select_separate_esp(using_gpt: bool) -> bool:
 		return False
 
 	prompt = ('Would you like to use a separate ESP partition?\n')
-	prompt += ('Merged: /boot is the ESP (simpler, default)\n')
-	prompt += ('Separate: /efi for ESP, /boot for kernels\n')
+	prompt += ('Merged: /boot/efi is the ESP (simpler, default)\n')
+	prompt += ('Separate: /efi for ESP (grub kernels on /), /boot for systemd-boot\n')
 
 	items = [
 		MenuItem('Standard (recommended)', value=False),
@@ -352,7 +300,6 @@ def suggest_single_disk_layout(
 	device: BDevice,
 	filesystem_type: FilesystemType | None = None,
 	separate_home: bool | None = None,
-	swap_config: 'SwapConfiguration | None' = None,
 ) -> DeviceModification:
 	if not filesystem_type:
 		filesystem_type = select_main_filesystem_format()
@@ -393,13 +340,20 @@ def suggest_single_disk_layout(
 	else:
 		next_start = Size(1, Unit.MiB, sector_size)
 
-	# Ask for boot partition size
-	boot_size = _select_boot_size(sector_size)
-	boot_partition = _boot_partition(sector_size, using_gpt, boot_size, separate_esp=use_separate_esp, filesystem_type=filesystem_type)
-	# Adjust boot partition start if ESP came first
-	if use_separate_esp:
-		boot_partition.start = next_start
-	device_modification.add_partition(boot_partition)
+	# When using GRUB with separate ESP, /boot partition is optional
+	# GRUB can install to ESP and load kernels from root
+	bootloader = arch_config_handler.config.bootloader
+	skip_boot_partition = (use_separate_esp and bootloader == Bootloader.Grub)
+
+	boot_partition = None
+	if not skip_boot_partition:
+		# Ask for boot partition size
+		boot_size = _select_boot_size(sector_size)
+		boot_partition = _boot_partition(sector_size, using_gpt, boot_size, separate_esp=use_separate_esp, filesystem_type=filesystem_type)
+		# Adjust boot partition start if ESP came first
+		if use_separate_esp:
+			boot_partition.start = next_start
+		device_modification.add_partition(boot_partition)
 
 	if separate_home is False or using_subvolumes or total_size < min_size_to_allow_home_part:
 		using_home_partition = False
@@ -420,8 +374,13 @@ def suggest_single_disk_layout(
 
 		using_home_partition = result.item() == MenuItem.yes()
 
-	# root partition starts right after boot partition
-	root_start = boot_partition.start + boot_partition.length
+	# root partition starts right after boot partition (or ESP if no boot partition)
+	if boot_partition:
+		root_start = boot_partition.start + boot_partition.length
+	elif use_separate_esp:
+		root_start = esp_partition.start + esp_partition.length
+	else:
+		root_start = Size(1, Unit.MiB, sector_size)
 
 	# Set a size for / (/root)
 	if using_home_partition:
@@ -467,130 +426,5 @@ def suggest_single_disk_layout(
 		device_modification.add_partition(home_partition)
 
 	return device_modification
-
-def suggest_multi_disk_layout(
-	devices: list[BDevice],
-	filesystem_type: FilesystemType | None = None,
-	swap_config: 'SwapConfiguration | None' = None,
-) -> list[DeviceModification]:
-	if not devices:
-		return []
-
-	# Not really a rock solid foundation of information to stand on, but it's a start:
-	# https://www.reddit.com/r/btrfs/comments/m287gp/partition_strategy_for_two_physical_disks/
-	# https://www.reddit.com/r/btrfs/comments/9us4hr/what_is_your_btrfs_partitionsubvolumes_scheme/
-	min_home_partition_size = Size(40, Unit.GiB, SectorSize.default())
-	# rough estimate taking in to account user desktops etc. TODO: Catch user packages to detect size?
-	desired_root_partition_size = Size(32, Unit.GiB, SectorSize.default())
-	mount_options = []
-
-	if not filesystem_type:
-		filesystem_type = select_main_filesystem_format()
-
-	# find proper disk for /home
-	possible_devices = [d for d in devices if d.device_info.total_size >= min_home_partition_size]
-	home_device = max(possible_devices, key=lambda d: d.device_info.total_size) if possible_devices else None
-
-	# find proper device for /root
-	devices_delta = {}
-	for device in devices:
-		if device is not home_device:
-			delta = device.device_info.total_size - desired_root_partition_size
-			devices_delta[device] = delta
-
-	sorted_delta: list[tuple[BDevice, Size]] = sorted(devices_delta.items(), key=lambda x: x[1])
-	root_device: BDevice | None = sorted_delta[0][0]
-
-	if home_device is None or root_device is None:
-		text = ('The selected drives do not have the minimum capacity required for an automatic suggestion\n')
-		text += ('Minimum capacity for /home partition: {}GiB\n').format(min_home_partition_size.format_size(Unit.GiB))
-		text += ('Minimum capacity for Arch Linux partition: {}GiB').format(desired_root_partition_size.format_size(Unit.GiB))
-
-		items = [MenuItem('Continue')]
-		group = MenuItemGroup(items)
-		SelectMenu(group).run()
-
-		return []
-
-	if filesystem_type == FilesystemType.Btrfs:
-		mount_options = select_mount_options()
-
-	device_paths = ', '.join([str(d.device_info.path) for d in devices])
-
-	debug(f'Suggesting multi-disk-layout for devices: {device_paths}')
-	debug(f'/root: {root_device.device_info.path}')
-	debug(f'/home: {home_device.device_info.path}')
-
-	root_device_modification = DeviceModification(root_device, wipe=True)
-	home_device_modification = DeviceModification(home_device, wipe=True)
-
-	root_device_sector_size = root_device_modification.device.device_info.sector_size
-	home_device_sector_size = home_device_modification.device.device_info.sector_size
-
-	using_gpt = device_handler.partition_table.is_gpt()
-
-	# Ask if user wants separate ESP (GPT only)
-	use_separate_esp = _select_separate_esp(using_gpt)
-
-	# Create ESP partition if using separate ESP mode
-	if use_separate_esp:
-		esp_partition = _esp_partition(root_device_sector_size)
-		root_device_modification.add_partition(esp_partition)
-		# Boot partition comes after ESP
-		next_start = esp_partition.start + esp_partition.length
-	else:
-		next_start = Size(1, Unit.MiB, root_device_sector_size)
-
-	# Ask for boot partition size and add to root device
-	boot_size = _select_boot_size(root_device_sector_size)
-	boot_partition = _boot_partition(root_device_sector_size, using_gpt, boot_size, separate_esp=use_separate_esp, filesystem_type=filesystem_type)
-	# Adjust boot partition start if ESP came first
-	if use_separate_esp:
-		boot_partition.start = next_start
-	root_device_modification.add_partition(boot_partition)
-
-	# Root partition starts right after boot partition
-	root_start = boot_partition.start + boot_partition.length
-	root_length = root_device.device_info.total_size - root_start
-
-	if using_gpt:
-		root_length = root_length.gpt_end()
-
-	root_length = root_length.align()
-
-	# add root partition to the root device
-	root_partition = PartitionModification(
-		status=ModificationStatus.Create,
-		type=PartitionType.Primary,
-		start=root_start,
-		length=root_length,
-		mountpoint=Path('/'),
-		mount_options=mount_options,
-		fs_type=filesystem_type,
-	)
-	root_device_modification.add_partition(root_partition)
-
-	home_start = Size(1, Unit.MiB, home_device_sector_size)
-	home_length = home_device.device_info.total_size - home_start
-
-	flags = []
-	if using_gpt:
-		home_length = home_length.gpt_end()
-		flags.append(PartitionFlag.LINUX_HOME)
-
-	home_length = home_length.align()
-
-	# add home partition to home device
-	home_partition = PartitionModification(
-		status=ModificationStatus.Create,
-		type=PartitionType.Primary,
-		start=home_start,
-		length=home_length,
-		mountpoint=Path('/home'),
-		mount_options=mount_options,
-		fs_type=filesystem_type,
-		flags=flags,
-	)
-	home_device_modification.add_partition(home_partition)
 
 	return [root_device_modification, home_device_modification]
