@@ -165,18 +165,18 @@ class ProfileHandler:
 		if greeter == GreeterType.NoGreeter:
 			return
 
-		packages = [greeter.value]
-
 		# Lightdm requires a greeter interface
 		if greeter == GreeterType.Lightdm:
 			packages.append('lightdm-gtk-greeter')
 
 		# SDDM with plasma_minimal requires sddm-kcm for KDE settings integration
-		if greeter == GreeterType.Sddm and profile and profile.name == 'plasma_minimal':
+		if greeter == GreeterType.Sddm and profile.name == 'plasma_minimal':
 			packages.append('sddm-kcm')
 
 		install_session.add_additional_packages(packages)
 		install_session.enable_service([greeter.value])
+
+		packages = [greeter.value]
 
 	def install_gfx_driver(self, install_session: 'Installer', driver: GfxDriver) -> None:
 		debug(f'Installing GFX driver: {driver.value}')

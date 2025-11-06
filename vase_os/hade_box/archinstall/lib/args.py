@@ -77,7 +77,7 @@ class ArchConfig:
 	services: list[str] = field(default_factory=list)
 	custom_commands: list[str] = field(default_factory=list)
 	removable_media: bool = False
-
+	
 	def unsafe_json(self) -> dict[str, Any]:
 		config: dict[str, list[UserSerialization] | str | None] = {}
 
