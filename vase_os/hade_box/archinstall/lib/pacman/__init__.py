@@ -38,6 +38,8 @@ class Pacman:
 	def ask(self, error_message: str, bail_message: str, func: Callable, *args, **kwargs) -> None:  # type: ignore[no-untyped-def, type-arg]
 		pacman_conf = Path('/etc/pacman.conf')
 		pacman_conf_backup = Path('/etc/pacman.conf.backup')
+		mirrorlist = Path('/etc/pacman.d/mirrorlist')
+		mirrorlist_backup = Path('/etc/pacman.d/mirrorlist.original')
 		backup_attempted = False
 
 		while True:
@@ -46,6 +48,18 @@ class Pacman:
 				break
 			except Exception as err:
 				error(f'{error_message}: {err}')
+
+				# Check if error is mirror-related (no servers configured)
+				if 'no servers configured' in str(err).lower() and mirrorlist_backup.exists() and not backup_attempted:
+					warn('No servers configured - attempting to restore mirrorlist from backup...')
+					try:
+						import shutil
+						shutil.copy(mirrorlist_backup, mirrorlist)
+						info('Restored mirrorlist backup, retrying...')
+						backup_attempted = True
+						continue
+					except Exception as restore_err:
+						error(f'Failed to restore mirrorlist: {restore_err}')
 
 				# Try to restore backup config if it exists and not already attempted
 				if pacman_conf_backup.exists() and not backup_attempted:
