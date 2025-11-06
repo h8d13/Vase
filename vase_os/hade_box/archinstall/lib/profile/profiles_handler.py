@@ -165,6 +165,9 @@ class ProfileHandler:
 		if greeter == GreeterType.NoGreeter:
 			return
 
+		# Initialize packages list with the greeter
+		packages = [greeter.value]
+
 		# Lightdm requires a greeter interface
 		if greeter == GreeterType.Lightdm:
 			packages.append('lightdm-gtk-greeter')
@@ -175,8 +178,6 @@ class ProfileHandler:
 
 		install_session.add_additional_packages(packages)
 		install_session.enable_service([greeter.value])
-
-		packages = [greeter.value]
 
 	def install_gfx_driver(self, install_session: 'Installer', driver: GfxDriver) -> None:
 		debug(f'Installing GFX driver: {driver.value}')
