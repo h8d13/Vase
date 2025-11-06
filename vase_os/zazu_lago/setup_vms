@@ -5,21 +5,23 @@
 
 # Base QEMU packages
 pkgs_needed="qemu-system-x86 qemu-img qemu-hw-display-virtio-gpu-pci qemu-hw-display-virtio-gpu"
-#pkgs_optional="qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice bridge-utils dmidecode dnsmasq iptables-nft tigervnc qemu-ui-spice-app qemu-hw-display-qxl"
-#can also install qemu-full and test other architectures
 
 # Add display backend packages based on config
 case "$qemu_display" in
     gtk) pkgs_needed="$pkgs_needed qemu-ui-gtk" ;;
     sdl) pkgs_needed="$pkgs_needed qemu-ui-sdl" ;;
-    spice) pkgs_needed="$pkgs_needed qemu-ui-spice-core qemu-audio-spice qemu-chardev-spice" ;;
 esac
+
+# Add audio backend packages based on config
 case "$audio_backend" in
     pipewire) pkgs_needed="$pkgs_needed qemu-audio-pipewire" ;;
 esac
 
 # Add GL renderer if enabled
 [ "$qemu_gl" = "on" ] && pkgs_needed="$pkgs_needed virglrenderer"
+
+# Note: qemu-vdagent for clipboard is built into qemu-system-x86, no extra package needed
+
 missing_pkgs=""
 
 preop "Checking VM packages..."

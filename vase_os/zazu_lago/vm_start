@@ -16,7 +16,8 @@ short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
-audio_backend="${qemu_audio:-pipewire}"  
+use_clipboard="${qemu_clipboard:-0}"
+audio_backend="${qemu_audio:-pipewire}"
 audio_device="${qemu_audio_dev:-intel-hda}" 
 
 # Check for CATART setting and display CLI art
@@ -133,6 +134,13 @@ qemu_cmd() {
         esac
     fi
 
+    # Add clipboard sharing if enabled
+    if [ "$use_clipboard" = "1" ]; then
+        cmd="$cmd -chardev qemu-vdagent,id=ch1,name=vdagent,clipboard=on"
+        cmd="$cmd -device virtio-serial-pci"
+        cmd="$cmd -device virtserialport,chardev=ch1,id=ch1,name=com.redhat.spice.0"
+    fi
+
     while [ $# -gt 0 ]; do
         case "$1" in
             --hda)
@@ -153,10 +161,6 @@ qemu_cmd() {
                 ;;
             --display)
                 cmd="$cmd -display $2"
-                shift 2
-                ;;
-            --spice)
-                cmd="$cmd -spice $2"
                 shift 2
                 ;;
             --usb-drive)

@@ -46,6 +46,7 @@ class GfxPackage(Enum):
 	NvidiaOpenDkms = 'nvidia-open-dkms'
 	NvidiaPrime = 'nvidia-prime'
 	QemuGuestAgent = 'qemu-guest-agent'
+	SpiceVdagent = 'spice-vdagent'
 	VulkanSwrast = 'vulkan-swrast'
 	VirtualboxGuestUtils = 'virtualbox-guest-utils'
 	VulkanIntel = 'vulkan-intel'
@@ -140,17 +141,15 @@ class GfxDriver(Enum):
 			case GfxDriver.VMOpenSource:
 				packages += [
 					GfxPackage.Mesa,
-					GfxPackage.VulkanVirtio,
-					GfxPackage.QemuGuestAgent,
 					GfxPackage.VulkanSwrast,
-					GfxPackage.LibvaMesaDriver,
+					GfxPackage.QemuGuestAgent,
+					GfxPackage.SpiceVdagent,
 				]
 			case GfxDriver.VirtualBox:
 				packages += [
 					GfxPackage.Mesa,
 					GfxPackage.VulkanSwrast,
 					GfxPackage.VirtualboxGuestUtils,
-					GfxPackage.LibvaMesaDriver,
 				]
 
 				# Legacy VM setup (pre-2024 VM detection refactor):
