@@ -157,14 +157,14 @@ if file_ex "$PROFILE_LIST"; then
 
             # Apply same styling as stylepac.py: enable Color and ILoveCandy
             info "Styling pacman.conf (Color + ILoveCandy)..."
-            local pacman_conf="$PROFILE_DIR/airootfs/etc/pacman.conf"
+            PACMAN_CONF="$PROFILE_DIR/airootfs/etc/pacman.conf"
 
             # Enable Color if commented
-            sed -i 's/^#Color$/Color/' "$pacman_conf"
+            sed -i 's/^#Color$/Color/' "$PACMAN_CONF"
 
             # Add ILoveCandy after "# Misc options" if not already present
-            if ! grep -q "ILoveCandy" "$pacman_conf"; then
-                sed -i '/^# Misc options$/a ILoveCandy' "$pacman_conf"
+            if ! grep -q "ILoveCandy" "$PACMAN_CONF"; then
+                sed -i '/^# Misc options$/a ILoveCandy' "$PACMAN_CONF"
             fi
 
             reop "Created local repo with $pkg_count packages ($cache_size) for installation"
