@@ -143,10 +143,11 @@ Making it all open so people can edit anything they desire from the flow, while 
 
 ### Artix Compat Layer 🥶
 
-<a href="./.github/docs/klar_tix.md"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.1-blue" alt="Artix_Linux"></a>
+<a href="https://github.com/h8d13/VaseX"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.5-blue" alt="Artix_Linux"></a>
 
 > Made specially for my friend Klagan who likes runit and minimalist installs.
 > Supports the post-install script, GUI and VMs. The installer is much more manual.
+> More advanced involved setup.
 
 Bootstrap Artix Linux with desired init system. From any existing Linux install to a live disk. Should be appreciated by purists and elitists of the community. 
 
@@ -169,7 +170,7 @@ Or better yet, fork all the repos and send me patches.
 | **kaes_arch** | Post-install - System configuration and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman common operations Gtk/Adwaita app | [README](./.github/docs/pacto_pac.md) |
 | **zazu_lago** | Testing suite - VM menu QEMU/KVM testing environment | [README](./.github/docs/zazu_lago.md) |
-| **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](./.github/docs/klar_tix.md) |
+| **klar_tix** | Artix bootstrap - Init system compatible minimal installer | [README](https://github.com/h8d13/VaseX) |
 
 [QEMU Docs](https://www.qemu.org/documentation/) 
 
