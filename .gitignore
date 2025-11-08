@@ -2,6 +2,7 @@
 .zed/
 .vscode/
 
+.secrets
 vase_os/zazu_lago/a/*.iso*
 vase_os/zazu_lago/c/*.qcow2
 vase_os/zazu_lago/d/*.iso*
