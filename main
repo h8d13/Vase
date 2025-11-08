@@ -250,6 +250,10 @@ if exec_args "EXTRACT_LOGS_UPLOAD"; then
     preop "Extracting and uploading installer logs..."
     "./${hb_d}/extract_logs" upload && exit
 fi
+if exec_args "EXTRACT_LOGS_FULL"; then
+    preop "Extracting and uploading full logs..."
+    "./${hb_d}/extract_logs" full && exit
+fi
 if im_groot; then
     # TUI with args
     if exec_args "TUI"; then

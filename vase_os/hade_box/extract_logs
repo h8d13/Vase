@@ -4,6 +4,7 @@
 # Find the correct log path based on script location
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log_file="${script_dir}/logs/install.log"
+base_path="${script_dir}/logs/*"
 
 if [ ! -f "$log_file" ]; then
     echo "[-] Error: No installer logs found"
@@ -15,15 +16,17 @@ mode="${1:-extract}"
 
 case "$mode" in
     extract)
-        echo "[+] Extracting installer logs from: $log_file"
+        echo "[+] Extracting essential installer logs from: $log_file"
         grep -iE 'INFO|error' "$log_file"
         ;;
     upload)
-        echo "[+] Extracting installer logs from: $log_file"
-        grep -iE 'INFO|error' "$log_file"
-        echo ""
+        echo "[+] Extracting full installer logs from: $log_file"
         echo "[+] Uploading logs to 0x0.st..."
         curl -F"file=@$log_file" https://0x0.st
+        ;;
+    full)
+        echo "[+] Uploading full logs to 0x0.st..."
+        (for f in $base_path; do echo "=== $f ==="; cat "$f"; echo; done) | curl -F"file=@-" https://0x0.st
         ;;
     *)
         echo "Usage: $0 {extract|upload}"

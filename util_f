@@ -16,6 +16,7 @@ Options:
   -bt, --branch-tui BRANCH   Switch to branch and launch TUI
   -xl, --extract-logs        Extract installer logs
   -xlu,--extract-logs-up     Extract and upload installer logs
+  -xlf,--extract-logs-full   Extract and upload full logs
 
   -pe, --post-edit <type>    Edit post install script (plasma/gnome/xfce4, default: plasma)
   -p,  --post <type>         Run post install script (plasma/gnome/xfce4, default: plasma)
@@ -152,6 +153,10 @@ parse_args() {
                 EXTRACT_LOGS_UPLOAD=1
                 shift
                 ;;
+            -xlf|--extract-logs-full)
+                EXTRACT_LOGS_FULL=1
+                shift
+                ;;
             -ec|--edit-conf)
                 EDIT_CONF=1
                 shift
@@ -183,6 +188,7 @@ exec_args() {
         PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
         EXTRACT_LOGS) [ "${EXTRACT_LOGS}" = "1" ] ;;
         EXTRACT_LOGS_UPLOAD) [ "${EXTRACT_LOGS_UPLOAD}" = "1" ] ;;
+        EXTRACT_LOGS_FULL) [ "${EXTRACT_LOGS_FULL}" = "1" ] ;;
         EDIT_CONF) [ "${EDIT_CONF}" = "1" ] ;;
         *) return 1 ;;
     esac
