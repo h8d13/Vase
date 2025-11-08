@@ -11,7 +11,7 @@ This is a modified version (fork) of [archinstall](https://github.com/archlinux/
 ## Installation
 
 **Pre-req:** 1 USB (minimum 2GB), 1 target Drive (minimum 8GB). 
-Or: One USB (minimum 8GB) using `./main -t --live` or `./main -t --pandora`
+Or: Just one One USB (minimum 8GB) but if you fail installation you'll have to flash again.
 
 Boot Arch Linux Live ISO or our builds (using f10, f12 or del)
 

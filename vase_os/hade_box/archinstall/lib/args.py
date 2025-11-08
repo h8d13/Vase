@@ -387,14 +387,6 @@ class ArchConfigHandler:
 			default=False,
 			help='Enabled verbose options',
 		)
-		parser.add_argument(
-			'--pandora',
-			'--live',
-			action='store_true',
-			dest='pandora',
-			default=False,
-			help='Enable removable media optimizations.',
-		)
 
 		return parser
 

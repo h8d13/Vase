@@ -212,10 +212,6 @@ def perform_installation(mountpoint: Path) -> None:
 		if cc := config.custom_commands:
 			run_custom_user_commands(cc, installation)
 
-		# Apply removable media optimizations if enabled
-		if config.removable_media:
-			installation.apply_removable_media_optimizations()
-
 		installation.genfstab()
 
 		debug(f'Disk states after installing:\n{disk_layouts()}')

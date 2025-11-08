@@ -125,7 +125,6 @@ python -B -m archinstall "$@"
 # All available archinstall command line options:
 #
 # -h, --help            show this help message and exit
-# --live # --pandora    apply live install optimizations
 
 ####################### Could be super useful (ckbcomp and grub keymaps)
 # --mountpoint [/mnt]   Define an alternate mount point for installation

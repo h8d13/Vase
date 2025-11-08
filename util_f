@@ -27,7 +27,6 @@ Options:
   -f,  --flash <device>      Flash ISO to USB device (e.g., /dev/sdd)
   -w,  --workflow <device>   Complete workflow: build, sign, flash
   -g,  --grub <args>         GRUB utilities (-h for grub help)
-  -b,  --bench <type>        Run benchmarks: io, cpu, gpu
   -r,  --reset               Reset logs and settings
 
 Examples:
@@ -99,7 +98,7 @@ parse_args() {
                 FLASH_DEVICE="$2"
                 if [ -z "$flash_device" ]; then
                     lsblk
-                    echo "No device specified. Use: -f /dev/sdX"
+                    postop "No device specified. Use: -f /dev/sdX"
                     exit 1
                 fi
                 shift 2
@@ -108,7 +107,7 @@ parse_args() {
                 WORKFLOW=1
                 if [ -z "$2" ] || [[ "$2" == -* ]]; then
                     lsblk
-                    echo "Error: -w requires a device argument (e.g., /dev/sdd)"
+                    postop "Error: -w requires a device argument (e.g., /dev/sdd)"
                     exit 1
                 fi
                 WORKFLOW_DEVICE="$2"

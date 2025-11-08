@@ -371,64 +371,6 @@ class Installer:
 			for entry in self._fstab_entries:
 				fp.write(f'{entry}\n')
 
-	def apply_removable_media_optimizations(self) -> None:
-		"""
-		Apply optimizations for removable media.
-		Based on: https://wiki.archlinux.org/title/Install_Arch_Linux_on_a_removable_medium
-
-		Optimizations include:
-		1. mkinitcpio hooks reordering for hardware portability
-		2. Systemd journal to RAM (volatile storage)
-		3. BFQ I/O scheduler for better USB/SSD performance
-		"""
-		info('[PAN_DORA] Applying removable media optimizations...')
-
-		# 1. Configure mkinitcpio for portable boot
-		info('[PAN_DORA] Configuring mkinitcpio for portable boot...')
-		mkinitcpio_conf = self.target / 'etc/mkinitcpio.conf'
-		if mkinitcpio_conf.exists():
-			config = mkinitcpio_conf.read_text()
-			# Move block and keyboard hooks BEFORE autodetect for hardware portability
-			config = re.sub(
-				r'^HOOKS=.*$',
-				'HOOKS=(base udev block keyboard autodetect microcode modconf kms keymap consolefont filesystems fsck)',
-				config,
-				flags=re.MULTILINE
-			)
-			mkinitcpio_conf.write_text(config)
-
-			# Regenerate initramfs
-			try:
-				SysCommand(f'arch-chroot -S {self.target} mkinitcpio -P')
-				info('[PAN_DORA] ✓ mkinitcpio configured for portable boot')
-			except SysCallError as err:
-				warn(f'[PAN_DORA] Failed to regenerate initramfs: {err}')
-		else:
-			warn('[PAN_DORA] ✗ /etc/mkinitcpio.conf not found')
-
-		# 2. Configure systemd journal to RAM (reduce writes)
-		info('[PAN_DORA] Configuring systemd journal for volatile storage...')
-		journald_dir = self.target / 'etc/systemd/journald.conf.d'
-		journald_dir.mkdir(parents=True, exist_ok=True)
-
-		journald_conf = journald_dir / 'usbstick.conf'
-		journald_conf.write_text('[Journal]\nStorage=volatile\nRuntimeMaxUse=30M\n')
-		info('[PAN_DORA] ✓ Journal configured for RAM storage (volatile)')
-
-		# 3. Set BFQ scheduler for better USB performance
-		info('[PAN_DORA] Configuring BFQ I/O scheduler...')
-		udev_rules_dir = self.target / 'etc/udev/rules.d'
-		udev_rules_dir.mkdir(parents=True, exist_ok=True)
-
-		udev_rule = udev_rules_dir / '60-ioschedulers.rules'
-		udev_rule.write_text(
-			'# Set BFQ scheduler for better performance on removable media\n'
-			'ACTION=="add|change", KERNEL=="sd[a-z]|mmcblk[0-9]*", '
-			'ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="bfq"\n'
-		)
-		info('[PAN_DORA] ✓ BFQ scheduler configured for SSDs/USB')
-
-		info('[PAN_DORA] Removable media optimizations complete!')
 
 	def set_hostname(self, hostname: str) -> None:
 		(self.target / 'etc/hostname').write_text(hostname + '\n')
