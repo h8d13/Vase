@@ -63,6 +63,11 @@ if [ -d "/run/archiso" ]; then
             MISSING+=("$package")
         fi
     done
+    # Clean up any stale pacman locks from previous cancelled installs
+    if [ -f /var/lib/pacman/db.lck ]; then
+        preop "Removing stale pacman lock from previous session..."
+        rm -f /var/lib/pacman/db.lck
+    fi
     preop "Checked only python deps. Skipping full check..."
 
     # Check internet connectivity before proceeding
@@ -96,23 +101,27 @@ else # Always check full deps when not running with ISO
     preop "Dependency check complete. Continuing..."
 fi
 
-# Clean up any stale pacman locks from previous cancelled installs
-if [ -f /var/lib/pacman/db.lck ]; then
-    preop "Removing stale pacman lock from previous session..."
-    rm -f /var/lib/pacman/db.lck
+timedatectl status
+read -p "Does this look correct? (y/N): " -n 1 -r
+echo
+if [[ ! "$REPLY" =~ ^[yY]$ ]]; then
+    postop "Please run timedatectl set-timezone Asia/Honk_Kong"
+    postop "And timedatectl list-timezones to check yours."
+    postop "You can also correct this in BIOS directly."
+  exit 1
 fi
 
 # Sync package database before launching TUI to prevent hangs
 preop "Syncing package database... & Checking up to date."
 if pacman -Sy --noconfirm 2>&1; then
     # Sync successful, update keyring
-    pacman -S --needed archlinux-keyring --noconfirm || postop "Keyring update failed (continuing anyway)"
+    pacman -S  --noconfirm --needed archlinux-keyring || postop "Keyring update failed (continuing anyway)"
 else
     # Sync failed - likely mirror issue, run reflector and retry
     postop "Database sync failed! Running reflector to fix mirrors..."
     if run_reflector; then
         preop "Retrying database sync..."
-        pacman -Sy --noconfirm && pacman -S --needed archlinux-keyring --noconfirm || postop "Database sync still failed (continuing anyway)"
+        pacman -Sy --noconfirm && pacman -S --needed --noconfirm archlinux-keyring || postop "Database sync still failed (continuing anyway)"
     else
         postop "Could not fix mirrors! Continuing anyway..."
     fi
