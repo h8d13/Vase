@@ -51,8 +51,8 @@ class Arguments:
 
 @dataclass
 class SwapConfiguration:
-	swap_type: str = 'zram'  # 'none', 'zram', 'swapfile', 'partition'
-	size: str = '4G'  # Size for zram/swapfile/partition
+	swap_type: str = 'zram'  # 'none', 'zram', 
+	size: str = '4G'  # Size for zram
 @dataclass
 class ArchConfig:
 	version: str | None = None
