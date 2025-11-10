@@ -105,10 +105,10 @@ timedatectl status
 read -p "Does this look correct? (y/N): " -n 1 -r
 echo
 if [[ ! "$REPLY" =~ ^[yY]$ ]]; then
-    postop "Please run timedatectl set-timezone Asia/Honk_Kong"
-    postop "And timedatectl list-timezones to check yours."
+    postop "Please run: timedatectl set-timezone Asia/Honk_Kong"
+    postop "And: timedatectl list-timezones to check yours."
     postop "You can also correct this in BIOS directly."
-  exit 1
+    exit 1
 fi
 
 # Sync package database before launching TUI to prevent hangs

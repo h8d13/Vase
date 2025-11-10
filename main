@@ -258,7 +258,7 @@ if im_groot; then
     # TUI with args
     if exec_args "TUI"; then
         # unquoted so that we can pass several args
-        "./${hb_d}/install" $(get_tui_cmd) && ./${cc_py} && exit
+        "./${hb_d}/install" $(get_tui_cmd) && ./${cc_py} || exit
     fi
     # Tree output
     if cmd_exists "tree"; then
