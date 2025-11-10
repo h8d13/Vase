@@ -848,7 +848,8 @@ class Installer:
 				#env_vars['GBM_BACKEND'] = 'nvidia-drm'
 				env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
 				env_vars['LIBVA_DRIVER_NAME'] = 'nvidia'
-
+				#env_vars['__NV_PRIME_RENDER_OFFLOAD'] = '1'
+				
 				# Hardware video decoding
 				info('Added proprietary/open NVIDIA environment variables for Wayland support')
 
@@ -857,12 +858,6 @@ class Installer:
 				#env_vars['__NV_PRIME_RENDER_OFFLOAD'] = '1'
 				#env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
 				#info('Added hybrid Intel/NVIDIA environment variables for PRIME offloading')
-
-			#elif self._gfx_driver == GfxDriver.NvidiaOpenKernel:
-				# Open kernel module with Wayland support
-				#env_vars['GBM_BACKEND'] = 'nvidia-drm'
-				#env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
-				#debug('Added open kernel NVIDIA environment variables')
 
 			# Troubleshooting LIBGL_ALWAYS_SOFTWARE=true which can make old card work on newer drivers. 
 			# This can also be useful for a VM if not doing GPU passthrough
@@ -1030,8 +1025,8 @@ class Installer:
 			if self._gfx_driver.is_nvidia():
 				if SysInfo.has_intel_graphics():
 					hw_params.append('i915.modeset=1')
-				if SysInfo.has_amd_graphics():
-					hw_params.append('amdgpu.modeset=1')
+				# if SysInfo.has_amd_graphics():
+				# 	hw_params.append('amdgpu.modeset=1')
  
 			if self._gfx_driver == GfxDriver.NvidiaProprietary or GfxDriver.NvidiaOpenSource:
 				hw_params.append('nvidia-drm.modeset=1')
