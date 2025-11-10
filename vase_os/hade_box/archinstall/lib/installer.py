@@ -848,6 +848,7 @@ class Installer:
 				#env_vars['GBM_BACKEND'] = 'nvidia-drm'
 				env_vars['__GLX_VENDOR_LIBRARY_NAME'] = 'nvidia'
 				env_vars['LIBVA_DRIVER_NAME'] = 'nvidia'
+				#env_vars['NVD_BACKEND'] = 'direct'
 				#env_vars['__NV_PRIME_RENDER_OFFLOAD'] = '1'
 				
 				# Hardware video decoding
