@@ -498,16 +498,6 @@ def ask_for_swap(preset: str = 'zram') -> str:
 			preview_action=lambda x: 'Compressed swap in RAM using zram.\nFast performance, no disk wear.\nSize: typically 25-50% of RAM.\nBest for most desktop/laptop systems.\nRecommended for SSDs.'
 		),
 		MenuItem(
-			text='Swap file on disk',
-			value='swapfile',
-			preview_action=lambda x: 'Traditional swap file on main filesystem.\nEasy to resize later.\nGood for systems with limited RAM.\nWorks with any filesystem type.\nSlightly slower than partition.'
-		),
-		MenuItem(
-			text='Swap partition on disk',
-			value='partition',
-			preview_action=lambda x: 'Dedicated swap partition on disk.\nSlightly faster than swap file.\nFixed size, harder to resize.\nTraditional Linux approach.\nGood for systems with spinning disks.'
-		),
-		MenuItem(
 			text='No swap',
 			value='none',
 			preview_action=lambda x: 'Disable swap entirely.\nRelies only on physical RAM.\nOnly recommended for systems with abundant RAM (16GB+).\nCan cause out-of-memory issues under heavy load.'
