@@ -68,7 +68,7 @@ class Installer:
 		self._base_packages = base_packages or __packages__[:3]
 		self.kernels = kernels or ['linux']
 		self._disk_config = disk_config
-
+		self.config: dict[str, Any] = {}
 		self._disk_encryption = disk_config.disk_encryption or DiskEncryption(EncryptionType.NoEncryption)
 		self.target: Path = target
 
@@ -556,6 +556,22 @@ class Installer:
 			debug('Archinstall will not install any ucode.')
 
 		debug(f'Optional repositories: {optional_repositories}')
+
+				locale_cfg = locale_config or LocaleConfiguration.default()
+
+		# Get keyboard layout
+		kb_vconsole = locale_cfg.kb_layout
+
+		# Ensure /etc exists
+		vconsole_dir = Path(self.target) / 'etc'
+		vconsole_dir.mkdir(parents=True, exist_ok=True)
+
+		vconsole_path = vconsole_dir / 'vconsole.conf'
+		debug(f'Vconsole path {vconsole_dir}')
+		# Write the KEYMAP to vconsole.conf
+		vconsole_path.write_text(f'KEYMAP={kb_vconsole}\n')
+
+		debug(f'Wrote to {vconsole_dir} using {kb_vconsole}')
 
 		# This action takes place on the host system as pacstrap copies over package repository lists.
 		pacman_conf = PacmanConfig(self.target)
