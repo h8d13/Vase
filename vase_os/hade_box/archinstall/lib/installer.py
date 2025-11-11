@@ -559,7 +559,7 @@ class Installer:
 		# WE NEED TO SET VCONSOLE.CONF BEFORE BASE
 		kb_layout = locale_config.kb_layout
 
-		if (Path('/etc').exists():
+		if (Path('/etc').exists()):
 			(Path(self.target) / 'etc' / 'vconsole.conf').unlink(missing_ok=True)
 			SysCommand(f'arch-chroot -S {self.target} echo "KEYMAP={kb_layout}" > /etc/vconsole.conf)
 
