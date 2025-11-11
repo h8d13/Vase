@@ -559,7 +559,10 @@ class Installer:
 		# WE NEED TO SET VCONSOLE.CONF BEFORE BASE
 		kb_layout = locale_config.kb_layout
 
-		vconsole_path = Path(self.target) / 'etc' / 'vconsole.conf'
+		vconsole_dir = Path(self.target) / 'etc'
+		vconsole_dir.mkdir(parents=True, exist_ok=True)
+
+		vconsole_path = vconsole_dir / 'vconsole.conf'
 		vconsole_path.write_text(f"KEYMAP={kb_layout}\n")
 
 		# This action takes place on the host system as pacstrap copies over package repository lists.
