@@ -41,24 +41,8 @@ kde_info="Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
 # Log to tests.status
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Host KDE/Qt: ${kde_info}" >> tests.status
 echo "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
-# Read traffic data from traffic.json (use cumulative all-time total)
-if file_ex "traffic.json"; then
-    # Check if normalized format exists
-    if jq -e '.daily_clones' traffic.json &>/dev/null; then
-        # Use cumulative_total for badge (never decreases), fallback to total_count
-        clone_count=$(jq '.cumulative_total // .total_count // 0' traffic.json)
-        unique_clones=$(jq '.total_uniques // 0' traffic.json)
-    else
-        # Old format: use latest 14-day window
-        clone_count=$(jq '.[-1].count // 0' traffic.json)
-        unique_clones=$(jq '.[-1].uniques // 0' traffic.json)
-    fi
-else
-    clone_count="N/A"
-    unique_clones="N/A"
-fi
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v clones="$clone_count" -v unique_clones="$unique_clones" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
+awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
 function badge(label, value, color) {
     return "<a href=\"https://github.com/h8d13/Vase/releases\"><img src=\"https://img.shields.io/badge/" label "-" value "-" color "\" alt=\"" label "\"></a>"
 }
