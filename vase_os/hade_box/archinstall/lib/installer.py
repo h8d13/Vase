@@ -561,7 +561,7 @@ class Installer:
 
 		if (Path('/etc').exists()):
 			(Path(self.target) / 'etc' / 'vconsole.conf').unlink(missing_ok=True)
-			SysCommand(f'arch-chroot -S {self.target} echo KEYMAP={kb_layout} > /etc/vconsole.conf)
+			SysCommand(f'arch-chroot -S {self.target} echo KEYMAP={kb_layout} > /etc/vconsole.conf')
 
 		# This action takes place on the host system as pacstrap copies over package repository lists.
 		pacman_conf = PacmanConfig(self.target)
