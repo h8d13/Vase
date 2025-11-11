@@ -495,7 +495,7 @@ class Installer:
 			# * systemd -> udev
 			# * sd-vconsole -> keymap
 			self._hooks = [hook.replace('systemd', 'udev').replace('sd-vconsole', 'keymap consolefont') for hook in self._hooks]
-
+			# this will also need change for keymap isnt stricly needed
 			content = re.sub('\nHOOKS=(.*)', f'\nHOOKS=({" ".join(self._hooks)})', content)
 			mkinit.seek(0)
 			mkinit.truncate()
@@ -557,8 +557,11 @@ class Installer:
 
 		debug(f'Optional repositories: {optional_repositories}')
 
-				locale_cfg = locale_config or LocaleConfiguration.default()
+		locale_cfg = locale_config or LocaleConfiguration.default()
 
+		# We need to set vconsole before the first hook in accordance to
+		# https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Persistent_configuration
+		# https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio/-/releases/v40
 		# Get keyboard layout
 		kb_vconsole = locale_cfg.kb_layout
 
