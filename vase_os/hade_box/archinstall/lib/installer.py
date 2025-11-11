@@ -559,9 +559,8 @@ class Installer:
 		# WE NEED TO SET VCONSOLE.CONF BEFORE BASE
 		kb_layout = locale_config.kb_layout
 
-		if (Path('/etc').exists()):
-			(Path(self.target) / 'etc' / 'vconsole.conf').unlink(missing_ok=True)
-			SysCommand(f'arch-chroot -S {self.target} echo KEYMAP={kb_layout} > /etc/vconsole.conf')
+		vconsole_path = Path(self.target) / 'etc' / 'vconsole.conf'
+		vconsole_path.write_text(f"KEYMAP={kb_layout}\n")
 
 		# This action takes place on the host system as pacstrap copies over package repository lists.
 		pacman_conf = PacmanConfig(self.target)
