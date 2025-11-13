@@ -4,7 +4,7 @@ General docs [README](./docs_main.md)
 
 | Components | Desc | Docs |
 |:----------|:------------|:--------------|
-| **hade_box** | Installer fork - Modified TUI for Arch Linux installation | [README](./.github/docs/hade_box.md) |
+| **hade_box** | Installer fork - Modified TUI for Arch Linux installation | [REPO](https://github.com/h8d13/archinstall-patch) |
 | **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./.github/docs/grom_lum.md) |
 | **kaes_arch** | Post-install - System config and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman common operations Gtk/Adw app | [README](./.github/docs/pacto_pac.md) |
