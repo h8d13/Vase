@@ -88,7 +88,14 @@ After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
 After login in with your user through `SDDM` or `GDM` or `LIGHTDM`:
 
-Open `Konsole` or `Console` and type: `cd Vase` this is where the post install script lives and more assets.
+Open `Konsole` or `Console` and type: 
+
+```
+$ sudo pacman -Sy git
+$ git clone https://github.com/h8d13/Vase
+$ cd Vase
+$ ./main -u
+```
 
 Then `sudo ./main -pe plasma` to edit desired values.
 
@@ -165,10 +172,10 @@ Or better yet, fork all the repos and send me patches.
 
 | Components | Desc | Docs |
 |:----------|:------------|:--------------|
-| **hade_box** | Installer fork - Modified TUI for Arch Linux installation | [README](https://github.com/h8d13/archinstall-patch) |
-| **grome_lum** | Grub2 utils - Setting passwords, or rescue/custom entries | [README](./.github/docs/grom_lum.md) |
+| **hade_box** | Installer fork - Modified TUI for Arch Linux installation | [REPO](https://github.com/h8d13/archinstall-patch) |
 | **kaes_arch** | Post-install - System config and package installation | [README](https://github.com/h8d13/KAES-ARCH) |
 | **pacto_pac** | GUI - Pacman common operations Gtk/Adw app | [README](./.github/docs/pacto_pac.md) |
+| **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./.github/docs/grom_lum.md) |
 | **zazu_lago** | Testing suite - VM menu QEMU/KVM testing | [README](./.github/docs/zazu_lago.md) |
 | **klar_tix** | Artix bootstrap - Init system compatible installer | [README](https://github.com/h8d13/VaseX) |
 
