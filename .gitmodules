@@ -9,6 +9,6 @@
     branch = master
 
 [submodule "vase_os/hade_box/archinstall"]
-    path = vase_os/hade_box/archinstall
-    url = https://github.com/h8d13/archinstall-patch.git
-    branch = master
+	path = vase_os/hade_box/archinstall
+	url = https://github.com/h8d13/archinstall-patch.git
+	branch = master

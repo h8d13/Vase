@@ -85,7 +85,7 @@ else
     fi
 fi
 
-export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
+export PYTHONPATH="$SCRIPT_DIR/archinstall:$PYTHONPATH"
 python -B -m archinstall "$@"
 
 #### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
