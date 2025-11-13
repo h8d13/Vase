@@ -86,3 +86,5 @@
 2025-11-11 14:38:28 | Host KDE/Qt: Plasma: 6.5.2 | Frameworks: 6.19.0 | Qt: 6.10.0
 2025-11-11 14:39:54 | Host KDE/Qt: Plasma: 6.5.2 | Frameworks: 6.19.0 | Qt: 6.10.0
 2025-11-13 14:07:30 | Version: 0.0.16 | ISO: VASE-2025.11.11-x86_64.iso | Size: 2.4GiB | GPG: gpg: Signature made Thu 13 Nov 2025 14:06:19 CET gpg: using EDDSA key 82D3B75AFE42263F4276843E8BCC09591FE98834 gpg: Good signature from "Eihdran L (New) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
+2025-11-13 17:08:01 | Version: 0.0.17 | ISO: VASE-2025.11.13-x86_64.iso | Size: 2.4GiB | GPG: gpg: Signature made Thu 13 Nov 2025 17:07:53 CET gpg: using EDDSA key 82D3B75AFE42263F4276843E8BCC09591FE98834 gpg: Good signature from "Eihdran L (New) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
+2025-11-13 17:21:38 | Version: 0.0.17 | ISO: VASE-2025.11.13-x86_64.iso | Size: 2.4GiB | GPG: gpg: Signature made Thu 13 Nov 2025 17:19:34 CET gpg: using EDDSA key 82D3B75AFE42263F4276843E8BCC09591FE98834 gpg: Good signature from "Eihdran L (New) <hadean-eon-dev@proton.me>" [ultimate]  | Status: OK
