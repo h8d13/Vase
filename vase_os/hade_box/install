@@ -14,34 +14,6 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Function to run reflector and update mirrorlist
-run_reflector() {
-    preop "Running reflector to fetch fast HTTPS mirrors..."
-
-    # Backup original mirrorlist if not already backed up
-    if [ ! -f /etc/pacman.d/mirrorlist.original ]; then
-        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.original 2>/dev/null || true
-    fi
-
-    # Run reflector
-    if command -v reflector >/dev/null 2>&1; then
-        if reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null; then
-            local mirror_count="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
-            postop "Reflector success: ${mirror_count} mirrors configured"
-            return 0
-        else
-            postop "Reflector failed, restoring backup..."
-            if [ -f /etc/pacman.d/mirrorlist.original ]; then
-                cp /etc/pacman.d/mirrorlist.original /etc/pacman.d/mirrorlist
-            fi
-            return 1
-        fi
-    else
-        postop "Reflector not found"
-        return 1
-    fi
-}
-
 preop "HADE_BOOT - ARCHINSTALL"
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
@@ -51,6 +23,7 @@ if [ -d "/run/archiso" ]; then
         "cryptography:python-cryptography"
         "parted:python-pyparted"
         "pydantic:python-pydantic"
+        "textual:python-textual"
     )
     for module_pkg in "${PYTHON_MODULES[@]}"; do
         module="${module_pkg%%:*}"
@@ -63,11 +36,6 @@ if [ -d "/run/archiso" ]; then
             MISSING+=("$package")
         fi
     done
-    # Clean up any stale pacman locks from previous cancelled installs
-    if [ -f /var/lib/pacman/db.lck ]; then
-        preop "Removing stale pacman lock from previous session..."
-        rm -f /var/lib/pacman/db.lck
-    fi
     preop "Checked only python deps. Skipping full check..."
 
     # Check internet connectivity before proceeding
@@ -84,16 +52,6 @@ if [ -d "/run/archiso" ]; then
         echo ""
         exit 1
     fi
-    # Arch disabled reflector.service auto-run - run it manually for fast mirrors
-    # Skip if reflector already ran successfully (user restarted installer)
-    current_mirrors="$(grep -c '^Server = ' /etc/pacman.d/mirrorlist 2>/dev/null || echo 0)"
-
-    # Only run reflector if mirrorlist seems stale/empty or this is first run
-    if [ -f /etc/pacman.d/mirrorlist.original ] && [ "${current_mirrors}" -ge 10 ] 2>/dev/null && [ "${current_mirrors}" -le 50 ] 2>/dev/null; then
-        preop "Reflector already ran ($current_mirrors mirrors), skipping..."
-    else
-        run_reflector
-    fi
 else # Always check full deps when not running with ISO
    	preop "Running from live system. Checking deps..."
     chmod +x "$SCRIPT_DIR/altodeps"
@@ -107,7 +65,7 @@ echo
 if [[ ! "$REPLY" =~ ^[yY]$ ]]; then
     postop "Please run: timedatectl set-timezone Asia/Honk_Kong"
     postop "And: timedatectl list-timezones to check yours."
-    postop "You can also correct this in BIOS directly."
+    postop "You can also correct this in BIOS directly..."
     exit 1
 fi
 
@@ -135,7 +93,6 @@ python -B -m archinstall "$@"
 #
 # -h, --help            show this help message and exit
 
-####################### Could be super useful (ckbcomp and grub keymaps)
 # --mountpoint [/mnt]   Define an alternate mount point for installation
 # --skip-ntp            Disables NTP checks during installation
 # --skip-wkd            Disables checking if archlinux keyring wkd sync is

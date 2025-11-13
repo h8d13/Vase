@@ -52,6 +52,7 @@ info "Adding git to ISO package list..."
 echo "" >> "$PROFILE_DIR/packages.x86_64"
 echo "# Git for cloning Vase installer" >> "$PROFILE_DIR/packages.x86_64"
 echo "git" >> "$PROFILE_DIR/packages.x86_64"
+echo "nano" >> "$PROFILE_DIR/packages.x86_64"
 
 # Add git clone command to zsh history for easy access
 info "Adding git clone to zsh history..."
@@ -84,7 +85,7 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
 EOF
 
 if file_ex "$PROFILE_LIST"; then
-    info "Creating local package repository for fat profile packages..."
+    info "Creating local package repository for $iso_profile packages..."
 
     # Read packages from profile (skip comments and empty lines)
     packages=$(grep -v '^#' "$PROFILE_LIST" | grep -v '^$' | tr '\n' ' ')
