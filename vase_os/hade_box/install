@@ -58,8 +58,21 @@ else # Always check full deps when not running with ISO
    	"$SCRIPT_DIR/altodeps"
     preop "Dependency check complete. Continuing..."
 fi
-export PYTHONPATH="$SCRIPT_DIR/archinstall:$PYTHONPATH"
-python -B -m archinstall "$@"
+
+# Check for dev mode flag
+ARCHINSTALL_DIR="archinstall"
+ARGS=()
+for arg in "$@"; do
+    if [ "$arg" = "--dev" ]; then
+        ARCHINSTALL_DIR="archinstall_dev"
+        preop "DEV MODE - Using archinstall_dev"
+    else
+        ARGS+=("$arg")
+    fi
+done
+
+export PYTHONPATH="$SCRIPT_DIR/$ARCHINSTALL_DIR:$PYTHONPATH"
+python -B -m archinstall "${ARGS[@]}"
 
 #### OPTIONS from orignal arch install. Heavily simplified to be TUI based guided.
 # All available archinstall command line options:

@@ -11,7 +11,7 @@ Options:
   -u,  --update              Check git for updates & pull submodules
   -ec, --edit-conf           Edit configuration file (...)
 
-  -t,  --tuimenu             Launch Vase Arch installer TUI
+  -t,  --tuimenu             Launch archinstall-patch (--dev) for dev repo
 
   -pe, --post-edit <type>    Edit post install script (plasma/gnome/xfce4, default: plasma)
   -p,  --post <type>         Run post install script (plasma/gnome/xfce4, default: plasma)
