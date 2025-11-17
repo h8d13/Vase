@@ -73,9 +73,14 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 `$ pacman-key --init && pacman -Sy git`
 
-`$ git clone https://github.com/h8d13/Vase && cd Vase`
+`$ git clone https://github.com/h8d13/Vase`
 
-`$ ./main -t` : Launch TUI forked archinstall
+`$ ./main -u` Pulls in submodules
+
+[!TIP]
+In the ISO you are root by default. Use sudo if running from an existing system.
+
+`$ ./main -t` : Launch TUI forked archinstall (Options include `--official --dev --patch`)
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, bluetooth needed, x11 optional (old NVIDIA hardware for example).
 
