@@ -45,9 +45,11 @@ A testing suite to run VMs and development platform to perform Archlinux system 
 Written in bash and python. 
 
 > Installs **6-13x faster** than any other distro with KDE, thanks to simply caching files overlayed onto the ISO. 
-> And also due to tools made by the release engineering teams at Arch. CURRENT BEST TIME: **1m54s**
+> And also due to tools made by the release engineering teams at Arch. 
 
-This works from official arch [ISO](https://archlinux.org/download/) (using mirrors slower, depending on internet speed) or the one built [here](https://github.com/h8d13/Vase/releases) (faster, using cached files). 
+**CURRENT BEST TIME:** 1m54s
+
+This works from official arch [ISO](https://archlinux.org/download/) (using mirrors slower, depending on internet speed) or the one built [here](https://github.com/h8d13/Vase/releases) (faster, using cached files). **This also works from an existing ArchLinux based installation.** where you can skip ISOs (mirrors only).
 
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
@@ -67,8 +69,6 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 ### From the official [ISO](https://archlinux.org/download/) or our builds [here](https://github.com/h8d13/Vase/releases)
 
 > By default you are already root in the ISO env. 
-
-**This also works from an existing ArchLinux based installation.** where you can skip ISOs (mirrors only).
 
 > ![TIP]
 > In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
