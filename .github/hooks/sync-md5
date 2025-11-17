@@ -1,0 +1,50 @@
+#!/bin/bash
+# Sync MD5 hashes for all tracked files in the repository
+#
+# SETUP: This script is meant to be run manually when you need to regenerate
+# all MD5 checksums (e.g., after forgetting to commit them or fixing issues)
+#
+# Usage: ./.github/hooks/sync-md5
+#
+# This script:
+# - Generates MD5 checksums for ALL files tracked by git
+# - Excludes the .md5/ directory itself (same as post-commit hook)
+# - Stores them in .md5/ directory with the same structure
+# - Stages changes but does NOT auto-commit (you review first)
+
+set -e
+
+echo "[+] Starting MD5 sync for all tracked files..."
+echo ""
+
+# Counter for progress
+count=0
+total=$(git ls-files | grep -v "^\.md5/" | wc -l)
+
+# Get all tracked files (excluding .md5 directory, same as post-commit hook)
+git ls-files | grep -v "^\.md5/" | while IFS= read -r file; do
+    if [ -f "$file" ]; then
+        # Create directory structure
+        mkdir -p ".md5/$(dirname "$file")"
+
+        # Generate MD5 hash (same logic as post-commit hook)
+        md5sum "$file" | awk '{print $1}' > ".md5/$file.md5"
+
+        count=$((count + 1))
+        if [ $((count % 50)) -eq 0 ]; then
+            echo "  Progress: $count/$total files processed..."
+        fi
+    fi
+done
+
+echo ""
+echo "[+] MD5 sync complete!"
+echo "[+] Processed $total files"
+echo ""
+echo "[+] Changes are staged. Review with:"
+echo "    git status"
+echo "    git diff --cached .md5/"
+echo ""
+echo "[+] If everything looks good, commit with:"
+echo "    git add .md5/"
+echo "    git commit -m 'Sync all MD5 checksums'"
