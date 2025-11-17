@@ -93,7 +93,7 @@ After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
 After login in with your user through `SDDM` or `GDM` or `LIGHTDM`:
 
-Open `Konsole` or `Console` and type: 
+Open `Konsole` or `Console` and type: ( `--dev` branch clones to SUDO_USER 0's home automatically)
 
 ```
 $ sudo pacman -Sy git
