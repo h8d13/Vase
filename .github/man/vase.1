@@ -14,20 +14,11 @@ Show help message
 .BR \-u ", " \-\-update
 Check git for updates & pull submodules
 .TP
-.BR \-c ", " \-\-check\-deps
-Check build dependencies
-.TP
 .BR \-ec ", " \-\-edit\-conf
 Edit configuration file (...)
 .TP
 .BR \-t ", " \-\-tuimenu
-Launch installer TUI (usually in ISO but not always)
-.TP
-.BR \-xl ", " \-\-extract\-logs
-Extract installer logs
-.TP
-.BR \-xlu ", " \-\-extract\-logs\-up
-Extract and upload installer logs
+Launch archinstall-patch (--dev) for dev repo
 .TP
 .BR \-pe ", " \-\-post\-edit " \fITYPE\fR"
 Edit post install script (plasma/gnome/xfce4, default: plasma)
@@ -45,7 +36,7 @@ Start VM menu
 Pass direct VM options (use "help" for list)
 .TP
 .BR \-i ", " \-\-isomod
-Create ISO using iso_profiles/fat.conf
+Create ISO using iso_profiles/plasma_skinny.conf
 .TP
 .BR \-f ", " \-\-flash " \fIDEVICE\fR"
 Flash ISO to USB device (e.g., /dev/sdd)
@@ -53,24 +44,18 @@ Flash ISO to USB device (e.g., /dev/sdd)
 .BR \-w ", " \-\-workflow " \fIDEVICE\fR"
 Complete workflow: build, sign, flash
 .TP
-.BR \-d ", " \-\-dev
-Development mode entry
-.TP
 .BR \-g ", " \-\-grub " \fIARGS\fR"
 GRUB utilities (\-h for grub help)
-.TP
-.BR \-b ", " \-\-bench " \fITYPE\fR"
-Run benchmarks: io, cpu, gpu
 .TP
 .BR \-r ", " \-\-reset
 Reset logs and settings
 .SH EXAMPLES
 .TP
 .B vase \-i
-Build ISO with package cache
+Build ISO
 .TP
 .B vase \-s
-Start VM testing menu
+Start VM menu
 .TP
 .B vase \-q help
 Show VM quick commands
