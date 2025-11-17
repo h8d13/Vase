@@ -58,7 +58,7 @@ echo "nano" >> "$PROFILE_DIR/packages.x86_64"
 info "Adding git clone to zsh history..."
 mkdir -p "$PROFILE_DIR/airootfs/root"
 cat > "$PROFILE_DIR/airootfs/root/.zsh_history" << 'HISTEOF'
-: 1728000000:0;pacman-key --init && git clone https://github.com/h8d13/archinstall-patch && cd archinstall-patch && python -m archinstall
+: 1728000000:0;pacman-key --init && git clone https://github.com/archlinux/archinstall && cd archinstall-patch && python -m archinstall
 HISTEOF
 
 # Append custom MOTD
