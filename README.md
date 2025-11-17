@@ -52,7 +52,7 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
-**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly with post-install utilities.
+**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly with post-install utilities and VM testing.
 
 ## Prep
 

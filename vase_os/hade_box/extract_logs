@@ -15,10 +15,6 @@ fi
 mode="${1:-extract}"
 
 case "$mode" in
-    extract)
-        echo "[+] Extracting essential installer logs from: $log_file"
-        grep -iE 'INFO|error' "$log_file"
-        ;;
     upload)
         echo "[+] Extracting full installer logs from: $log_file"
         echo "[+] Uploading logs to 0x0.st..."
@@ -29,7 +25,7 @@ case "$mode" in
         (for f in $base_path; do echo "=== $f ==="; cat "$f"; echo; done) | curl -F"file=@-" https://0x0.st
         ;;
     *)
-        echo "Usage: $0 {extract|upload}"
+        echo "Usage: $0 {full|upload}"
         exit 1
         ;;
 esac 
