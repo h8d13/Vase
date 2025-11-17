@@ -52,7 +52,8 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
 
-**The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly with post-install utilities and VM testing.
+> [!INFO]
+> **The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly with post-install utilities and VM testing.
 
 ## Prep
 
@@ -69,6 +70,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 **This also works from an existing ArchLinux based installation.** where you can skip ISOs (mirrors only).
 
+> ![TIP]
 > In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
 
 `$ pacman-key --init && pacman -Sy git`
