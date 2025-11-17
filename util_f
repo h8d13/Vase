@@ -367,7 +367,7 @@ tree_dir() {
         return 1
     fi
 
-    local current_tree=$(tree -a --dirsfirst --gitignore -I '.git|.md5' "$1" 2>/dev/null)
+    local current_tree=$(tree -a --dirsfirst --gitignore -I '.git|.md5|archinstall_official|archinstall_patch' "$1" 2>/dev/null)
     local current_hash=$(echo "$current_tree" | md5sum | awk '{print $1}')
     local stored_hash=""
 
