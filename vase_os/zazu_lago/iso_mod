@@ -76,9 +76,8 @@ cat >> "$PROFILE_DIR/airootfs/etc/motd" << EOF
       Where SSID is you WiFi...
 ╚═══════════════════════════════════════╝
 
-
 ╔═══════════════════════════════════════╗
-      Install: UP KEY ↑ then ENTER. ↵ 
+    INSTALL: UP KEY ↑ then ENTER ╛ KEY
 ╚═══════════════════════════════════════╝
 EOF
 
