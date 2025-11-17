@@ -80,7 +80,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 > [!TIP]
 > In the ISO you are root by default. Use sudo if running from an existing system.
 
-`$ ./main -t` : Launch TUI forked archinstall (Options include `--official --dev --patch`)
+`$ ./main -t` : Launch TUI forked archinstall (Options include `--official`, `--dev` and `--patch`)
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, applications, network manager.
 
