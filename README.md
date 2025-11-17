@@ -182,7 +182,7 @@ Or better yet, fork all the repos and send me patches.
 | **pacto_pac** | GUI - Pacman common operations Gtk/Adw app | [README](./.github/docs/pacto_pac.md) |
 | **grome_lum** | Grub2 utils - Setting keymaps, passwords, or custom entries | [README](./.github/docs/grom_lum.md) |
 | **zazu_lago** | Testing suite - VM menu QEMU/KVM testing | [README](./.github/docs/zazu_lago.md) |
-| **klar_tix** | Artix bootstrap - Init system compatible installer | [README](https://github.com/h8d13/VaseX) |
+| **klar_tix** | Artix bootstrap - Init system compatible installer | [REPO](https://github.com/h8d13/VaseX) |
 
 [QEMU Docs](https://www.qemu.org/documentation/) 
 
