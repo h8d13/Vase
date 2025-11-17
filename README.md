@@ -78,7 +78,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 `$ ./main -u` Pulls in submodules
 
 [!TIP]
-In the ISO you are root by default. Use sudo if running from an existing system.
+> In the ISO you are root by default. Use sudo if running from an existing system.
 
 `$ ./main -t` : Launch TUI forked archinstall (Options include `--official --dev --patch`)
 
