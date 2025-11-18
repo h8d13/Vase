@@ -4,32 +4,32 @@
 <table>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Arch_Linux-v6.17.8-darkgreen" alt="Arch_Linux"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/arch-linux.svg" alt="Arch_Linux"></a>
         </td>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Plasma-6.5.2-darkgreen" alt="Plasma"></a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/TUI_Status-Passing-darkgreen" alt="TUI_Status"></a>
-        </td>
-        <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Qt-6.10.0-darkgreen" alt="Qt"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/plasma.svg" alt="Plasma"></a>
         </td>
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Git_Clones-3453-blue" alt="Git_Clones"></a> <!-- 17/11-->
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/tui-status.svg" alt="TUI_Status"></a>
         </td>
         <td>
-            <a href="https://github.com/h8d13/Vase/releases"><img src="https://img.shields.io/badge/Frameworks-6.20.0-blue" alt="Frameworks"></a>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/qt.svg" alt="Qt"></a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/git-clones.svg" alt="Git_Clones"></a> <!-- 17/11-->
+        </td>
+        <td>
+            <a href="https://github.com/h8d13/Vase/releases"><img src="./.github/badges/frameworks.svg" alt="Frameworks"></a>
         </td>
     </tr>
 </table>
 <br clear="left">
 
-<strong>Version:</strong> 0.0.17 | <strong>Tested:</strong> 2025-11-18 14:19:56 | <strong>Size:</strong> 2.4GiB
+<strong>Version:</strong> 0.0.17| <strong>Tested:</strong> 2025-11-18 14:19:56| <strong>Size:</strong> 2.4GiB
 <br><br>
 <a href="https://github.com/h8d13/Vase/releases">Releases</a>
 
@@ -156,8 +156,6 @@ Making it all open so people can edit anything they desire from the flow, while 
 ## For Devs [README](./.github/docs/docs_main.md)
 
 ### Artix Compat Layer 🥶
-
-<a href="https://github.com/h8d13/VaseX"><img src="https://img.shields.io/badge/Artix_Linux-v6.17.5-blue" alt="Artix_Linux"></a>
 
 > Made specially for my friend Klagan who likes runit and minimalist installs.
 > Supports the post-install script, GUI and VMs. The installer is much more manual.

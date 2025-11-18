@@ -42,55 +42,26 @@ kde_info="Plasma: ${plasma_ver} | Frameworks: ${frameworks_ver} | Qt: ${qt_ver}"
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Host KDE/Qt: ${kde_info}" >> tests.status
 echo "Logged KDE/Qt versions: Plasma ${plasma_ver}, Frameworks ${frameworks_ver}, Qt ${qt_ver}"
 
-awk -v version="$version" -v test_date="$test_date" -v iso_name="$iso_name" -v iso_size="$iso_size" -v kernel="$kernel_version" -v kernel_color="$kernel_color" -v mirror_badge="$mirror_badge" -v mirror_color="$mirror_color" -v tui_badge="$tui_badge" -v tui_color="$tui_color" -v plasma="$plasma_ver" -v frameworks="$frameworks_ver" -v qt="$qt_ver" '
-function badge(label, value, color) {
-    return "<a href=\"https://github.com/h8d13/Vase/releases\"><img src=\"https://img.shields.io/badge/" label "-" value "-" color "\" alt=\"" label "\"></a>"
-}
-/^# Vase$/ {
-    skip = 1
-    print
-    print ""
-    print "<img src=\"./vase_os/vase.svg\" alt=\"VaseLogo\" width=\"117\" align=\"left\">"
-    print "<table>"
-    print "    <tr>"
-    print "        <td>"
-    print "            " badge("Arch_Linux", "v" kernel, kernel_color)
-    print "        </td>"
-    print "        <td>"
-    print "            " badge("Plasma", plasma, "darkgreen")
-    print "        </td>"
-    print "    </tr>"
-    print "    <tr>"
-    print "        <td>"
-    print "            " badge("TUI_Status", tui_badge, tui_color)
-    print "        </td>"
-    print "        <td>"
-    print "            " badge("Qt", qt, "darkgreen")
-    print "        </td>"
-    print "    </tr>"
-    print "    <tr>"
-    print "        <td>"
-    print "            " badge("Git_Clones", clones, "blue")
-    print "        </td>"
-    print "        <td>"
-    print "            " badge("Frameworks", frameworks, "blue")
-    print "        </td>"
-    print "    </tr>"
-    print "</table>"
-    print "<br clear=\"left\">"
-    print ""
-    print "<strong>Version:</strong> " version " | <strong>Tested:</strong> " test_date " | <strong>Size:</strong> " iso_size
-    print "<br><br>"
-    print "<a href=\"https://github.com/h8d13/Vase/releases\">Releases</a>"
-    print ""
-    next
-}
-/^## VaseOS/ {
-    skip = 0
-    print "---"
-    print ""
-}
-!skip { print }
-' README.md > README.md.tmp && mv README.md.tmp README.md
+# Update SVG badge files
+sed -i "s/aria-label=\"Arch Linux: [^\"]*\"/aria-label=\"Arch Linux: v${kernel_version}\"/" .github/badges/arch-linux.svg
+sed -i "s/>v[0-9.]*<\/text>/>v${kernel_version}<\/text>/g" .github/badges/arch-linux.svg
 
-echo "README updated with latest release: ${version} (Kernel: ${kernel_version})"
+sed -i "s/aria-label=\"Plasma: [^\"]*\"/aria-label=\"Plasma: ${plasma_ver}\"/" .github/badges/plasma.svg
+sed -i "s/>[0-9.]*<\/text>/>${plasma_ver}<\/text>/g" .github/badges/plasma.svg
+
+sed -i "s/aria-label=\"TUI Status: [^\"]*\"/aria-label=\"TUI Status: ${tui_badge}\"/" .github/badges/tui-status.svg
+sed -i "s/>Passing<\/text>/>${tui_badge}<\/text>/g" .github/badges/tui-status.svg
+sed -i "s/>Failing<\/text>/>${tui_badge}<\/text>/g" .github/badges/tui-status.svg
+
+sed -i "s/aria-label=\"Qt: [^\"]*\"/aria-label=\"Qt: ${qt_ver}\"/" .github/badges/qt.svg
+sed -i "s/>[0-9.]*<\/text>/>${qt_ver}<\/text>/g" .github/badges/qt.svg
+
+sed -i "s/aria-label=\"Frameworks: [^\"]*\"/aria-label=\"Frameworks: ${frameworks_ver}\"/" .github/badges/frameworks.svg
+sed -i "s/>[0-9.]*<\/text>/>${frameworks_ver}<\/text>/g" .github/badges/frameworks.svg
+
+# Update README version info only
+sed -i "s/<strong>Version:<\/strong> [^|]*/<strong>Version:<\/strong> ${version}/" README.md
+sed -i "s/<strong>Tested:<\/strong> [^|]*/<strong>Tested:<\/strong> ${test_date}/" README.md
+sed -i "s/<strong>Size:<\/strong> [^<]*/<strong>Size:<\/strong> ${iso_size}/" README.md
+
+echo "README and badges updated with latest release: ${version} (Kernel: ${kernel_version})"
