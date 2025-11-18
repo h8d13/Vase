@@ -56,7 +56,7 @@ sed -i "s/>Failing<\/text>/>${tui_badge}<\/text>/g" .github/badges/tui-status.sv
 sed -i "s/aria-label=\"Qt: [^\"]*\"/aria-label=\"Qt: ${qt_ver}\"/" .github/badges/qt.svg
 sed -i "s/>[0-9.]*<\/text>/>${qt_ver}<\/text>/g" .github/badges/qt.svg
 
-sed -i "s/aria-label=\"Frameworks: [^\"]*\"/aria-label=\"Frameworks: ${frameworks_ver}\"/" .github/badges/frameworks.svg
+sed -i "s/aria-label=\"Fws: [^\"]*\"/aria-label=\"Fws: ${frameworks_ver}\"/" .github/badges/frameworks.svg
 sed -i "s/>[0-9.]*<\/text>/>${frameworks_ver}<\/text>/g" .github/badges/frameworks.svg
 
 # Update README version info only
