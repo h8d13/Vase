@@ -64,6 +64,7 @@ ARCHINSTALL_DIR="archinstall_official"
 ARGS=()
 for arg in "$@"; do
     if [ "$arg" = "--dev" ] || [ "$arg" = "-d" ]; then
+        reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
         ARCHINSTALL_DIR="archinstall_dev"
         preop "DEV MODE - Using archinstall_dev"
     elif [ "$arg" = "--patch" ] || [ "$arg" = "-p" ]; then
