@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="98" height="20" role="img" aria-label="Plasma: 6.5.2">
+<svg xmlns="http://www.w3.org/2000/svg" width="98" height="20" role="img" aria-label="Plasma: 6.5.4">
   <linearGradient id="s" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     <stop offset="1" stop-opacity=".1"/>
@@ -14,7 +14,7 @@
   <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">
     <text aria-hidden="true" x="275" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="430">Plasma</text>
     <text x="275" y="140" transform="scale(.1)" fill="#fff" textLength="430">Plasma</text>
-    <text aria-hidden="true" x="745" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="350">6.5.2</text>
-    <text x="745" y="140" transform="scale(.1)" fill="#fff" textLength="350">6.5.2</text>
+    <text aria-hidden="true" x="745" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="350">6.5.4</text>
+    <text x="745" y="140" transform="scale(.1)" fill="#fff" textLength="350">6.5.4</text>
   </g>
 </svg>
