@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from archinstall.lib.exceptions import DiskError, SysCallError
 from archinstall.lib.general import SysCommand
 from archinstall.lib.models.device import LsblkInfo
-from archinstall.lib.output import debug, warn
+from archinstall.lib.output import debug, error, info, warn
 
 class LsblkOutput(BaseModel):
 	blockdevices: list[LsblkInfo]
@@ -131,4 +131,30 @@ def umount(mountpoint: Path, recursive: bool = False) -> None:
 			continue
 
 		debug(f'Unmounting mountpoint: {path}')
-		SysCommand(cmd + [str(path)])
+		try:
+			SysCommand(cmd + [str(path)])
+		except Exception as e:
+			# If normal unmount fails (target is busy), try lazy unmount
+			if 'busy' in str(e).lower() or 'target is busy' in str(e).lower():
+				warn(f'Mountpoint {path} is busy, attempting lazy unmount...')
+				try:
+					SysCommand(['umount', '-l', str(path)])
+					info(f'Successfully performed lazy unmount of {path}')
+
+					# After lazy unmount, sync and flush buffers to ensure kernel releases the device
+					import time
+					SysCommand(['sync'])
+					time.sleep(0.5)  # Brief delay for kernel to process
+
+					# Try to flush device buffers
+					try:
+						SysCommand(['blockdev', '--flushbufs', str(mountpoint)])
+						debug(f'Flushed buffers for {mountpoint}')
+					except Exception:
+						pass  # blockdev may fail on some systems, non-critical
+
+				except Exception as lazy_err:
+					error(f'Failed to lazy unmount {path}: {lazy_err}')
+					raise
+			else:
+				raise

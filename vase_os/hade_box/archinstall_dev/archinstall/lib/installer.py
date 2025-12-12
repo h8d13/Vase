@@ -309,6 +309,52 @@ class Installer:
 			options = mount_options + [f'subvol={subvol.name}']
 			device_handler.mount(dev_path, mountpoint, options=options)
 
+	def _create_boot_efi_symlink(self) -> None:
+		"""
+		Create /boot -> /efi symlink for EFI stub boot support.
+		This allows the kernel and initramfs to be placed on the EFI partition,
+		enabling direct UEFI boot without a traditional bootloader.
+
+		Only creates symlink when:
+		- /efi exists (ESP is mounted)
+		- /boot is NOT a mount point (systemd-boot uses /boot as XBOOTLDR partition)
+		"""
+		efi_path = self.target / 'efi'
+		boot_path = self.target / 'boot'
+
+		# Only create symlink if /efi exists
+		if not (efi_path.exists() and efi_path.is_dir()):
+			return
+
+		# Don't create symlink if /boot is a mount point (systemd-boot with XBOOTLDR)
+		if os.path.ismount(boot_path):
+			debug('/boot is a mount point (systemd-boot XBOOTLDR), skipping symlink')
+			return
+
+		# Handle existing /boot
+		if boot_path.exists():
+			if boot_path.is_symlink():
+				debug('/boot symlink already exists')
+				return
+			elif boot_path.is_dir():
+				# Move contents of /boot to /efi before creating symlink
+				try:
+					for item in boot_path.iterdir():
+						shutil.move(str(item), str(efi_path / item.name))
+						debug(f'Moved {item.name} from /boot to /efi')
+					boot_path.rmdir()
+					info('Moved /boot contents to /efi')
+				except OSError as e:
+					error(f'Failed to move /boot contents: {e}')
+					return
+
+		# Create the symlink (use relative path so it works in chroot)
+		try:
+			boot_path.symlink_to('efi')
+			info('Created /boot -> efi symlink for EFI stub boot support')
+		except OSError as e:
+			error(f'Failed to create /boot -> efi symlink: {e}')
+
 	def post_install_check(self, *args: str, **kwargs: str) -> list[str]:
 		return [step for step, flag in self._helper_flags.items() if flag is False]
 
@@ -1312,6 +1358,10 @@ class Installer:
 					raise ValueError('systemd-boot requires a /boot partition')
 				self._add_systemd_bootloader(boot_partition, root, efi_partition, uki_enabled)
 			case Bootloader.Grub:
+				# Create /boot -> /efi symlink for GRUB with EFI stub boot support
+				# Only for GRUB in UEFI mode with separate ESP (no separate /boot partition)
+				if SysInfo.has_uefi() and boot_partition is None and efi_partition is not None:
+					self._create_boot_efi_symlink()
 				self._add_grub_bootloader(boot_partition, root, efi_partition, grub_config)
 
 	def add_additional_packages(self, packages: str | list[str]) -> None:

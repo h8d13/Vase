@@ -76,8 +76,7 @@ class ArchConfig:
 	timezone: str = 'UTC'
 	services: list[str] = field(default_factory=list)
 	custom_commands: list[str] = field(default_factory=list)
-	removable_media: bool = False
-	
+
 	def unsafe_json(self) -> dict[str, Any]:
 		config: dict[str, list[UserSerialization] | str | None] = {}
 
@@ -108,7 +107,6 @@ class ArchConfig:
 			'timezone': self.timezone,
 			'services': self.services,
 			'custom_commands': self.custom_commands,
-			'removable_media': self.removable_media,
 			'bootloader': self.bootloader.json() if self.bootloader else None,
 			'grub_config': self.grub_config.__dict__ if self.grub_config else None,
 			'uki_enabled': self.uki_enabled,
@@ -247,9 +245,6 @@ class ArchConfig:
 
 		if custom_commands := args_config.get('custom_commands', []):
 			arch_config.custom_commands = custom_commands
-
-		# Set removable_media from config or from command line args
-		arch_config.removable_media = args_config.get('removable_media', args.pandora)
 
 		return arch_config
 

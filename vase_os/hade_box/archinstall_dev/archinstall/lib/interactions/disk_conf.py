@@ -197,10 +197,11 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 	flags = [PartitionFlag.BOOT]
 	start = Size(1, Unit.MiB, sector_size)
 
-	# Determine filesystem type and flags based on separate_esp setting
+	# Determine filesystem type, flags, and mountpoint based on separate_esp setting
 	if separate_esp:
 		# When using separate ESP, /boot uses the same filesystem as root (user's choice)
 		fs_type = filesystem_type if filesystem_type else FilesystemType.Ext4
+		mountpoint = Path('/boot')
 		# Add XBOOTLDR flag for systemd-boot when using separate ESP
 		if using_gpt:
 			if arch_config_handler.config.bootloader == Bootloader.Systemd:
@@ -208,6 +209,7 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 	else:
 		# Standard mode: /boot is the ESP (FAT32)
 		fs_type = FilesystemType.Fat32
+		mountpoint = Path('/boot')
 		if using_gpt:
 			flags.append(PartitionFlag.ESP)
 
@@ -216,7 +218,7 @@ def _boot_partition(sector_size: SectorSize, using_gpt: bool, size: Size | None 
 		type=PartitionType.Primary,
 		start=start,
 		length=size,
-		mountpoint=Path('/boot'),
+		mountpoint=mountpoint,
 		fs_type=fs_type,
 		flags=flags,
 	)

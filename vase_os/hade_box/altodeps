@@ -15,13 +15,11 @@ PACKAGES=(
     "pciutils"
     "dosfstools"
     "reflector"
-    # Optional (depending on options picked in archinstall only needed in target)
-    #"btrfs-progs" 
-    #"cryptsetup"
-    #"libfido2"
-    #"e2fsprogs" 
-    # grub
-    # Core (sanity check)
+    "btrfs-progs" 
+    "reflector"
+    "cryptsetup"
+    "libfido2"
+    "e2fsprogs" 
     "coreutils"
     "glibc"
     "shadow"
@@ -31,6 +29,7 @@ PACKAGES=(
     "python-cryptography"
     "python-pyparted"
     "python-pydantic"
+    "python-textual"
 )
 preop "Cheching system subdeps"
 MISSING=()

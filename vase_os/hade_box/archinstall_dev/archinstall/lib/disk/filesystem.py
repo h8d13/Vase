@@ -57,6 +57,27 @@ class FilesystemHandler:
 
 		device_handler.udev_sync()
 
+		# Force kernel to re-read partition table and clear cached data
+		from ..general import SysCommand
+		import time
+		for mod in device_mods:
+			try:
+				# Re-read partition table
+				SysCommand(['partprobe', str(mod.device_path)])
+				debug(f'Ran partprobe on {mod.device_path}')
+			except Exception as e:
+				debug(f'partprobe failed (non-critical): {e}')
+
+			try:
+				# Flush device buffers
+				SysCommand(['blockdev', '--flushbufs', str(mod.device_path)])
+				debug(f'Flushed buffers on {mod.device_path}')
+			except Exception as e:
+				debug(f'blockdev --flushbufs failed (non-critical): {e}')
+
+		# Brief delay for kernel to process partition table changes
+		time.sleep(1)
+
 		for mod in device_mods:
 			self._format_partitions(mod.partitions)
 

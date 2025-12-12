@@ -64,7 +64,6 @@ class GlobalMenu(AbstractMenu[None]):
 			'parallel_downloads', # 0
 			'timezone',      # 'UTC'
 			'ntp',          # True
-			'removable_media', # False
 		]
 		
 		for key in items_with_defaults:
@@ -313,12 +312,6 @@ class GlobalMenu(AbstractMenu[None]):
 				preview_action=self._prev_mirror_config,
 				mandatory=True,
 				key='mirror_config',
-			),
-			MenuItem(
-				text=('Live medium'),
-				value=self._arch_config.removable_media,
-				preview_action=self._prev_removable_media,
-				key='removable_media',
 			),
 			MenuItem(
 				text='',
@@ -748,17 +741,6 @@ class GlobalMenu(AbstractMenu[None]):
 			output += f'{title}:\n\n{table}'
 
 		return output.strip()
-
-	def _prev_removable_media(self, item: MenuItem) -> str | None:
-		if item.value is not None:
-			status = 'Enabled' if item.value else 'Disabled'
-			output = f'Live medium: {status}\n\n'
-			if item.value:
-				output += 'Portable installation with:\n'
-			else:
-				output += 'Standard fixed drive installation'
-			return output
-		return None
 
 	def _handle_abort(self, preset: None) -> None:
 		"""Handle abort with option to save selections"""

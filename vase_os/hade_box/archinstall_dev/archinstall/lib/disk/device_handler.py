@@ -289,6 +289,25 @@ class DeviceHandler:
 		try:
 			SysCommand(cmd)
 		except SysCallError as err:
+			# If "in use" error, try aggressive cleanup and retry once
+			if 'in use' in err.message.lower() or 'apparently in use' in err.message.lower():
+				warn(f'{path} appears to be in use, attempting cleanup...')
+				import time
+				try:
+					# Force flush and re-read on the specific device only
+					SysCommand(['blockdev', '--flushbufs', str(path)])
+					# Get parent device path to avoid affecting system devices like /dev/null
+					parent_device = self.get_parent_device_path(path)
+					SysCommand(['partprobe', str(parent_device)])
+					time.sleep(1)
+					# Retry format
+					info(f'Retrying format of {path}...')
+					SysCommand(cmd)
+					info(f'Successfully formatted {path} after cleanup')
+					return
+				except Exception as retry_err:
+					error(f'Format retry failed: {retry_err}')
+
 			msg = f'Could not format {path} with {fs_type.value}: {err.message}'
 			error(msg)
 			raise DiskError(msg) from err
