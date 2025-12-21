@@ -26,3 +26,4 @@ pkg/
 vase-git/
 *.iso
 *.img
+*_OVMF_VARS.fd

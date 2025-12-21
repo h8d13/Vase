@@ -8,6 +8,7 @@ iso_dir_path="${script_dir}/${vm_d}/"
 iso_name="${script_dir}/${vm_d}/${iso_n}.$iso_ext"
 disks_dir_path="${script_dir}/c/"
 image_name="${script_dir}/c/${vm_name}.${vm_ext}"
+ovmf_vars="${script_dir}/c/${vm_name}_OVMF_VARS.fd"
 
 # Global state
 session_uuid=$(cat /proc/sys/kernel/random/uuid)
@@ -88,6 +89,7 @@ qemu_cmd() {
     # Add UEFI firmware if enabled
     if [ "$use_uefi" = "1" ]; then
         cmd="$cmd -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.4m.fd"
+        cmd="$cmd -drive if=pflash,format=raw,file=$ovmf_vars"
     fi
 
     local use_display=1
@@ -226,6 +228,12 @@ main() {
     if ! file_ex "$image_name"; then
         preop "Creating initial disk: $image_name"
         qemu-img create -f qcow2 "$image_name" "$size"
+    fi
+
+    # Create UEFI NVRAM if UEFI is enabled and file doesn't exist
+    if [ "$use_uefi" = "1" ] && ! file_ex "$ovmf_vars"; then
+        preop "Creating UEFI NVRAM: $ovmf_vars"
+        cp /usr/share/edk2/x64/OVMF_VARS.4m.fd "$ovmf_vars"
     fi
 
     # Check for quick command from argument (bypass menu)
