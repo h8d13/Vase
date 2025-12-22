@@ -92,35 +92,56 @@ if file_ex "$PROFILE_LIST"; then
         REPO_DIR="$PROFILE_DIR/airootfs/root/vase_packages"
         mkdir -p "$REPO_DIR"
 
-        info "Downloading packages with dependencies: $packages"
+        # Recursively get ALL dependencies using pactree FIRST
+        info "Resolving complete dependency tree for: $packages"
+        all_packages=$(
+            for pkg in $packages; do
+                pactree -u -l "$pkg" 2>/dev/null || echo "$pkg"
+            done | sort -u | grep -v "^$" | \
+            # Strip version constraints (gdb-common=17.1 -> gdb-common)
+            sed 's/[><=].*//' | \
+            # Filter out library sonames (libcrypt.so, libdbus-1.so, etc)
+            grep -v '\.so' | \
+            # Remove duplicates after stripping versions
+            sort -u
+        )
+        dep_count=$(echo "$all_packages" | wc -l)
+        info "Found $dep_count real packages (stripped version constraints)"
 
-        # Download packages (pacman resolves dependencies automatically)
+        # Download ALL packages (explicit + dependencies) to cache
+        # Note: -Sw downloads to cache; some packages may already be cached
+        info "Downloading $dep_count packages to cache..."
         if [ "$silent_mode" = "1" ]; then
-            pacman -Sw --noconfirm $packages >/dev/null 2>&1
+            pacman -Syw --noconfirm $all_packages >/dev/null 2>&1
         else
-            pacman -Sw --noconfirm $packages
+            pacman -Syw --noconfirm $all_packages
         fi
 
+        # Sync database to ensure all packages are available
+        pacman -Sy >/dev/null 2>&1 || true
+
         if [ $? -eq 0 ]; then
-            # Recursively get ALL dependencies using pactree
-            info "Resolving complete dependency tree..."
-            all_packages=$(
-                for pkg in $packages; do
-                    pactree -u -l "$pkg" 2>/dev/null || echo "$pkg"
-                done | sort -u | grep -v "^$"
-            )
-            dep_count=$(echo "$all_packages" | wc -l)
             info "Copying $dep_count packages to ISO repository..."
 
             # Copy all packages from cache
-            {
-                for pkg_name in $all_packages; do
-                    latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
-                    if [ -n "$latest" ]; then
-                        cp "$latest" "$REPO_DIR/" 2>/dev/null || true
-                    fi
-                done
-            } >/dev/null 2>&1
+            copied=0
+            not_found=0
+            missing_list=""
+            for pkg_name in $all_packages; do
+                latest=$(ls -t /var/cache/pacman/pkg/${pkg_name}-*.pkg.tar.zst 2>/dev/null | head -n1)
+                if [ -n "$latest" ]; then
+                    cp "$latest" "$REPO_DIR/" 2>/dev/null && ((copied++)) || true
+                else
+                    ((not_found++)) || true
+                    missing_list="$missing_list $pkg_name"
+                fi
+            done
+
+            if [ $not_found -gt 0 ]; then
+                warn "$not_found packages not found in cache:"
+                echo "$missing_list" | tr ' ' '\n' | grep -v '^$' | head -20
+            fi
+            info "Successfully copied $copied packages to ISO repository"
 
             # Create local repository database (using explicit file list)
             info "Creating repository database..."

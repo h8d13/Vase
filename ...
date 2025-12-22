@@ -4,8 +4,8 @@ EDITOR="${EDITOR:-vim}"
 
 ################## ISO CREATION
 vase_v="0.0.18" # For motd / github page
-silent_mode=1 #Supress output of mkarchiso
-auto_date=0 # 1=automatic date, 0=manual
+silent_mode=0 #Supress output of mkarchiso
+auto_date=1 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
 ################## VM STUFF
