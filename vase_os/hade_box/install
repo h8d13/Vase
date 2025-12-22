@@ -14,6 +14,11 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# Check for archinstall version flag
+ARCHINSTALL_DIR="archinstall_dev"
+preop "DEV MODE - Using archinstall_dev (This is a mess expect bugs. Please use official if you have any sanity left.)"
+sleep 3
+
 preop "HADE_BOOT - ARCHINSTALL"
 # Determine if we running from ISO or not
 if [ -d "/run/archiso" ]; then
@@ -60,24 +65,6 @@ else # Always check full deps when not running with ISO
    	"$SCRIPT_DIR/altodeps"
     preop "Dependency check complete. Continuing..."
 fi
-
-# Check for archinstall version flag
-ARCHINSTALL_DIR="archinstall_official"
-ARGS=()
-for arg in "$@"; do
-    if [ "$arg" = "--dev" ] || [ "$arg" = "-d" ]; then
-        ARCHINSTALL_DIR="archinstall_dev"
-        preop "DEV MODE - Using archinstall_dev"
-    elif [ "$arg" = "--patch" ] || [ "$arg" = "-p" ]; then
-        ARCHINSTALL_DIR="archinstall_patch"
-        preop "PATCH MODE - Using archinstall_patch"
-    elif [ "$arg" = "--official" ] || [ "$arg" = "-o" ]; then
-        ARCHINSTALL_DIR="archinstall_official"
-        preop "OFFICIAL MODE - Using archinstall_official"
-    else
-        ARGS+=("$arg")
-    fi
-done
 
 export PYTHONPATH="$SCRIPT_DIR/$ARCHINSTALL_DIR:$PYTHONPATH"
 python -B -m archinstall "${ARGS[@]}"
