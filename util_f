@@ -22,7 +22,6 @@ Options:
   -i,  --isomod              Create ISO using iso_profiles/plasma_skinny.conf
   -f,  --flash <device>      Flash ISO to USB device (e.g., /dev/sdd)
   -w,  --workflow <device>   Complete workflow: build, sign, flash
-  -g,  --grub <args>         GRUB utilities (-h for grub help)
   -r,  --reset               Reset logs and settings
 
 Examples:
