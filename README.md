@@ -82,7 +82,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 > [!TIP]
 > In the ISO you are root by default. Use sudo if running from an existing system.
 
-`$ ./main -t` : Launch TUI forked archinstall (Options include `--official`, `--dev` and `--patch`)
+`$ ./main -t` : Launch TUI forked archinstall
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, applications, network manager.
 
@@ -95,7 +95,7 @@ After initial install pick `Reboot` and **switch to hard disk** in BIOS.
 
 After login in with your user through `SDDM` or `GDM` or `LIGHTDM`:
 
-Open a terminal and type: ( `--dev` branch clones to `SUDO_USER0`'s home automatically you can skip this.)
+Open a terminal and type: (Dev branch clones to `SUDO_USER0`'s home automatically you can skip this.)
 
 ```
 $ sudo pacman -Sy git

@@ -7,8 +7,3 @@
     path = vase_os/pacto_pac
     url = https://github.com/h8d13/PACTOPAC.git
     branch = master
-
-[submodule "vase_os/hade_box/archinstall_patch"]
-	path = vase_os/hade_box/archinstall_patch
-	url = https://github.com/h8d13/archinstall-patch.git
-	branch = master

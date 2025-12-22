@@ -11,7 +11,7 @@ Options:
   -u,  --update              Check git for updates & pull submodules
   -ec, --edit-conf           Edit configuration file (...)
 
-  -t,  --tuimenu             Launch archinstall-patch (--dev) for dev repo
+  -t,  --tuimenu             Launch archinstall-dev mess
 
   -pe, --post-edit <type>    Edit post install script (plasma/gnome/xfce4, default: plasma)
   -p,  --post <type>         Run post install script (plasma/gnome/xfce4, default: plasma)
@@ -61,9 +61,6 @@ parse_args() {
             -t |--tuimenu)
                 TUI=1
                 shift
-                # Capture all remaining
-                TUI_CMD="$*"
-                break
                 ;;
             -q|--quick)
                 QUICK=1
