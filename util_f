@@ -96,13 +96,6 @@ parse_args() {
                 WORKFLOW_DEVICE="$2"
                 shift 2
                 ;;
-            -g|--grub)
-                GRUB=1
-                # Capture all remaining args for grome_lum
-                GRUB_CMD="$*"
-                shift
-                break
-                ;;
             -p|--post)
                 POST=1
                 if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
@@ -150,7 +143,6 @@ exec_args() {
         UPDATE) [ "${UPDATE}" = "1" ] ;;
         FLASH) [ "${FLASH}" = "1" ] ;;
         WORKFLOW) [ "${WORKFLOW}" = "1" ] ;;
-        GRUB) [ "${GRUB}" = "1" ] ;;
         POST) [ "${POST}" = "1" ] ;;
         POST_EDIT) [ "${POST_EDIT}" = "1" ] ;;
         PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
@@ -175,9 +167,6 @@ get_flash_device() {
 }
 get_workflow_device() {
     echo "${WORKFLOW_DEVICE}"
-}
-get_grub_cmd() {
-    echo "${GRUB_CMD}"
 }
 get_post_type() {
     echo "${POST_TYPE}"
