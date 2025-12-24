@@ -8,7 +8,6 @@ iso_dir_path="${script_dir}/${vm_d}/"
 iso_name="${script_dir}/${vm_d}/${iso_n}.$iso_ext"
 disks_dir_path="${script_dir}/c/"
 image_name="${script_dir}/c/${vm_name}.${vm_ext}"
-ovmf_vars="${script_dir}/c/${vm_name}_OVMF_VARS.fd"
 
 # Global state
 session_uuid=$(cat /proc/sys/kernel/random/uuid)
@@ -17,8 +16,7 @@ short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 display="${qemu_display:-gtk}"
 gl="${qemu_gl:-off}"
 use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
-use_clipboard="${qemu_clipboard:-0}"
-audio_backend="${qemu_audio:-pipewire}"
+audio_backend="${qemu_audio:-pipewire}"  
 audio_device="${qemu_audio_dev:-intel-hda}" 
 
 # Check for CATART setting and display CLI art
@@ -73,24 +71,6 @@ copy_disk() {
     return 0
 }
 
-copy_uefi_vars() {
-    local source="$1"
-    local temp_name="/tmp/${short_uuid}_OVMF_VARS.fd"
-
-    if ! file_ex "$source"; then
-        postop "Error: UEFI vars $source not found" >&2
-        return 1
-    fi
-
-    if ! cp "$source" "$temp_name"; then
-        postop "Error: Failed to copy UEFI vars" >&2
-        return 1
-    fi
-
-    echo "$temp_name"
-    return 0
-}
-
 generate_mac() {
     local mac
     mac="52:54:00:$(printf '%02x:%02x:%02x' $((RANDOM % 256)) $((RANDOM % 256)) $((RANDOM % 256)))"
@@ -100,15 +80,13 @@ generate_mac() {
 
 qemu_cmd() {
     local image="$1"
-    local vars_file="$2"
-    shift 2
+    shift
     # Base command
     local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores}"
 
     # Add UEFI firmware if enabled
     if [ "$use_uefi" = "1" ]; then
         cmd="$cmd -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.4m.fd"
-        cmd="$cmd -drive if=pflash,format=raw,file=$vars_file"
     fi
 
     local use_display=1
@@ -155,13 +133,6 @@ qemu_cmd() {
         esac
     fi
 
-    # Add clipboard sharing if enabled
-    if [ "$use_clipboard" = "1" ]; then
-        cmd="$cmd -chardev qemu-vdagent,id=ch1,name=vdagent,clipboard=on"
-        cmd="$cmd -device virtio-serial-pci"
-        cmd="$cmd -device virtserialport,chardev=ch1,id=ch1,name=com.redhat.spice.0"
-    fi
-
     while [ $# -gt 0 ]; do
         case "$1" in
             --hda)
@@ -182,6 +153,10 @@ qemu_cmd() {
                 ;;
             --display)
                 cmd="$cmd -display $2"
+                shift 2
+                ;;
+            --spice)
+                cmd="$cmd -spice $2"
                 shift 2
                 ;;
             --usb-drive)
@@ -242,30 +217,11 @@ show_menu() {
 
 main() {
     local quick_cmd="${1:-}"  # Get quick command from argument
-    local temp_ovmf_vars=""
 
     # Create disk if it doesn't exist
     if ! file_ex "$image_name"; then
         preop "Creating initial disk: $image_name"
         qemu-img create -f qcow2 "$image_name" "$size"
-    fi
-
-    # Create UEFI NVRAM template if UEFI is enabled and file doesn't exist
-    if [ "$use_uefi" = "1" ] && ! file_ex "$ovmf_vars"; then
-        preop "Creating UEFI NVRAM template: $ovmf_vars"
-        cp /usr/share/edk2/x64/OVMF_VARS.4m.fd "$ovmf_vars"
-    fi
-
-    # Copy UEFI vars to temp for this session
-    if [ "$use_uefi" = "1" ]; then
-        preop "Copying UEFI vars to /tmp for session..."
-        temp_ovmf_vars=$(copy_uefi_vars "$ovmf_vars")
-        if [ $? -ne 0 ]; then
-            postop "Failed to copy UEFI vars"
-            return 1
-        fi
-        # Clean up temp UEFI vars on exit
-        trap "rm -f '$temp_ovmf_vars'" EXIT INT TERM
     fi
 
     # Check for quick command from argument (bypass menu)
@@ -305,37 +261,37 @@ main() {
 
         brick)
             preop "Booting from ISO ..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --cdrom "$iso_name" --boot d)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
             run_vm "$cmd"
             return 0
             ;;
         vncd)
             preop "Booting from ISO (VNC)..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --cdrom "$iso_name" --boot d --vnc)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --vnc)
             run_vm "$cmd"
             ;;
 
         vnck)
             preop "Running VM (VNC)..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c --vnc)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --vnc)
             run_vm "$cmd"
             ;;
 
         std)
             preop "Running VM (standard VGA)..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c --vga-std)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --vga-std)
             run_vm "$cmd"
             ;;
 
         bootk)
             preop "Headless boot..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --cdrom "$iso_name" --boot d --headless)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --headless)
             run_headless "$cmd"
             ;;
 
         taild)
             preop "Headless run..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c --headless)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --headless)
             run_headless "$cmd"
             ;;
 
@@ -345,19 +301,20 @@ main() {
                 postop "Failed to copy disk"
                 return 1
             fi
-            cmd=$(qemu_cmd "$temp_name" "$temp_ovmf_vars" --hda "$temp_name" --boot c)
+            preop "Launching temp VM..."
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             rm -f "$temp_name"
             preop "Temp disk removed"
             ;;
-
         dupk)
             temp_name=$(copy_disk "$image_name")
             if [ $? -ne 0 ]; then
                 postop "Failed to copy disk"
                 return 1
             fi
-            cmd=$(qemu_cmd "$temp_name" "$temp_ovmf_vars" --hda "$temp_name" --boot c)
+            preop "Launching permtemp VM..."
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             preop "Permanent copy: $temp_name"
             ;;
@@ -368,7 +325,8 @@ main() {
                 postop "Failed to copy disk"
                 return 1
             fi
-            cmd=$(qemu_cmd "$temp_name" "$temp_ovmf_vars" --hda "$temp_name" --boot c)
+            preop "Launching mayb VM..."
+            cmd=$(qemu_cmd "$temp_name" --hda "$temp_name" --boot c)
             run_vm "$cmd"
             printf "Save? (Y/n): "
             read -r save_choice
@@ -386,28 +344,28 @@ main() {
 
         macg)
             mac=$(generate_mac)
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c --network "$mac")
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --network "$mac")
             run_vm "$cmd"
             ;;
 
         cupk)
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c --usb-drive "$target")
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c --usb-drive "$target")
             run_vm "$cmd" 1
             ;;
 
         cupkd)
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --cdrom "$iso_name" --boot d --usb-drive "$target")
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d --usb-drive "$target")
             run_vm "$cmd" 1
             ;;
 
         conk)
-            cmd=$(qemu_cmd "" "$temp_ovmf_vars" --boot c --usb-drive "$target")
+            cmd=$(qemu_cmd "" --boot c --usb-drive "$target")
             run_vm "$cmd" 1
             return 0
             ;;
 
         conkd)
-            cmd=$(qemu_cmd "" "$temp_ovmf_vars" --cdrom "$iso_name" --boot d --usb-drive "$target")
+            cmd=$(qemu_cmd "" --cdrom "$iso_name" --boot d --usb-drive "$target")
             run_vm "$cmd" 1
             return 0
             ;;
@@ -415,7 +373,7 @@ main() {
         *)
             # Default run
             preop "Running VM..."
-            cmd=$(qemu_cmd "$image_name" "$temp_ovmf_vars" --hda "$image_name" --boot c)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --boot c)
             run_vm "$cmd"
             ;;
     esac

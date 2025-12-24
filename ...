@@ -5,12 +5,12 @@ EDITOR="${EDITOR:-vim}"
 ################## ISO CREATION
 vase_v="0.0.18" # For motd / github page
 silent_mode=0 #Supress output of mkarchiso
-auto_date=1 # 1=automatic date, 0=manual
+auto_date=0 # 1=automatic date, 0=manual
 iso_profile="plasma_skinny"
 
 ################## VM STUFF
 arch="x86_64"
-ram="8096"
+ram="16000"
 # 16384 4048 2024 1012
 cores="6"
 # vCPUS so actually threads but named it cores
@@ -21,7 +21,7 @@ vm_d="a"
 # "a" for testing build ISOs "d" for regular
 
 [ "$auto_date" = "1" ] && iso_n="VASE-$(date +%Y.%m.%d)-x86_64" ||\
-iso_n="archlinux-x86_64"
+iso_n="VASE-2025.12.22-x86_64"
 # Or manual ^^
 
 iso_ext="iso" #raw, bin
