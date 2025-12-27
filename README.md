@@ -37,7 +37,7 @@
 
 ## VaseOS - Arch 🏺
 
-A testing suite to run VMs and development platform to perform Archlinux system installations. 
+**A testing suite** to run VMs and development platform to perform Archlinux system installations. 
 
 > Made to be able to test future installs without going into BIOS. **Without a USB or without an ISO.**
 > Or test other distros from Arch without learning all the QEMU docs.
@@ -53,6 +53,8 @@ This works from official arch [ISO](https://archlinux.org/download/) (using mirr
 
 > At our compute cost of having to do more frequent builds whenever something is borken. 
 > Or at major releases of upstream sources which we have to track closely.
+
+**Do note the dates of ISO as public releases are at the beginning of each month**
 
 > [!NOTE]
 > **The twist**: A fork of archinstall that builds itself and creates, signs ISOs, and can test them directly with post-install utilities and VM testing.
