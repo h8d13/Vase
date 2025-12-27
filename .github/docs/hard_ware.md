@@ -55,8 +55,6 @@ It will return 64 for a 64-bit (x64) UEFI or 32 for a 32-bit (IA32) UEFI. If the
 ### NVIDIA Table :) 
 > Refer back to top table.
 
-- Maxwell = GTX 900 series (GTX 950, 960, 970, 980)
-- Pascal = GTX 10 series (GTX 1050, 1060, 1070, 1080)
 - Turing = RTX 20 series & GTX 16 series (RTX 2060, 2070, 2080, GTX 1650, 1660)
 - Ampere = RTX 30 series (RTX 3060, 3070, 3080, 3090)
 - Ada Lovelace = RTX 40 series (RTX 4060, 4070, 4080, 4090)
@@ -66,6 +64,8 @@ It will return 64 for a 64-bit (x64) UEFI or 32 for a 32-bit (IA32) UEFI. If the
 
 ### NVIDIA Table :(
 
+- Maxwell = GTX 900 series (GTX 950, 960, 970, 980)
+- Pascal = GTX 10 series (GTX 1050, 1060, 1070, 1080)
 - GTX 600/700 (Kepler) → needs nvidia-470xx-dkms (AUR)
 - GTX 400/500 (Fermi) → needs nvidia-390xx-dkms (AUR)
 - GTX 200/8800 (Tesla) → needs nvidia-340xx-dkms (AUR)
