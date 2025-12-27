@@ -185,6 +185,9 @@ Or better yet, fork all the repos and send me patches.
 
 [QEMU Docs](https://www.qemu.org/documentation/) 
 
+Please see [archinstall](https://github.com/archlinux/archinstall/)
+Also do some stuff on [gitlab](https://gitlab.archlinux.org/users/h8d13/projects) like my attempt at an International ISO.
+
 ### TerminationOS
 
 Basically I was just sick of distro-hopping. Thought how can I create my next build in minutes not hours.
