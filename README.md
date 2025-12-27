@@ -89,6 +89,16 @@ Please refer to archinstall and archwiki.
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, applications, network manager.
 
+## Tips in the menu 
+
+`/` allows you to search
+
+`CTRL + C` allows you to clear a field
+
+`hjkl` also allow you to move around (just like arrow keys)
+
+`CTRL + H` shows the full help
+
 <img width="1070" height="746" alt="Screenshot_20251012_120728" src="https://github.com/user-attachments/assets/b7c2ca05-2f03-44bb-abd7-6cc5881856e9" />
 
 Go grab some coffee during installation (it'll be done when you come back). 
