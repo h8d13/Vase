@@ -79,7 +79,7 @@ pacman-key --init
 pacman -Sy git
 git clone https://github.com/archlinux/archinstall
 cd archinstall
-python -m archinstall
+python -m archinstall $@
 ```
 
 > [!TIP]
@@ -97,7 +97,7 @@ python -m archinstall
 
 Please refer to archinstall and archwiki. This is the safe way **do not continue this guide.** 
 
-You can also obviously try other contributors [forks](https://github.com/archlinux/archinstall/forks?include=active&page=1&period=2y&sort_by=last_updated)
+You can also obviously try other contributors' [forks](https://github.com/archlinux/archinstall/forks?include=active&page=1&period=2y&sort_by=last_updated)
 And do some testing by `git clone -b branch_name` ! 
 
 ## Dev Fork
