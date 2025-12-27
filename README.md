@@ -81,7 +81,9 @@ git clone https://github.com/archlinux/archinstall
 cd archinstall
 python -m archinstall
 ```
-Please refer to archinstall and archwiki.
+Please refer to archinstall and archwiki. This is the safe way **do not continue this guide.** 
+
+## Dev Fork
 
 > [!TIP]
 > By default you are already root in the ISO env. In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
