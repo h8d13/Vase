@@ -225,3 +225,35 @@ First tried on alpine and gave up at hardware drivers so here we are.
 
 > It is also largely frustration-driven: Both with how newer users struggle (usually in forums) and what I wish I had when I first started using Arch.
 > Shout to Bringus Studios on YT too for the inspiration with the many weird build gaming systems and videos. Perhaps this project can also serve for others who want to create their own systems?
+
+### Maintaining your system
+
+I dont know what I'm lookign for:
+```
+pacman -Qi pkg
+# pacman -Ql pkg 
+pacman -Q | grep <pkg>
+```
+
+I want to learn about something:
+```
+sudo pacman -S man
+man <pkg>
+```
+
+I want to have a clean system:
+```
+pacman -S pacman-contrib
+paccache -r
+checkupdates   
+bash-completion 2.17.0-1 -> 2.17.0-2
+mkinitcpio 40-3 -> 40-4
+# visit archlinux.org/news
+# limit AUR usage to strictly necessary
+```
+
+I have slow mirrors:
+```
+sudo reflector --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+sudo pacman -Sy
+```
