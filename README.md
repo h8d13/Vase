@@ -83,7 +83,10 @@ python -m archinstall $@
 ```
 
 > [!TIP]
-> By default you are already root in the ISO env.
+> By default you are already root in the ISO env. You can use args: `-h --help` you can for example use: `--debug --verbose` for dev.
+
+You can also obviously try other contributors' [forks](https://github.com/archlinux/archinstall/forks?include=active&page=1&period=2y&sort_by=last_updated)
+And do some testing by `git clone -b branch_name` ! 
 
 ## Mor tips in the menu 
 
@@ -96,9 +99,6 @@ python -m archinstall $@
 `CTRL + H` shows the full help
 
 Please refer to archinstall and archwiki. This is the safe way **do not continue this guide.** 
-
-You can also obviously try other contributors' [forks](https://github.com/archlinux/archinstall/forks?include=active&page=1&period=2y&sort_by=last_updated)
-And do some testing by `git clone -b branch_name` ! 
 
 ## Dev Fork
 
