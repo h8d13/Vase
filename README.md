@@ -73,7 +73,7 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 Please refer to archinstall and archwiki.
 
-> ![TIP]
+> [!TIP]
 > By default you are already root in the ISO env. In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
 
 `$ pacman-key --init && pacman -Sy git`
