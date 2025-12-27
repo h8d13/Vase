@@ -43,7 +43,6 @@ It will return 64 for a 64-bit (x64) UEFI or 32 for a 32-bit (IA32) UEFI. If the
   | **All Open-Source** | Installs a lot of packages... | Universal fallback |
   | **AMD / ATI** | mesa, xf86-video-amdgpu, xf86-video-ati, libva-mesa-driver, vulkan-radeon | Generic AMD |
   | **Intel** | mesa, libva-intel-driver, intel-media-driver, vulkan-intel | HD Graphics, Iris Xe, Arc, etc |
-  | **Nvidia (Proprietary)** | nvidia-dkms, dkms, libva-nvidia-driver | GTX 900+ / RTX 20-50 series. Auto-adds nvidia-prime if Intel iGPU detected |
   | **Nvidia (Open Kernel)** | nvidia-open-dkms, dkms, libva-nvidia-driver | Turing+ and newer. Auto-adds nvidia-prime if Intel iGPU detected |
   | **Nvidia (Nouveau)** | mesa, xf86-video-nouveau, libva-mesa-driver, vulkan-nouveau | For legacy/unsupported cards |
   | **QEMU/KVM VM** | mesa, vulkan-virtio, qemu-guest-agent, vulkan-swrast, libva-mesa-driver | VM optimized |
@@ -60,7 +59,7 @@ It will return 64 for a 64-bit (x64) UEFI or 32 for a 32-bit (IA32) UEFI. If the
 - Ada Lovelace = RTX 40 series (RTX 4060, 4070, 4080, 4090)
 - Blackwell = RTX 5000+
 
-> They are a bit of a hit or miss. But what is cool is that you can try several drivers (prop vs open vs fallback), kernels (zen, lts) in little time and run `Glmark2` or `3dmax` or similar to test perf. My Ada series (4060Ti) works perfectly fine on proprietary for example.
+> They are a bit of a hit or miss. But what is cool is that you can try several drivers, kernels (zen, lts) in little time and run `Glmark2` or similar to test perf. 
 
 ### NVIDIA Table :(
 
