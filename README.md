@@ -71,8 +71,16 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 ### From the official [ISO](https://archlinux.org/download/) or our builds [here](https://github.com/h8d13/Vase/releases)
 
 > [!WARNING] 
-> This is a dev fork that has been completly stripped of a lot of things and altered. Expect bugs and little sanity. Mainly made to test major changes safely.
+> This is a dev fork that has been completly stripped of a lot of things and altered. Expect bugs and little sanity. Mainly made to test major changes safely. I send my patches here: https://github.com/archlinux/archinstall
 
+And you can try it out:
+```
+pacman-key --init
+pacman -Sy git
+git clone https://github.com/archlinux/archinstall
+cd archinstall
+python -m archinstall
+```
 Please refer to archinstall and archwiki.
 
 > [!TIP]
