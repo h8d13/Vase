@@ -68,10 +68,13 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 
 ### From the official [ISO](https://archlinux.org/download/) or our builds [here](https://github.com/h8d13/Vase/releases)
 
-> By default you are already root in the ISO env. 
+> [!WARNING] 
+> This is a dev fork that has been completly stripped of a lot of things and altered. Expect bugs and little sanity. Mainly made to test major changes safely.
+
+Please refer to archinstall and archwiki.
 
 > ![TIP]
-> In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
+> By default you are already root in the ISO env. In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
 
 `$ pacman-key --init && pacman -Sy git`
 
