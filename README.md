@@ -81,12 +81,26 @@ git clone https://github.com/archlinux/archinstall
 cd archinstall
 python -m archinstall
 ```
-Please refer to archinstall and archwiki. This is the safe way **do not continue this guide.** 
-
-## Dev Fork
 
 > [!TIP]
-> By default you are already root in the ISO env. In our ISO builds: One arrow UP does what is bellow one go. Only requirement is internet access. 
+> By default you are already root in the ISO env.
+
+## Mor tips in the menu 
+
+`/` allows you to search
+
+`CTRL + C` allows you to clear a field
+
+`hjkl` also allow you to move around (just like arrow keys)
+
+`CTRL + H` shows the full help
+
+Please refer to archinstall and archwiki. This is the safe way **do not continue this guide.** 
+
+You can also obviously try other contributors [forks](https://github.com/archlinux/archinstall/forks?include=active&page=1&period=2y&sort_by=last_updated)
+And do some testing by `git clone -b branch_name` ! 
+
+## Dev Fork
 
 `$ pacman-key --init && pacman -Sy git`
 
@@ -100,16 +114,6 @@ Please refer to archinstall and archwiki. This is the safe way **do not continue
 `$ ./main -t` : Launch TUI forked archinstall
 
 > In the TUI: Some critical sections include disk setup, hardware profiles, applications, network manager.
-
-## Tips in the menu 
-
-`/` allows you to search
-
-`CTRL + C` allows you to clear a field
-
-`hjkl` also allow you to move around (just like arrow keys)
-
-`CTRL + H` shows the full help
 
 <img width="1070" height="746" alt="Screenshot_20251012_120728" src="https://github.com/user-attachments/assets/b7c2ca05-2f03-44bb-abd7-6cc5881856e9" />
 
