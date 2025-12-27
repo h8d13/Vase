@@ -45,8 +45,6 @@ When no args are provided shows help
 --isomod                   # -i   # Create iso default `iso_profiles/plasma_profile.conf`
 --flash <device>           # -f   # Flash ISO to USB device (e.g., /dev/sdd)
 --workflow <device>        # -w   # Complete workflow
---grub <args>              # -g   # GRUB utilities -h for help
---bench <type>             # -b   # Run benchmarks: io, cpu, gpu
 
 --reset                    # -r   # Resets logs and rcw
 ```
