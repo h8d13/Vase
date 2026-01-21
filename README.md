@@ -71,7 +71,9 @@ You can use [rufus](https://rufus.ie/) for Winslows or [KDEImageWriter](https://
 ### From the official [ISO](https://archlinux.org/download/) or our builds [here](https://github.com/h8d13/Vase/releases)
 
 > [!WARNING] 
-> This is a dev fork that has been completly stripped of a lot of things and altered. Expect bugs and little sanity. Mainly made to test major changes safely. I send my patches here: https://github.com/archlinux/archinstall
+> This is a dev fork that has been completly stripped of a lot of things and altered.
+> Expect bugs and little sanity. Mainly made to test major changes safely. I send my patches here: https://github.com/archlinux/archinstall
+> I have also moved all my code to: [here](https://github.com/h8d13/archinstoo)
 
 And you can try it out:
 ```
