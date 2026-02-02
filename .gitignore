@@ -3,8 +3,8 @@
 .vscode/
 
 .secrets
-vase_os/zazu_lago/a/*.iso*
 vase_os/zazu_lago/c/*.qcow2
+vase_os/zazu_lago/c/*.fd
 vase_os/zazu_lago/d/*.iso*
 vase_os/zazu_lago/archiso_work/
 vase_os/zazu_lago/archiso_profile
@@ -26,4 +26,3 @@ pkg/
 vase-git/
 *.iso
 *.img
-*_OVMF_VARS.fd

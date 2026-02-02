@@ -2,7 +2,7 @@
 # shellcheck disable=SC1090,SC1091,SC2154
 
 . "$(dirname "$0")/../../util_f"
-. "$(dirname "$0")/../../..."
+vase_init
 
 # Base QEMU packages
 pkgs_needed="qemu-system-x86 qemu-img qemu-hw-display-virtio-gpu-pci qemu-hw-display-virtio-gpu"

@@ -2,11 +2,7 @@
 # shellcheck disable=SC1090,SC1091,SC2154
 
 . "$(dirname "$0")/../../util_f"
-. "$(dirname "$0")/../../..."
-
-if file_ex "${rel}${p_lib}/${rcw_file}"; then
-    . "${rel}${p_lib}/${rcw_file}"
-fi
+vase_init
 check_updates_safe() {
     tmpdir=$(mktemp -d)
     trap "rm -rf \$tmpdir" EXIT

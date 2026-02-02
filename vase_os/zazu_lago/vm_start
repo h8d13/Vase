@@ -2,26 +2,49 @@
 # shellcheck disable=SC1090,SC1091,SC2154
 
 . "$(dirname "$0")/../../util_f"
-. "$(dirname "$0")/../../..."
+vase_init
+
+trap 'echo "Caught interrupt, exiting..."; exit 0' INT
 
 script_dir="$(dirname "$0")"
 iso_name="${script_dir}/${vm_d}/${iso_n}.$iso_ext"
 image_name="${script_dir}/c/${vm_name}.${vm_ext}"
+ovmf_vars_path="${script_dir}/c/${ovmf_vars_local}"
 
 # Global state
 session_uuid=$(cat /proc/sys/kernel/random/uuid)
 short_uuid=$(echo "$session_uuid" | tr -d '-' | cut -c1-6)
 
-display="${qemu_display:-gtk}"
+display="${qemu_display:-sdl}"
 gl="${qemu_gl:-off}"
-use_uefi="${qemu_uefi:-0}"  # Set to 0 for legacy BIOS mode
-audio_backend="${qemu_audio:-pipewire}"  
-audio_device="${qemu_audio_dev:-intel-hda}" 
+use_uefi="${qemu_uefi:-0}"
+machine="${qemu_machine:-q35}"
+network="${qemu_network:-user}"
+
+# Fix PipeWire/Pulse under sudo: point to real user's runtime dir
+if [ -n "$SUDO_USER" ] || [ -n "$DOAS_USER" ]; then
+    real_uid=$(id -u "$(get_real_user)")
+    export XDG_RUNTIME_DIR="/run/user/${real_uid}"
+fi
 
 # Check for CATART setting and display CLI art
 if [ "${CATART}" = "1" ]; then
     cat "${script_dir}/cli_art"
 fi
+
+init_ovmf() {
+    [ "$use_uefi" != "1" ] && return
+    if [ ! -f "$ovmf_vars_path" ]; then
+        if [ -f "$ovmf_vars_source" ]; then
+            preop "Copying OVMF_VARS to $ovmf_vars_path"
+            cp "$ovmf_vars_source" "$ovmf_vars_path"
+        else
+            warn "OVMF_VARS source not found: $ovmf_vars_source"
+        fi
+    fi
+}
+# Init OVMF before any VM commands
+init_ovmf
 
 run_vm() {
     local cmd="$1"
@@ -81,12 +104,16 @@ qemu_cmd() {
     local image="$1"
     shift
     # Base command
-    local cmd="qemu-system-${arch} -enable-kvm -m ${ram} -cpu host -smp ${cores}"
+    local cmd="qemu-system-${arch} -machine ${machine},accel=kvm -enable-kvm -m ${ram} -cpu host -smp ${cores}"
 
     # Add UEFI firmware if enabled
     if [ "$use_uefi" = "1" ]; then
-        cmd="$cmd -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.4m.fd"
+        cmd="$cmd -drive if=pflash,format=raw,readonly=on,file=${ovmf_code}"
+        cmd="$cmd -drive if=pflash,format=raw,file=${ovmf_vars_path}"
     fi
+
+    # Network
+    cmd="$cmd -nic ${network}"
 
     local use_display=1
     local use_std_vga=0
@@ -193,7 +220,8 @@ qemu_cmd() {
 show_menu() {
     echo "########################################"
     echo "Zazu_lago VM Tooling: rdisk, brick, then dupk."
-    echo "Display: ${qemu_display} | GL: ${qemu_gl}"
+    echo "Display: ${display} | GL: ${gl} | UEFI: ${use_uefi}"
+    echo "Machine: ${machine} | Net: ${network}"
     echo "########################################"
     echo " rdisk   : Reset ${vm_name} ${size}"
     echo " dupk    : Permanent copy"
@@ -249,6 +277,11 @@ main() {
 
         rdisk)
             qemu-img create -f qcow2 "$image_name" "$size"
+            # Reset OVMF vars too so UEFI is clean
+            if [ "$use_uefi" = "1" ] && [ -f "$ovmf_vars_source" ]; then
+                cp "$ovmf_vars_source" "$ovmf_vars_path"
+                postop "Reset OVMF vars"
+            fi
             postop "Reset disk $image_name"
             return 0
             ;;
@@ -260,7 +293,7 @@ main() {
 
         brick)
             preop "Booting from ISO ..."
-            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot d)
+            cmd=$(qemu_cmd "$image_name" --hda "$image_name" --cdrom "$iso_name" --boot "once=d,menu=${boot_menu:-on}")
             run_vm "$cmd"
             return 0
             ;;

@@ -10,14 +10,32 @@ cores="6"
 # vCPUS so actually threads but named it cores
 size="60G" 
 # Preallocation doesnt take space directly
+## QEMU Settings
+qemu_machine="q35"
+# Machine type: q35, pc
+qemu_display="sdl"
+# Display backend: sdl, gtk, vnc
+qemu_gl="on"
+# GL acceleration: on, off
+qemu_uefi=1
+# UEFI boot: 1 or 0
+qemu_network="user"
+# Network: user, none, bridge
+boot_menu="on"
+# Boot menu: on, off
 
-vm_d="a"
-# "a" for testing build ISOs "d" for regular
+audio_backend="pipewire"  # pa, alsa, pipewire, or none
+audio_device="intel-hda"  # intel-hda, AC97, usb-audio
 
-[ "$auto_date" = "1" ] && iso_n="VASE-$(date +%Y.%m.%d)-x86_64" ||\
-iso_n="VASE-2025.12.22-x86_64"
-# Or manual ^^
+## OVMF (UEFI firmware) paths
+ovmf_code="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
+ovmf_vars_source="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
+ovmf_vars_local="OVMF_VARS.fd"
+# Local writable copy, auto-created on first boot
 
+vm_d="d"
+
+iso_n="archlinux-x86_64"
 iso_ext="iso" #raw, bin
 
 vm_name="myvm0" 
@@ -36,16 +54,6 @@ target="${target_t}${target_p}"
 # Mount it first. 
 # Check lsblk output to find which partition it is. 
 # Ex sdd3 8:51   0 880.5G  0 part /run/media/usr/UUID
-
-## QEMU Display Settings
-qemu_display="sdl"
-# Display backend: sdl, gtk, vnc
-qemu_gl="on"
-# GL acceleration: on, off (for gtk)
-qemu_uefi=1
-# Copy EFI vars to QEMU: 1 or 0
-audio_backend="pipewire"  # pa, alsa, pipewire, or none
-audio_device="intel-hda"  # intel-hda, AC97, usb-audio
 
 ################## DIRS/LOGS/PERMS
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

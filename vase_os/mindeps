@@ -3,14 +3,8 @@
 # VaseOS Internal Dependencies Documentation
 # This file documents all tools used internally by Vase components
 # Use this to verify the vasebuild profile has everything needed
-SCRIPT_DIR="$(dirname "$0")"
-. "$SCRIPT_DIR/../util_f"
-. "$SCRIPT_DIR/../..."
-
-# Source rcw for info/warn/reop functions
-if [ -f "$SCRIPT_DIR/../.vase.d/rcw" ]; then
-    . "$SCRIPT_DIR/../.vase.d/rcw"
-fi
+. "$(dirname "$0")/../util_f"
+vase_init
 
 MISSING=()
 # Core packages (checks with pacman)

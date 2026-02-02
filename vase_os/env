@@ -1,19 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC1090,SC1091,SC2154
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [ -f "$SCRIPT_DIR/../utili_f" ]; then
-    . "$SCRIPT_DIR/../util_f"
-elif [ -f "$(dirname "$(dirname "$0")")/util_f" ]; then
-    . "$(dirname "$(dirname "$0")")/util_f"
-fi
-# Source constants if they exist
-if file_ex "$SCRIPT_DIR/../..."; then
-    . "$SCRIPT_DIR/../..."
-fi
-if file_ex "${rel}${p_lib}/${rcw_file}"; then
-    . "${rel}${p_lib}/${rcw_file}"
-fi
+. "$(dirname "$0")/../util_f"
+vase_init
 
 # Detect OS and distro
 os_type=$(uname -s)

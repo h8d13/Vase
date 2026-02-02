@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC1091
 #utilities
 show_help() {
     cat << 'EOF'
@@ -272,6 +273,25 @@ check_updates() {
     echo ""
     echo "To update run: git pull in project root or view diff git log"
     return 0
+}
+vase_init() {
+    # Find repo root relative to calling script
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+    VASE_ROOT="$script_dir"
+    while [ "$VASE_ROOT" != "/" ]; do
+        [ -f "$VASE_ROOT/util_f" ] && [ -f "$VASE_ROOT/..." ] && break
+        VASE_ROOT="$(dirname "$VASE_ROOT")"
+    done
+    # Source constants
+    if [ -f "$VASE_ROOT/..." ]; then
+        . "$VASE_ROOT/..."
+    fi
+    # Source rcw if it exists
+    if [ -n "${rel}" ] && [ -n "${p_lib}" ] && [ -n "${rcw_file}" ] && \
+       [ -f "${rel}${p_lib}/${rcw_file}" ]; then
+        . "${rel}${p_lib}/${rcw_file}"
+    fi
 }
 tree_dir() {
     if ! dir_ex "$1"; then
