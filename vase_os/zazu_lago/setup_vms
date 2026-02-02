@@ -21,8 +21,6 @@ esac
 # Add GL renderer if enabled
 [ "$qemu_gl" = "on" ] && pkgs_needed="$pkgs_needed virglrenderer"
 
-# Note: qemu-vdagent for clipboard is built into qemu-system-x86, no extra package needed
-
 missing_pkgs=""
 
 preop "Checking VM packages..."
