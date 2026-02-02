@@ -2,12 +2,6 @@
 # This file is an absolute mess but everything is declared here
 EDITOR="${EDITOR:-vim}"
 
-################## ISO CREATION
-vase_v="0.0.18" # For motd / github page
-silent_mode=0 #Supress output of mkarchiso
-auto_date=0 # 1=automatic date, 0=manual
-iso_profile="plasma_skinny"
-
 ################## VM STUFF
 arch="x86_64"
 ram="16000"
@@ -56,7 +50,6 @@ audio_backend="pipewire"  # pa, alsa, pipewire, or none
 audio_device="intel-hda"  # intel-hda, AC97, usb-audio
 
 ################## DIRS/LOGS/PERMS
-iso_sig="asc"
 s_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rel="$s_dir/"
 # Dir mods
@@ -80,20 +73,11 @@ cli_a="cli_art"
 
 #### More paths
 vase_d="vase_os"
-hb_d="$vase_d/hade_box"
 zl_d="$vase_d/zazu_lago"
-gl_d="$vase_d/grome_lum"
-ch_d="$vase_d/chap_pie"
-ka_d="$vase_d/kaes_arch"
-pp_d="$vase_d/pacto_pac"
 
 vase_p_env="$vase_d/env"
 vase_p_deps="$vase_d/mindeps"
 cc_py="$vase_d/clean_cache"
-
-#### Future alpine imp
-# Privilege escalation (ex: doas alternative)
-elev_cmd="sudo"
 
 ## For runtime output
 script_s=$(date +%s%6N)

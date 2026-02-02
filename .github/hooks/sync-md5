@@ -19,7 +19,7 @@ echo ""
 
 # Counter for progress
 count=0
-total=$(git ls-files | grep -v "^\.md5/" | wc -l)
+total=$(git ls-files | grep -vc "^\.md5/")
 
 # Get all tracked files (excluding .md5 directory, same as post-commit hook)
 git ls-files | grep -v "^\.md5/" | while IFS= read -r file; do

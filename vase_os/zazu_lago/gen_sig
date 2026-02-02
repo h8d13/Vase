@@ -1,6 +1,0 @@
-#!/bin/bash
-. "$(dirname "$0")/../../util_f"
-. "$(dirname "$0")/../../..."
-
-# Run me as user and configure gpg key before.
-gpg --detach-sign --armor "${zl_d}/${vm_d}/${iso_n}.${iso_ext}"

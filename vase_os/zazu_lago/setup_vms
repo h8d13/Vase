@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC1091,SC2154
 
 . "$(dirname "$0")/../../util_f"
 . "$(dirname "$0")/../../..."
@@ -37,6 +38,7 @@ done
 
 if [ -n "$missing_pkgs" ]; then
     preop "Installing missing packages:$missing_pkgs"
+    # shellcheck disable=SC2086  # Intentional word splitting for package list
     pacman -S --noconfirm --needed $missing_pkgs
 else
     preop "All packages already installed. Skipping..."

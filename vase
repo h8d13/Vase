@@ -1,3 +1,10 @@
 #!/bin/bash
-sudo -E ./main "$@"
 ## Hold env variables. Passes all args to main.
+. ./util_f
+elev_type
+case "$priv_esc" in
+    doas) doas ./main "$@" ;;
+    sudo) sudo -E ./main "$@" ;;
+    su)   su root -c "./main $(printf '%q ' "$@")" ;;
+    *)    echo "No privilege escalation found (doas/sudo/su)"; exit 1 ;;
+esac

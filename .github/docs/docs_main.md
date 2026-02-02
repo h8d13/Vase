@@ -95,11 +95,7 @@ By simply commenting out you can easily switch builds.
 
 - Inside `vase_os/env` main detection logic for kernel version, distro/init system, GPU/CPU.
 
-- Inside `vase_os/hade_box/altodeps` to see check all subdeps used by archinstall for installs without a USB (detected automatically).
-
 - Inside `vase_os/mindeps` deps used by Vase it-self.
-
-- Inside `vase_os/hade_box/install` main TUI entry script for ArchKDE.
 
 ## Philosophy
 

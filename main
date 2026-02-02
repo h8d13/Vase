@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC1091,SC2154
 
 #main
 #set -e # Debug line
@@ -7,6 +8,7 @@
 
 parse_args "$@"
 setup_cleanup
+real_user="$(get_real_user)"
 
 # Show help if requested
 if exec_args "HELP"; then
@@ -31,8 +33,8 @@ dir_excreate "${rel}${zl_d}/d"  # Create ISO dir
 dir_excreate "${rel}${zl_d}/c" # Create Disks dir
 
 # Awlays give these back to sudo user
-chown_all "$SUDO_USER" "${rel}${zl_d}/d" && dir_own "${rel}${zl_d}/d" "$SUDO_USER" 
-chown_all "$SUDO_USER" "${rel}${zl_d}/c" && dir_own "${rel}${zl_d}/c" "$SUDO_USER" 
+chown_all "$real_user" "${rel}${zl_d}/d" && dir_own "${rel}${zl_d}/d" "$real_user" 
+chown_all "$real_user" "${rel}${zl_d}/c" && dir_own "${rel}${zl_d}/c" "$real_user" 
 
 # Create settings if not exist
 if ! file_ex "${rel}${p_lib}/${c_file}.${c_ext}"; then
@@ -65,7 +67,6 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
-WHITE='\033[1;37m'
 NC='\033[0m'
 
 info() {
@@ -177,50 +178,19 @@ if file_ex "${rel}${p_lib}/${rcw_file}"; then
     . "${rel}${p_lib}/${rcw_file}"
     info "Loaded ${rcw_file} from ${rel}${p_lib}"
 fi
-# Skip logging for TUI mode (breaks curses) otherwise start log
-if ! exec_args "TUI"; then
-    init_log "${rel}${p_lib}/${log_n}.${log_ext}"
-fi
 if exec_args "UPDATE"; then
     git submodule update --init --recursive
     check_updates && exit
-fi
-if exec_args "GRUB"; then
-    grub_args="$(get_grub_cmd)"
-    # Extract first arg after -g flag
-    grub_flag=$(echo "$grub_args" | awk '{print $2}')
-    # Get remaining args
-    grub_rest=$(echo "$grub_args" | cut -d' ' -f3-)
-    if [ -z "$grub_flag" ]; then
-        "./${gl_d}/grome_lum" -h && exit
-    else
-        "./${gl_d}/grome_lum" "$grub_flag" $grub_rest && exit
-    fi
 fi
 if exec_args "EDIT_CONF"; then
     preop "Editing config file"
     $EDITOR ... && exit
 fi
-if exec_args "POST"; then
-    post_type="$(get_post_type)"
-    preop "Running post-install script: post_${post_type}..."
-    "./${ka_d}/post_${post_type}" && exit
-fi
-if exec_args "POST_EDIT"; then
-    post_edit_type="$(get_post_edit_type)"
-    preop "Opening post-install script in $EDITOR: post_${post_edit_type}..."
-    $EDITOR "./${ka_d}/post_${post_edit_type}" && exit
-fi
-if exec_args "PKG_MAN"; then
-    preop "Launching PACTOPAC package manager..."
-    gui_som "$SUDO_USER"
-    python3 "./${pp_d}/main.py" && ./${cc_py} && exit
-fi
 if im_groot; then
     # TUI with args
     if exec_args "TUI"; then
-        # unquoted so that we can pass several args
-        "./${hb_d}/install" $(get_tui_cmd) && ./${cc_py} || exit
+        # shellcheck disable=SC2046  # Intentional word splitting for multiple args
+        "./${hb_d}/install" $(get_tui_cmd) && ./"${cc_py}" || exit
     fi
     # Tree output
     if cmd_exists "tree"; then
@@ -228,11 +198,9 @@ if im_groot; then
         tree_dir "$s_dir" # Outputs tree to .dir file conditional
     fi 
     # Use reop for regular operation green output
-    if im_sudo; then
+    if im_elev; then
         obanner "PERMS CHECK"
         info "Running as elevated user..."
-        info "Session type: $(gui_what)"
-        gui_som "$SUDO_USER" #export XDG for sudo user
 
         cbanner "PERMS CHECK"
         obanner "ENVIR CHECK"
@@ -271,69 +239,6 @@ if im_groot; then
                 "./${zl_d}/vm_start" "$quick_arg"
             fi
             exit $?
-        fi
-        if exec_args "ISO"; then
-            preop "Checking host is Up to Date..."
-            "./${zl_d}/host_uptodate" || exit 1
-            preop "Starting ISO Builder..."
-            "./${zl_d}/iso_mod" && exit
-        fi
-        if exec_args "FLASH"; then
-            flash_device="$(get_flash_device)"
-
-            iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
-            if ! file_ex "$iso_file"; then
-                die "ISO not found: $iso_file"
-            fi
-            preop "Flashing ISO to device..."
-            "./${zl_d}/flash_iso" "$iso_file" "$flash_device" && rcw true && exit
-        fi
-        if exec_args "WORKFLOW"; then
-            all_device="$(get_workflow_device)"
-            preop "Starting ISO workflow..." # Check happens in util_f
-
-            # Build ISO
-            preop "Checking host is Up to Date..."
-            "./${zl_d}/host_uptodate" || exit 1
-            preop "Building ISO..."
-            "./${zl_d}/iso_mod" || exit 1
-
-            preop "Signing ISO..."
-            sudo -u "$SUDO_USER" "./${zl_d}/gen_sig"
-
-            # Verify signature
-            preop "Verifying signature..."
-            gpg_info=$(sudo -u "$SUDO_USER" "./${zl_d}/ver_sig" | tail -n 1)
-
-            # Flash ISO
-            iso_file="./${zl_d}/${vm_d}/${iso_n}.${iso_ext}"
-            preop "Flashing ISO to $all_device..."
-            "./${zl_d}/flash_iso" "$iso_file" "$all_device" 
-
-            # Log to test.status
-            test_date=$(date '+%Y-%m-%d %H:%M:%S')
-            # Get raw bytes and convert to GiB
-            iso_bytes=$(stat -c%s "$iso_file" 2>/dev/null || echo 0)
-            iso_size=$(bytes_to_gib "$iso_bytes")
-            if [ "${dev_mode:-0}" = "1" ]; then
-                echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: DEV" >> tests.status
-            else
-                echo "${test_date} | Version: ${vase_v} | ISO: ${iso_n}.${iso_ext} | Size: ${iso_size} | GPG: ${gpg_info} | Status: OK" >> tests.status
-            fi
-            
-            chown "$SUDO_USER:$SUDO_USER" tests.status README.md || true
-
-            reop "All workflow finished! Change Status to FAIL in tests.status if physical test fails."
-            exit
-        fi
-        if dir_own "${rel}${p_lib}" "root"; then
-            ## Give back to user
-            info "Changing ownership from root to $SUDO_USER"
-            chown_all "$SUDO_USER" "${rel}${p_lib}"
-            # Verify we actually gave back
-            dir_own "${rel}${p_lib}" "$SUDO_USER" || die "Failed to switch ownership"
-        else
-            info "Skipping... file already owned by $SUDO_USER"
         fi
     else
         reop "Running as root. Skipping..."

@@ -5,7 +5,7 @@
 # Run once after cloning: git config core.hooksPath .github/hooks
 
 # Get files changed in the last commit (excluding .md5/ directory)
-git diff --name-only HEAD~1 HEAD | grep -v "^\.md5/" | while read file; do
+git diff --name-only HEAD~1 HEAD | grep -v "^\.md5/" | while read -r file; do
     if [ -f "$file" ]; then
         # File exists - update its hash
         mkdir -p ".md5/$(dirname "$file")"

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC1091,SC2154
 # VaseOS Internal Dependencies Documentation
 # This file documents all tools used internally by Vase components
 # Use this to verify the vasebuild profile has everything needed
@@ -40,7 +41,6 @@ fi
 # Categories:
 # [BUILD] - ISO creation (iso_mod) 
 # [VM] - VM testing (has it's own dep check ./zazu_lago/setup_vms and env)
-# [INSTALL] - Installer runtime Host-2-Target installs (hade_box/install, altodeps)
 # [CORE] - Core system dependencies
 
 # Build-time Dependencies (ISO Creation)

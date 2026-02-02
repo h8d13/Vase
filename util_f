@@ -11,24 +11,13 @@ Options:
   -u,  --update              Check git for updates & pull submodules
   -ec, --edit-conf           Edit configuration file (...)
 
-  -t,  --tuimenu             Launch archinstall-dev mess
-
-  -pe, --post-edit <type>    Edit post install script (plasma/gnome/xfce4, default: plasma)
-  -p,  --post <type>         Run post install script (plasma/gnome/xfce4, default: plasma)
-  -pm, --pkg-man             Launch pacman GUI
-
   -s,  --start               Start VM menu
   -q,  --quick <command>     Pass direct VM options (use "help" for list)
-  -i,  --isomod              Create ISO using iso_profiles/plasma_skinny.conf
-  -f,  --flash <device>      Flash ISO to USB device (e.g., /dev/sdd)
-  -w,  --workflow <device>   Complete workflow: build, sign, flash
   -r,  --reset               Reset logs and settings
 
 Examples:
 
-  ./main -i                  Build ISO
   ./main -q help             Show VM quick commands
-  ./main -w /dev/sdd         Build ISO, sign, and flash to USB
 
 EOF
 }
@@ -53,14 +42,6 @@ parse_args() {
                 START=1
                 shift
                 ;;
-            -i |--isomod)
-                ISO=1
-                shift
-                ;;
-            -t |--tuimenu)
-                TUI=1
-                shift
-                ;;
             -q|--quick)
                 QUICK=1
                 if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
@@ -73,50 +54,6 @@ parse_args() {
                 ;;
             -u|--update)
                 UPDATE=1
-                shift
-                ;;
-            -f|--flash)
-                FLASH=1
-                FLASH_DEVICE="$2"
-                if [ -z "$flash_device" ]; then
-                    lsblk
-                    postop "No device specified. Use: -f /dev/sdX"
-                    exit 1
-                fi
-                shift 2
-                ;;
-            -w|--workflow)
-                WORKFLOW=1
-                if [ -z "$2" ] || [[ "$2" == -* ]]; then
-                    lsblk
-                    postop "Error: -w requires a device argument (e.g., /dev/sdd)"
-                    exit 1
-                fi
-                WORKFLOW_DEVICE="$2"
-                shift 2
-                ;;
-            -p|--post)
-                POST=1
-                if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
-                    POST_TYPE="$2"
-                    shift 2
-                else
-                    POST_TYPE="plasma"
-                    shift
-                fi
-                ;;
-            -pe|--post-edit)
-                POST_EDIT=1
-                if [ -n "$2" ] && [[ ! "$2" == -* ]]; then
-                    POST_EDIT_TYPE="$2"
-                    shift 2
-                else
-                    POST_EDIT_TYPE="plasma"
-                    shift
-                fi
-                ;;
-            -pm|--pkg-man)
-                PKG_MAN=1
                 shift
                 ;;
             -ec|--edit-conf)
@@ -136,15 +73,8 @@ exec_args() {
         HELP) [ "${HELP}" = "1" ] ;;
         RESET) [ "${RESET}" = "1" ] ;;
         START) [ "${START}" = "1" ] ;;
-        ISO) [ "${ISO}" = "1" ] ;;
-        TUI)  [ "${TUI}" = "1" ] ;;
         QUICK) [ "${QUICK}" = "1" ] ;;
         UPDATE) [ "${UPDATE}" = "1" ] ;;
-        FLASH) [ "${FLASH}" = "1" ] ;;
-        WORKFLOW) [ "${WORKFLOW}" = "1" ] ;;
-        POST) [ "${POST}" = "1" ] ;;
-        POST_EDIT) [ "${POST_EDIT}" = "1" ] ;;
-        PKG_MAN) [ "${PKG_MAN}" = "1" ] ;;
         EDIT_CONF) [ "${EDIT_CONF}" = "1" ] ;;
         *) return 1 ;;
     esac
@@ -160,18 +90,6 @@ get_tui_cmd() {
 }
 get_branch_name() {
     echo "${BRANCH_NAME}"
-}
-get_flash_device() {
-    echo "${FLASH_DEVICE}"
-}
-get_workflow_device() {
-    echo "${WORKFLOW_DEVICE}"
-}
-get_post_type() {
-    echo "${POST_TYPE}"
-}
-get_post_edit_type() {
-    echo "${POST_EDIT_TYPE}"
 }
 bytes_to_gib() {
     local bytes="$1"
@@ -208,8 +126,13 @@ cleanup() {
             postop "Runtime: ${us}μs"
         fi
     fi
+    # Give back root-created files to the real user
+    if [ -n "$real_user" ] && [ -n "${rel}${p_lib}" ] && dir_ex "${rel}${p_lib}"; then
+        if dir_own "${rel}${p_lib}" "root"; then
+            chown_all "$real_user" "${rel}${p_lib}"
+        fi
+    fi
     postop "Cleaning up..."
-    # Add cleanup stuff here
 }
 to_devnull(){
     "$@" >/dev/null 2>&1
@@ -238,33 +161,34 @@ dir_excreate() {
         mkdir -p "$1"
     fi
 }
+elev_type() {
+    # shellcheck disable=SC2034  # priv_esc used by callers (vase)
+    if command -v doas &>/dev/null; then
+        priv_esc="doas"
+    elif command -v sudo &>/dev/null; then
+        priv_esc="sudo"
+    elif command -v su &>/dev/null; then
+        priv_esc="su"
+    fi
+}
+get_real_user() {
+    # Return the non-root user who invoked the elevated session
+    if [ -n "$SUDO_USER" ]; then
+        echo "$SUDO_USER"
+    elif [ -n "$DOAS_USER" ]; then
+        echo "$DOAS_USER"
+    else
+        logname 2>/dev/null || whoami
+    fi
+}
 im_groot() {
     [ "$EUID" -eq 0 ]
 }
 am_iuser() {
     [ "$EUID" -ne 0 ]
 }
-im_sudo() {
-    [ -n "$SUDO_USER" ]
-}
-gui_what() {
-    if [ -n "$SUDO_USER" ]; then
-        local user_pid
-        user_pid=$(pgrep -u "$SUDO_USER" -n)
-        silent_err grep -z "^XDG_SESSION_TYPE=" /proc/"$user_pid"/environ | cut -d= -f2 | tr -d '\0'
-    else
-        echo "${XDG_SESSION_TYPE}"
-    fi
-}
-gui_som() {
-    local user="${1:-$SUDO_USER}"
-    local runtime_dir="/run/user/$(id -u "$user")"
-
-    export XDG_RUNTIME_DIR="$runtime_dir"
-    export DBUS_SESSION_BUS_ADDRESS="unix:path=${runtime_dir}/bus"
-    export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"  
-    export DISPLAY="$DISPLAY"  
-    export XAUTHORITY=$XAUTHORITY
+im_elev() {
+    [ -n "$SUDO_USER" ] || [ -n "$DOAS_USER" ]
 }
 chown_all() {
     chown -R "$1:$1" "$2"
@@ -311,7 +235,8 @@ check_updates() {
         return 1
     fi
 
-    local local_hash=$(git rev-parse HEAD 2>/dev/null)
+    local local_hash
+    local_hash=$(git rev-parse HEAD 2>/dev/null)
     if [ -z "$local_hash" ]; then
         warn "Failed to get local commit hash"
         return 1
@@ -324,7 +249,8 @@ check_updates() {
         return 1
     fi
 
-    local remote_hash=$(git rev-parse FETCH_HEAD 2>/dev/null)
+    local remote_hash
+    remote_hash=$(git rev-parse FETCH_HEAD 2>/dev/null)
 
     if [ -z "$remote_hash" ]; then
         warn "Failed to get remote commit hash"
@@ -352,8 +278,10 @@ tree_dir() {
         return 1
     fi
 
-    local current_tree=$(tree -a --dirsfirst --gitignore -I '.git|.md5|archinstall_official|archinstall_patch' "$1" 2>/dev/null)
-    local current_hash=$(echo "$current_tree" | md5sum | awk '{print $1}')
+    local current_tree
+    current_tree=$(tree -a --dirsfirst --gitignore -I '.git|.md5|archinstall_official|archinstall_patch' "$1" 2>/dev/null)
+    local current_hash
+    current_hash=$(echo "$current_tree" | md5sum | awk '{print $1}')
     local stored_hash=""
 
     if file_ex "$1/.directory"; then
